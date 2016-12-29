@@ -1,0 +1,1096 @@
+------------------------------------------------------------------------
+r262 | moritz | 2011-10-08 18:41:17 -0500 (Sat, 08 Oct 2011) | 4 lines
+
+ - Added the DOSBox OPL emulator as a GPL alternative to the MAME one
+   (thanks to Blzut3)
+ - Moved fmopl to mame subfolder
+ - Fixed MinGW portability issues (thanks to Fabian Greffrath)
+------------------------------------------------------------------------
+r261 | moritz | 2011-08-22 16:22:17 -0500 (Mon, 22 Aug 2011) | 1 line
+
+Added option to use GPL for the soure code (except for the MAME OPL2 emulator, which should probably be replaced by a GPL one (DosBox?))
+------------------------------------------------------------------------
+r260 | moritz | 2011-06-19 17:35:26 -0500 (Sun, 19 Jun 2011) | 1 line
+
+ - Added support for Japanese full version
+------------------------------------------------------------------------
+r259 | moritz | 2011-06-19 12:57:13 -0500 (Sun, 19 Jun 2011) | 2 lines
+
+ - Fixed crashes on Windows when ALT-TAB'ing
+ - Reload latch memory when surfaces were lost
+------------------------------------------------------------------------
+r258 | moritz | 2011-05-17 15:43:43 -0500 (Tue, 17 May 2011) | 1 line
+
+Added Windows icon and version info
+------------------------------------------------------------------------
+r257 | moritz | 2011-05-15 16:57:14 -0500 (Sun, 15 May 2011) | 1 line
+
+Fixed signon screen (show 'One moment') and jukebox (thanks to Chris Chokan)
+------------------------------------------------------------------------
+r256 | moritz | 2011-05-15 15:29:13 -0500 (Sun, 15 May 2011) | 1 line
+
+Added support for Mac OS X (thanks to Chris Ballinger). Release v1.7
+------------------------------------------------------------------------
+r255 | moritz | 2010-11-01 06:17:59 -0500 (Mon, 01 Nov 2010) | 3 lines
+
+ - Added support for .sd1 SOD game files as delivered by Steam
+   by changing --mission parameter slightly
+   (thanks to Pickle)
+------------------------------------------------------------------------
+r254 | moritz | 2010-10-30 07:19:13 -0500 (Sat, 30 Oct 2010) | 2 lines
+
+ - Added --windowed-mouse parameter to start windowed mode with grabbed mouse
+   (thanks to Jared Breland)
+------------------------------------------------------------------------
+r253 | moritz | 2010-10-30 07:08:03 -0500 (Sat, 30 Oct 2010) | 4 lines
+
+ - Rain and snow speed fix (thanks to Tricob)
+ - Floor/ceiling fix (thanks to Tricob / Adam Biser)
+ - Fixed moon out of screen bug (thanks to Tricob)
+ - Rain/snow leaking ceilings fix (thanks to Adam Biser / Tricob)
+------------------------------------------------------------------------
+r252 | moritz | 2010-10-30 06:00:39 -0500 (Sat, 30 Oct 2010) | 3 lines
+
+ - Per-user configuration/savegame directories (~/.wolf4sdl) on
+   Linux like systems per default (thanks to Jared Breland)
+ - Added --configdir parameter
+------------------------------------------------------------------------
+r251 | moritz | 2009-12-06 14:31:58 -0500 (Sun, 06 Dec 2009) | 1 line
+
+Fixed endless loop in fizzle fade, when in windowed mode (bug reported by Havoc)
+------------------------------------------------------------------------
+r250 | moritz | 2009-05-19 16:29:16 -0500 (Tue, 19 May 2009) | 1 line
+
+Added Mac OS X (x86) to the supported OSs
+------------------------------------------------------------------------
+r249 | moritz | 2009-04-22 02:10:36 -0500 (Wed, 22 Apr 2009) | 1 line
+
+Patch by Cyle for my broken Dreamcast changes
+------------------------------------------------------------------------
+r248 | moritz | 2009-02-24 08:13:23 -0500 (Tue, 24 Feb 2009) | 6 lines
+
+Modified patch by dcbasic (probably broken due to my changes)
+- Saved game description saved to VMS header
+- Adjustments made to LCD
+- VMU loading code improved
+- Miscellaneous code clean ups
+- Work started on new disc check code
+------------------------------------------------------------------------
+r247 | moritz | 2009-02-24 05:41:11 -0500 (Tue, 24 Feb 2009) | 1 line
+
+Patch by Pickle adding support for GP2X Wiz
+------------------------------------------------------------------------
+r246 | moritz | 2009-02-08 03:32:03 -0500 (Sun, 08 Feb 2009) | 1 line
+
+Define all ENDSTRs in foreign.h and use YES/NOBUTTONNAME constants
+------------------------------------------------------------------------
+r245 | moritz | 2009-01-22 09:40:31 -0500 (Thu, 22 Jan 2009) | 1 line
+
+GP2X: Use the second core (940) for the OPL emulation for speedup (patch by sepulep and Pickle)
+------------------------------------------------------------------------
+r244 | moritz | 2009-01-16 16:17:16 -0500 (Fri, 16 Jan 2009) | 1 line
+
+Replaced name by nickname
+------------------------------------------------------------------------
+r243 | moritz | 2009-01-16 08:32:21 -0500 (Fri, 16 Jan 2009) | 1 line
+
+Updated README-dc.txt
+------------------------------------------------------------------------
+r242 | moritz | 2009-01-16 08:22:24 -0500 (Fri, 16 Jan 2009) | 5 lines
+
+ - Use SDL_DOUBLEBUF for vsync to avoid or at least reduce flickering
+   (thanks to Avramenko for the hint, use --nodblbuf to disable it)
+ - Removed remainings of the frame rate counter on screen, when disabled
+ - Don't quit game when using TAB+E with --tedlevel
+
+------------------------------------------------------------------------
+r241 | moritz | 2008-12-28 17:47:29 -0500 (Sun, 28 Dec 2008) | 1 line
+
+Made wl_atmos.cpp VC6 compatible. Fixed compile error in wl_parallax.cpp (reported by Havoc)
+------------------------------------------------------------------------
+r240 | moritz | 2008-11-06 15:58:35 -0500 (Thu, 06 Nov 2008) | 1 line
+
+Default extravbls to 0 instead of 1. Added command line parameter --extravbls <vbls>
+------------------------------------------------------------------------
+r239 | moritz | 2008-11-06 15:44:20 -0500 (Thu, 06 Nov 2008) | 1 line
+
+Fixed missing umask parameter (thanks to Daniel Fass)
+------------------------------------------------------------------------
+r238 | moritz | 2008-10-02 18:38:48 -0500 (Thu, 02 Oct 2008) | 1 line
+
+Updated some comments (Cyle)
+------------------------------------------------------------------------
+r237 | moritz | 2008-10-01 17:04:38 -0500 (Wed, 01 Oct 2008) | 1 line
+
+Fixed support for 1.0 shareware data files (thanks to Marcus Naylor)
+------------------------------------------------------------------------
+r236 | moritz | 2008-09-04 05:28:22 -0500 (Thu, 04 Sep 2008) | 1 line
+
+Fixed xtile and ytile not being valid in HitHorizWall and HitVertWall, respectively. Removed unused HitHorizPWall and HitVertPWall.
+------------------------------------------------------------------------
+r235 | moritz | 2008-09-01 06:10:11 -0500 (Mon, 01 Sep 2008) | 1 line
+
+'tell' does not exist on Linux
+------------------------------------------------------------------------
+r234 | moritz | 2008-08-31 19:33:50 -0500 (Sun, 31 Aug 2008) | 1 line
+
+Forgot config.default...
+------------------------------------------------------------------------
+r233 | moritz | 2008-08-31 19:32:04 -0500 (Sun, 31 Aug 2008) | 1 line
+
+v1.6 release
+------------------------------------------------------------------------
+r232 | moritz | 2008-08-31 18:32:28 -0500 (Sun, 31 Aug 2008) | 1 line
+
+Fixed several warnings reported by VC6. Fixed songs not really supporting more than 64k...
+------------------------------------------------------------------------
+r231 | moritz | 2008-08-31 17:42:59 -0500 (Sun, 31 Aug 2008) | 3 lines
+
+ - Try to recognize whether data files don't fit to program version
+   instead of just using them and probably crash
+   (can be disabled with --ignorenumchunks)
+------------------------------------------------------------------------
+r230 | moritz | 2008-08-31 13:08:47 -0500 (Sun, 31 Aug 2008) | 1 line
+
+Fizzle fade now works for resolutions up to 8191x4095 ;D (Thanks to Xilinx, Inc.!!)
+------------------------------------------------------------------------
+r229 | moritz | 2008-08-31 13:00:20 -0500 (Sun, 31 Aug 2008) | 1 line
+
+Removed some references to nonexistent functions
+------------------------------------------------------------------------
+r228 | moritz | 2008-08-31 12:53:14 -0500 (Sun, 31 Aug 2008) | 1 line
+
+Fix VL_LatchToScreen for 320x200 for non 8-bit modes
+------------------------------------------------------------------------
+r227 | moritz | 2008-08-31 08:59:11 -0500 (Sun, 31 Aug 2008) | 1 line
+
+Fixed aspect ratio check for --res option
+------------------------------------------------------------------------
+r226 | moritz | 2008-08-29 21:09:04 -0500 (Fri, 29 Aug 2008) | 1 line
+
+Forgot to remove demo bug from bug list
+------------------------------------------------------------------------
+r225 | moritz | 2008-08-29 20:21:53 -0500 (Fri, 29 Aug 2008) | 4 lines
+
+ - Fixed demos being dependent on actual duration of GETGATLINGSND
+   (fixes second demo, which even rarely worked in vanilla Wolf3D)
+ - Fixed demos by disabling some bugfixes during recording and playback
+   (see PLAYDEMOLIKEORIGINAL define in version.h)
+------------------------------------------------------------------------
+r224 | moritz | 2008-08-29 20:17:01 -0500 (Fri, 29 Aug 2008) | 1 line
+
+Windows: Removed system menu in windowed mode to avoid ALT to open it
+------------------------------------------------------------------------
+r223 | moritz | 2008-08-28 12:57:50 -0500 (Thu, 28 Aug 2008) | 1 line
+
+Fixed palette issues occurring on some Windows systems by using 'best' color depth reported by libSDL per default (also see --bits option)
+------------------------------------------------------------------------
+r222 | moritz | 2008-07-06 10:26:02 -0500 (Sun, 06 Jul 2008) | 1 line
+
+Updated Changes.txt
+------------------------------------------------------------------------
+r221 | moritz | 2008-07-06 10:20:12 -0500 (Sun, 06 Jul 2008) | 1 line
+
+Fixed directional 3d sprites on architectures only allowing aligned memory access (thanks to Pickle for reporting the bug)
+------------------------------------------------------------------------
+r220 | moritz | 2008-06-02 13:55:38 -0500 (Mon, 02 Jun 2008) | 1 line
+
+Fixed remaining status bar after end of demo in 320x240s resolution
+------------------------------------------------------------------------
+r219 | moritz | 2008-05-26 19:06:57 -0500 (Mon, 26 May 2008) | 1 line
+
+Made demo timing more stable (demos still act the same, though)
+------------------------------------------------------------------------
+r218 | moritz | 2008-05-26 19:05:00 -0500 (Mon, 26 May 2008) | 1 line
+
+Removed last busy waiting (fixes very unstable framerates on machines with stricter schedulers like FreeBSD; thanks to Tron for making me notice)
+------------------------------------------------------------------------
+r217 | moritz | 2008-05-26 16:09:56 -0500 (Mon, 26 May 2008) | 1 line
+
+Fixed Spear compiling on case sensitive file systems (Thanks to Michael)
+------------------------------------------------------------------------
+r216 | moritz | 2008-05-26 16:09:00 -0500 (Mon, 26 May 2008) | 1 line
+
+Removed a warning
+------------------------------------------------------------------------
+r215 | moritz | 2008-05-24 21:40:51 -0500 (Sat, 24 May 2008) | 1 line
+
+Updated VC++ 6 support. Release v1.5
+------------------------------------------------------------------------
+r214 | moritz | 2008-05-24 20:25:53 -0500 (Sat, 24 May 2008) | 4 lines
+
+ - Reduced minimum distance to back of moving pushwall to PLAYERSIZE
+ - Fixed minor pushwall rendering issues
+ - Fixed pushwall rendering when player's eye is in the pushwall back tile
+   (bug reported by Pickle)
+------------------------------------------------------------------------
+r213 | moritz | 2008-05-23 21:02:15 -0500 (Fri, 23 May 2008) | 1 line
+
+Updated README and Changes file
+------------------------------------------------------------------------
+r212 | moritz | 2008-05-23 19:46:33 -0500 (Fri, 23 May 2008) | 1 line
+
+Fixed regression on leaving 'View scores' screen
+------------------------------------------------------------------------
+r211 | moritz | 2008-05-23 19:18:57 -0500 (Fri, 23 May 2008) | 1 line
+
+Made some more sound variables volatile (without any improvement...)
+------------------------------------------------------------------------
+r210 | moritz | 2008-05-23 17:51:43 -0500 (Fri, 23 May 2008) | 1 line
+
+Removed unused joystick variables. Enable joystick at first startup, when a joystick is available. Allow --joystick -1 to disable joystick
+------------------------------------------------------------------------
+r209 | moritz | 2008-05-23 17:15:24 -0500 (Fri, 23 May 2008) | 1 line
+
+Enable 'End game' menu item also when using --tedlevel
+------------------------------------------------------------------------
+r208 | moritz | 2008-05-23 17:10:54 -0500 (Fri, 23 May 2008) | 1 line
+
+Removed garbage on screen bottom when dying at a 320x240 resolution. Removed some unneccessary fade outs (DrawPlayScreen does not call VW_FadeOut anymore!!). When using 'End game', 'View scores' does not directly show up anymore.
+------------------------------------------------------------------------
+r207 | moritz | 2008-05-23 16:17:04 -0500 (Fri, 23 May 2008) | 1 line
+
+GP2X fixes by Pickle (sorry, I messed up your original patches)
+------------------------------------------------------------------------
+r206 | moritz | 2008-05-22 15:49:39 -0500 (Thu, 22 May 2008) | 1 line
+
+Fixed quickload/quicksave not working when started with --tedlevel (vanilla bug). This now also only checks for save games once at startup (may speed up entering the menu on Dreamcast)
+------------------------------------------------------------------------
+r205 | moritz | 2008-05-22 15:33:22 -0500 (Thu, 22 May 2008) | 1 line
+
+Removed pushwall debugging code
+------------------------------------------------------------------------
+r204 | moritz | 2008-05-22 15:32:50 -0500 (Thu, 22 May 2008) | 1 line
+
+Fixed drawing moving pushwalls viewed at acute angles near at the level border
+------------------------------------------------------------------------
+r203 | moritz | 2008-05-22 12:29:08 -0500 (Thu, 22 May 2008) | 1 line
+
+Fixed vanilla bug hiding bonus items on same tile as player, when player cannot pick them up (e.g. medikit at 100% health) (thanks to Pickle for noticing)
+------------------------------------------------------------------------
+r202 | moritz | 2008-05-20 17:57:54 -0500 (Tue, 20 May 2008) | 1 line
+
+Reduced default audiobuffer size on GP2X (by Pickle)
+------------------------------------------------------------------------
+r201 | moritz | 2008-05-20 17:55:46 -0500 (Tue, 20 May 2008) | 1 line
+
+Added README-GP2X.txt by Pickle. Updated version.h. Updated README.txt
+------------------------------------------------------------------------
+r200 | Moritz | 2008-05-15 17:19:13 -0500 (Thu, 15 May 2008) | 1 line
+
+Improved and updated README.txt
+------------------------------------------------------------------------
+r199 | moritz | 2008-05-14 19:30:02 -0500 (Wed, 14 May 2008) | 1 line
+
+Added GP2X specific code by Pickle
+------------------------------------------------------------------------
+r198 | moritz | 2008-05-14 19:29:18 -0500 (Wed, 14 May 2008) | 1 line
+
+Applied Pickle's FPS counter improvements
+------------------------------------------------------------------------
+r197 | moritz | 2008-05-14 13:27:58 -0500 (Wed, 14 May 2008) | 1 line
+
+Fixed drawing order in DrawPlayScreen to support new view size 20
+------------------------------------------------------------------------
+r196 | moritz | 2008-05-14 12:52:29 -0500 (Wed, 14 May 2008) | 1 line
+
+Reimplemented picture grabber to support all screen resolutions
+------------------------------------------------------------------------
+r195 | moritz | 2008-05-14 06:45:32 -0500 (Wed, 14 May 2008) | 1 line
+
+Add VL_ClearScreen(int color) using SDL_FillRect
+------------------------------------------------------------------------
+r194 | moritz | 2008-05-13 08:04:27 -0500 (Tue, 13 May 2008) | 3 lines
+
+- Added --resf option to force to use unsupported resolutions >= 320x200
+- Added support for resolutions being a multiple of 320x240
+  (thanks for your help, Pickle!)
+------------------------------------------------------------------------
+r193 | moritz | 2008-05-10 11:39:09 -0500 (Sat, 10 May 2008) | 1 line
+
+Added project files for Visual C++ 2008
+------------------------------------------------------------------------
+r192 | moritz | 2008-05-10 11:24:48 -0500 (Sat, 10 May 2008) | 1 line
+
+Fixed keyboard movement regression noticed by Andy_Nonymous and found by Tron
+------------------------------------------------------------------------
+r191 | moritz | 2008-05-04 12:53:45 -0500 (Sun, 04 May 2008) | 1 line
+
+Updated README.txt and Changes.txt. Added README-dc.txt and Makefile.dc by fackue
+------------------------------------------------------------------------
+r190 | moritz | 2008-05-03 19:05:27 -0500 (Sat, 03 May 2008) | 1 line
+
+Patch by fackue: Added transparency to the VMU icon.
+------------------------------------------------------------------------
+r189 | moritz | 2008-05-03 10:48:20 -0500 (Sat, 03 May 2008) | 1 line
+
+Fixed crash when cheat-hurting oneself to death (bug reported by Tricob)
+------------------------------------------------------------------------
+r188 | moritz | 2008-05-03 09:41:41 -0500 (Sat, 03 May 2008) | 1 line
+
+Cleaned up id_sd.cpp (kept PC speaker stuff for reference)
+------------------------------------------------------------------------
+r187 | moritz | 2008-05-03 07:53:09 -0500 (Sat, 03 May 2008) | 1 line
+
+Added move buttons (invalidates config file). Consistently name right mouse button button1 and middle mouse button button2
+------------------------------------------------------------------------
+r186 | moritz | 2008-05-03 06:39:22 -0500 (Sat, 03 May 2008) | 1 line
+
+Allow exiting control input state with controller button 1 when not reading joystick data. Don't enter keyboard input state with controller button
+------------------------------------------------------------------------
+r185 | moritz | 2008-05-03 05:44:36 -0500 (Sat, 03 May 2008) | 1 line
+
+Added joystick support to US_LineInput used for highscore names and save games. Added US_Printf and US_CPrintf (works just like printf)
+------------------------------------------------------------------------
+r184 | moritz | 2008-05-03 04:19:35 -0500 (Sat, 03 May 2008) | 1 line
+
+Patch by fackue: Added mouse recognition (requires current SDL patch from KOS as the mouse buttons to fix wrong mapping). Added support for more shareware/full version CDs
+------------------------------------------------------------------------
+r183 | moritz | 2008-04-25 19:26:34 -0500 (Fri, 25 Apr 2008) | 1 line
+
+Fixed wrong surface locks/unlocks
+------------------------------------------------------------------------
+r182 | moritz | 2008-04-25 15:27:33 -0500 (Fri, 25 Apr 2008) | 1 line
+
+Added Visual C++ 6 support
+------------------------------------------------------------------------
+r181 | moritz | 2008-04-25 15:07:47 -0500 (Fri, 25 Apr 2008) | 1 line
+
+Removed some useless VW_WaitVBLs
+------------------------------------------------------------------------
+r180 | moritz | 2008-04-13 13:26:55 -0500 (Sun, 13 Apr 2008) | 1 line
+
+Added some asserts in id_vl.cpp to check for screen access out of bounds
+------------------------------------------------------------------------
+r179 | moritz | 2008-04-13 11:49:51 -0500 (Sun, 13 Apr 2008) | 1 line
+
+Fixed problems with some VSWAPs (probably saved by FloEdit)
+------------------------------------------------------------------------
+r178 | moritz | 2008-04-13 10:52:01 -0500 (Sun, 13 Apr 2008) | 1 line
+
+Replaced usage of SIZE_MAX by (size_t) -1
+------------------------------------------------------------------------
+r177 | moritz | 2008-04-12 19:07:37 -0500 (Sat, 12 Apr 2008) | 1 line
+
+Fixed BJ face popping up in fullsize mode sometimes (thanks to Andy_Nonymous)
+------------------------------------------------------------------------
+r176 | moritz | 2008-04-12 19:01:51 -0500 (Sat, 12 Apr 2008) | 1 line
+
+Rewrote page management to allow pages in VSWAP > 64kB. This also fixes sounds > 4kB in high resolution mode
+------------------------------------------------------------------------
+r175 | moritz | 2008-04-12 18:48:47 -0500 (Sat, 12 Apr 2008) | 1 line
+
+Fixed uninitialized variable occurring in E2M2
+------------------------------------------------------------------------
+r174 | moritz | 2008-04-07 16:19:00 -0500 (Mon, 07 Apr 2008) | 1 line
+
+Removed unused upper memory stuff for GP2X
+------------------------------------------------------------------------
+r173 | moritz | 2008-03-29 20:39:59 -0500 (Sat, 29 Mar 2008) | 1 line
+
+Fixed endart when ARTSEXTERN is not defined
+------------------------------------------------------------------------
+r172 | moritz | 2008-03-26 04:51:48 -0500 (Wed, 26 Mar 2008) | 1 line
+
+Forgot dc_main.cpp ....
+------------------------------------------------------------------------
+r171 | moritz | 2008-03-24 19:11:29 -0500 (Mon, 24 Mar 2008) | 7 lines
+
+DreamCast changes by fackue:
+ - Added DC special default button mapping
+ - Data is now saved and loaded on/from the VMU
+ - Wolf4SDL parameters can now be applied via a /cd/params.txt tile
+ - Ask for Wolfenstein 3D data CD, if not already inserted
+ - Ask for SOD mission pack to play
+ - Added special Code::Blocks project to be used with "CodeBlocks DC Dev"
+------------------------------------------------------------------------
+r170 | tron | 2008-03-24 09:59:48 -0500 (Mon, 24 Mar 2008) | 1 line
+
+Fix typo in comment, factorise common #include.
+------------------------------------------------------------------------
+r169 | tron | 2008-03-24 09:56:14 -0500 (Mon, 24 Mar 2008) | 1 line
+
+Nobody except Windows has O_BINARY.  Always define O_BINARY (as 0) if it is not defined.
+------------------------------------------------------------------------
+r168 | moritz | 2008-03-24 06:13:50 -0500 (Mon, 24 Mar 2008) | 1 line
+
+DreamCast has no O_BINARY, it's always binary
+------------------------------------------------------------------------
+r167 | moritz | 2008-03-23 20:01:49 -0500 (Sun, 23 Mar 2008) | 1 line
+
+Applied GotGatling BJ face fix for controller display by fackue
+------------------------------------------------------------------------
+r166 | moritz | 2008-03-23 19:45:05 -0500 (Sun, 23 Mar 2008) | 1 line
+
+Improved SOD mission packs support (thanks to fackue!). Reduced changes due to mission pack support
+------------------------------------------------------------------------
+r165 | moritz | 2008-03-23 17:49:53 -0500 (Sun, 23 Mar 2008) | 1 line
+
+Fixed some files being read in text mode on MinGW. Updated Dev-C++ and Code::Blocks projects
+------------------------------------------------------------------------
+r164 | moritz | 2008-03-09 18:58:28 -0500 (Sun, 09 Mar 2008) | 1 line
+
+Fixed SOD missions support (by fackue)
+------------------------------------------------------------------------
+r163 | moritz | 2008-03-09 18:15:32 -0500 (Sun, 09 Mar 2008) | 6 lines
+
+- Updated version number to 1.4
+- Updated Dev-C++ and Code::Blocks project
+- Added README-devcpp.txt
+- Fixed busy waiting during level completed screens
+- Updated README.txt and Changes.txt
+- Added MinGW/MSYS support
+------------------------------------------------------------------------
+r162 | moritz | 2008-03-09 16:51:40 -0500 (Sun, 09 Mar 2008) | 1 line
+
+Changed window caption for SoD
+------------------------------------------------------------------------
+r161 | moritz | 2008-03-09 14:08:34 -0500 (Sun, 09 Mar 2008) | 1 line
+
+Added support for directional 3d sprites
+------------------------------------------------------------------------
+r160 | moritz | 2008-03-08 07:31:42 -0500 (Sat, 08 Mar 2008) | 1 line
+
+Added support for Spear mission packs by fackue (untested)
+------------------------------------------------------------------------
+r159 | moritz | 2008-03-05 18:46:58 -0500 (Wed, 05 Mar 2008) | 1 line
+
+Added compile-time-configured support for Wolf3d full v1.1 and shareware v1.0, v1.1 and v1.2
+------------------------------------------------------------------------
+r158 | moritz | 2008-03-05 13:42:53 -0500 (Wed, 05 Mar 2008) | 1 line
+
+Fixed 100% cpu usage issues on article screens and some control menu options
+------------------------------------------------------------------------
+r157 | moritz | 2008-02-18 17:25:49 -0500 (Mon, 18 Feb 2008) | 1 line
+
+Added shading support
+------------------------------------------------------------------------
+r156 | moritz | 2008-02-18 12:32:12 -0500 (Mon, 18 Feb 2008) | 1 line
+
+Added support for controllers with up to 32 buttons. Introduced button types: bt_nextweapon, bt_prevweapon, bt_esc, bt_pause, bt_strafeleft, bt_straferight. Removed some unused variables
+------------------------------------------------------------------------
+r155 | moritz | 2008-02-17 18:54:38 -0500 (Sun, 17 Feb 2008) | 6 lines
+
+- Reintroduced version.h
+- Moved extra features into separate files
+- Removed mindist by already existing MINDIST
+- Made object flags 32-bit (only used for statobj_t, yet)
+- Added "specialFlags" field to statinfo in wl_act1.cpp and annotated
+  some static objects with FL_FULLBRIGHT (not used, yet)
+------------------------------------------------------------------------
+r154 | moritz | 2008-02-17 09:54:50 -0500 (Sun, 17 Feb 2008) | 1 line
+
+Increased MAXVISABLE from 50 to 250 for very demanding mods ;)
+------------------------------------------------------------------------
+r153 | moritz | 2008-02-16 19:20:31 -0500 (Sat, 16 Feb 2008) | 1 line
+
+Updated Dreamcast BJ LCD images (by Antioch)
+------------------------------------------------------------------------
+r152 | moritz | 2008-02-15 18:59:45 -0500 (Fri, 15 Feb 2008) | 1 line
+
+Applied changes by fackue: Added BJ face displaying in LCD of controller. Adjusted some default values.
+------------------------------------------------------------------------
+r151 | moritz | 2008-02-15 18:16:59 -0500 (Fri, 15 Feb 2008) | 1 line
+
+Read corner data in SetupGameLevel and overwrite corners by adjacent tiles to avoid wrong interpretation. Improved star calculation a bit
+------------------------------------------------------------------------
+r150 | moritz | 2008-02-10 13:48:21 -0500 (Sun, 10 Feb 2008) | 1 line
+
+Removed doubled prototype
+------------------------------------------------------------------------
+r149 | moritz | 2008-02-09 18:03:05 -0500 (Sat, 09 Feb 2008) | 1 line
+
+Added outside atmosphere features
+------------------------------------------------------------------------
+r148 | moritz | 2008-02-09 15:39:32 -0500 (Sat, 09 Feb 2008) | 1 line
+
+Removed unnecessary include
+------------------------------------------------------------------------
+r147 | moritz | 2008-02-09 15:30:39 -0500 (Sat, 09 Feb 2008) | 1 line
+
+Added cloud sky support. Improved DrawFloorAndCeiling
+------------------------------------------------------------------------
+r146 | moritz | 2008-02-09 08:24:36 -0500 (Sat, 09 Feb 2008) | 1 line
+
+Disable mouse support on GP2x and Dreamcast
+------------------------------------------------------------------------
+r145 | moritz | 2008-02-09 08:07:42 -0500 (Sat, 09 Feb 2008) | 1 line
+
+Added support for SOD Demo
+------------------------------------------------------------------------
+r144 | moritz | 2008-02-09 07:38:01 -0500 (Sat, 09 Feb 2008) | 1 line
+
+Fixed SOD on systems with case sensitive filenames
+------------------------------------------------------------------------
+r143 | moritz | 2008-02-06 19:27:45 -0500 (Wed, 06 Feb 2008) | 1 line
+
+Added DarkOne's textured floors/ceilings via USE_FLOORCEILINGTEX
+------------------------------------------------------------------------
+r142 | moritz | 2008-02-06 17:59:51 -0500 (Wed, 06 Feb 2008) | 1 line
+
+Introduced the level feature flags and parallax sky as a first flag implementation
+------------------------------------------------------------------------
+r141 | moritz | 2008-02-06 15:12:41 -0500 (Wed, 06 Feb 2008) | 1 line
+
+Added HiRes support via USE_HIRES define in wl_def.h
+------------------------------------------------------------------------
+r140 | moritz | 2008-02-06 13:34:46 -0500 (Wed, 06 Feb 2008) | 1 line
+
+Prepared HiRes support. Readded id_pm.h. Pages may only be used through PM_GetPage now, which returns an uint32_t pointer! Cast it before you use it!
+------------------------------------------------------------------------
+r139 | moritz | 2008-02-05 18:15:46 -0500 (Tue, 05 Feb 2008) | 1 line
+
+Fixed appearing walls and wrong single columns on ARM and SH4 and several others probably...
+------------------------------------------------------------------------
+r138 | moritz | 2008-02-03 23:01:52 -0500 (Sun, 03 Feb 2008) | 1 line
+
+Fixed include order for dreamcast
+------------------------------------------------------------------------
+r137 | moritz | 2008-02-02 17:34:21 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Added support for music > 64 kB as supported by WDC
+------------------------------------------------------------------------
+r136 | moritz | 2008-02-02 16:49:23 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Added additional includes for non Win32
+------------------------------------------------------------------------
+r135 | moritz | 2008-02-02 16:43:48 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Fixed reading of adlib sounds
+------------------------------------------------------------------------
+r134 | moritz | 2008-02-02 15:15:01 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Fixed menu for spear
+------------------------------------------------------------------------
+r133 | moritz | 2008-02-02 15:01:40 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Use inline function for reading a word from memory
+------------------------------------------------------------------------
+r132 | moritz | 2008-02-02 12:59:30 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Resolved remaining alignment issues reported by gcc on ARM
+------------------------------------------------------------------------
+r131 | moritz | 2008-02-02 11:58:02 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Fixed number of menu items (especially in main menu)
+------------------------------------------------------------------------
+r130 | moritz | 2008-02-02 11:44:51 -0500 (Sat, 02 Feb 2008) | 1 line
+
+Added --samplerate and --audiobuffer parameters. Also adjust music speed to samplerate. Disabled PC speaker menu item
+------------------------------------------------------------------------
+r129 | moritz | 2008-02-01 19:19:27 -0500 (Fri, 01 Feb 2008) | 1 line
+
+Solved alignment problems in wl_draw.cpp
+------------------------------------------------------------------------
+r128 | moritz | 2008-01-31 18:14:57 -0500 (Thu, 31 Jan 2008) | 1 line
+
+Solved alignment problems in id_ca.cpp
+------------------------------------------------------------------------
+r127 | moritz | 2008-01-28 16:45:19 -0500 (Mon, 28 Jan 2008) | 1 line
+
+Use char only for characters, as it is unsigned on ARM...
+------------------------------------------------------------------------
+r126 | moritz | 2008-01-27 21:42:29 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Added adjustments for Dreamcast by dcbasic
+------------------------------------------------------------------------
+r125 | moritz | 2008-01-27 21:41:45 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Added missing includes for GP2X
+------------------------------------------------------------------------
+r124 | moritz | 2008-01-27 21:27:04 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Added joystick support to ShowArticle, Confirm and MouseSensitivity
+------------------------------------------------------------------------
+r123 | moritz | 2008-01-27 19:00:31 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Removed joystick port and gravis menu items
+------------------------------------------------------------------------
+r122 | moritz | 2008-01-27 17:07:43 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Some cleanup
+------------------------------------------------------------------------
+r121 | tron | 2008-01-27 14:07:22 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Fix last commit: wl_def.h is missing the include guard.
+------------------------------------------------------------------------
+r120 | tron | 2008-01-27 14:03:42 -0500 (Sun, 27 Jan 2008) | 1 line
+
+Load grstarts[] in a somewhat portable way.
+------------------------------------------------------------------------
+r119 | moritz | 2008-01-26 20:36:44 -0500 (Sat, 26 Jan 2008) | 1 line
+
+Allocate page file buffer in upper memory on GP2X
+------------------------------------------------------------------------
+r118 | moritz | 2008-01-26 20:36:10 -0500 (Sat, 26 Jan 2008) | 1 line
+
+Added joystick hat option
+------------------------------------------------------------------------
+r117 | moritz | 2008-01-26 19:33:28 -0500 (Sat, 26 Jan 2008) | 1 line
+
+Don't cache chunks in Quit, which cannot be displayed anyway, yet
+------------------------------------------------------------------------
+r116 | moritz | 2008-01-26 19:31:31 -0500 (Sat, 26 Jan 2008) | 1 line
+
+Always check pointers returned by malloc!
+------------------------------------------------------------------------
+r115 | moritz | 2008-01-26 18:43:13 -0500 (Sat, 26 Jan 2008) | 1 line
+
+Implemented joystick support. Removed quite some related unnecessary stuff
+------------------------------------------------------------------------
+r114 | moritz | 2008-01-20 06:49:20 -0500 (Sun, 20 Jan 2008) | 1 line
+
+Updated changes file
+------------------------------------------------------------------------
+r113 | moritz | 2008-01-20 06:36:53 -0500 (Sun, 20 Jan 2008) | 1 line
+
+Added parameter for SOD to disable copy protection quiz
+------------------------------------------------------------------------
+r112 | moritz | 2008-01-20 06:18:07 -0500 (Sun, 20 Jan 2008) | 1 line
+
+Grab mouse also on F12. Updated changes and readme
+------------------------------------------------------------------------
+r111 | moritz | 2008-01-20 06:06:15 -0500 (Sun, 20 Jan 2008) | 1 line
+
+Fixed out of bounds array access
+------------------------------------------------------------------------
+r110 | tron | 2008-01-16 05:11:29 -0500 (Wed, 16 Jan 2008) | 1 line
+
+Remove BETA code (just a time limit).
+------------------------------------------------------------------------
+r109 | moritz | 2008-01-08 20:18:14 -0500 (Tue, 08 Jan 2008) | 1 line
+
+Removed non existing file from project
+------------------------------------------------------------------------
+r108 | moritz | 2008-01-08 20:12:20 -0500 (Tue, 08 Jan 2008) | 1 line
+
+Updated version number, changes file and readme for v1.2
+------------------------------------------------------------------------
+r107 | moritz | 2008-01-08 19:36:47 -0500 (Tue, 08 Jan 2008) | 1 line
+
+Fixed fades for menus in fullscreen. Fixed fade in for 'End Game'
+------------------------------------------------------------------------
+r106 | moritz | 2008-01-08 19:09:27 -0500 (Tue, 08 Jan 2008) | 1 line
+
+Updated known bugs text
+------------------------------------------------------------------------
+r105 | moritz | 2008-01-08 19:09:06 -0500 (Tue, 08 Jan 2008) | 1 line
+
+Corrected fading speed
+------------------------------------------------------------------------
+r104 | moritz | 2008-01-06 21:31:53 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Added Spear of Destiny support
+------------------------------------------------------------------------
+r103 | moritz | 2008-01-06 19:13:53 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Removed Gamepal3d.cpp from project files
+------------------------------------------------------------------------
+r102 | moritz | 2008-01-06 18:18:07 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Reimplemented color table to use a new file format. Fixed MenuFadeOut.
+------------------------------------------------------------------------
+r101 | moritz | 2008-01-06 09:45:28 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Removed duplicate of MAPPLANES definition
+------------------------------------------------------------------------
+r100 | moritz | 2008-01-06 09:19:30 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Fixed double fade out after end game with --nowait. Enforce '--' for options. Added revision tag in version info
+------------------------------------------------------------------------
+r99 | moritz | 2008-01-06 09:18:16 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Fixed end game crash, when player did not die yet (Thanks to Agent87)
+------------------------------------------------------------------------
+r98 | moritz | 2008-01-06 07:50:45 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Moved constant expression out of nested loops
+------------------------------------------------------------------------
+r97 | moritz | 2008-01-06 07:47:31 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Improved full size status bar sourcecode a bit. Removed senseless comments in id_vl.cpp
+------------------------------------------------------------------------
+r96 | moritz | 2008-01-06 07:46:04 -0500 (Sun, 06 Jan 2008) | 1 line
+
+Added Code::Blocks and Dev-C++ projects. Added some compile infos to README
+------------------------------------------------------------------------
+r95 | moritz | 2008-01-05 20:30:49 -0500 (Sat, 05 Jan 2008) | 1 line
+
+Added some license infos
+------------------------------------------------------------------------
+r94 | moritz | 2008-01-05 20:25:49 -0500 (Sat, 05 Jan 2008) | 1 line
+
+Removed 3 warnings on MinGW
+------------------------------------------------------------------------
+r93 | moritz | 2008-01-05 20:13:48 -0500 (Sat, 05 Jan 2008) | 1 line
+
+Added full size screen feature
+------------------------------------------------------------------------
+r92 | moritz | 2008-01-05 19:00:54 -0500 (Sat, 05 Jan 2008) | 1 line
+
+Oops...
+------------------------------------------------------------------------
+r91 | moritz | 2008-01-05 19:00:30 -0500 (Sat, 05 Jan 2008) | 1 line
+
+Made it MinGW compatible
+------------------------------------------------------------------------
+r90 | moritz | 2007-12-30 17:34:20 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Fixed demo fading issues
+------------------------------------------------------------------------
+r89 | moritz | 2007-12-30 17:01:08 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Reformatted header files
+------------------------------------------------------------------------
+r88 | moritz | 2007-12-30 16:45:03 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Major code reformating. Removed some outcommented lines.
+------------------------------------------------------------------------
+r87 | moritz | 2007-12-30 14:32:40 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Removed all warnings reported by VC++ 8
+------------------------------------------------------------------------
+r86 | tron | 2007-12-30 13:57:04 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Hopefully improve readability of DrawPlayBorderSides().
+------------------------------------------------------------------------
+r85 | moritz | 2007-12-30 11:59:48 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Fixed missing initialization of SoundTable when sound effects are off
+------------------------------------------------------------------------
+r84 | moritz | 2007-12-30 11:29:11 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Removed some warnings. Removed unused 2 variables
+------------------------------------------------------------------------
+r83 | moritz | 2007-12-30 11:27:53 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Updated README
+------------------------------------------------------------------------
+r82 | tron | 2007-12-30 08:29:21 -0500 (Sun, 30 Dec 2007) | 1 line
+
+static.  remove unused variables.
+------------------------------------------------------------------------
+r81 | tron | 2007-12-30 07:50:03 -0500 (Sun, 30 Dec 2007) | 1 line
+
+Remove the unused global variable byte* wavebuffer.
+------------------------------------------------------------------------
+r80 | tron | 2007-12-30 07:48:13 -0500 (Sun, 30 Dec 2007) | 1 line
+
+s/nil/NULL/.
+------------------------------------------------------------------------
+r79 | moritz | 2007-12-29 13:52:16 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Fix numpad keys with numlock off. Map left and right alt, shift, and ctrl keys to the same key. Always grab mouse when started in fullscreen
+------------------------------------------------------------------------
+r78 | moritz | 2007-12-29 11:26:12 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Removed a buffer overflow
+------------------------------------------------------------------------
+r77 | tron | 2007-12-29 10:43:12 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Always assume NOSEGMENTATION and remove the macro.
+------------------------------------------------------------------------
+r76 | tron | 2007-12-29 10:31:24 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Remove write-only global variables.
+------------------------------------------------------------------------
+r75 | moritz | 2007-12-29 10:31:06 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Some random cleanup
+------------------------------------------------------------------------
+r74 | tron | 2007-12-29 10:23:21 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Remove boolean virtualreality, which is always false, and calls to VW_SetScreen(), which does not exist.
+------------------------------------------------------------------------
+r73 | tron | 2007-12-29 10:15:37 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Remove stale debug and old keyboard handlig code.
+------------------------------------------------------------------------
+r72 | tron | 2007-12-29 09:45:45 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Remove the unnecessary function VW_MarkUpdateBlock() and related code.
+------------------------------------------------------------------------
+r71 | tron | 2007-12-29 09:26:51 -0500 (Sat, 29 Dec 2007) | 1 line
+
+Remove the parameter screenhack, which had no effect anymore, from CAL_HuffExpand() and also remove stale assembler code there.
+------------------------------------------------------------------------
+r70 | tron | 2007-12-28 01:16:12 -0500 (Fri, 28 Dec 2007) | 1 line
+
+Testing for NULL before free() is redundant;  free(NULL) is valid.
+------------------------------------------------------------------------
+r69 | moritz | 2007-12-27 19:20:51 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Added credits section in the README file
+------------------------------------------------------------------------
+r68 | moritz | 2007-12-27 19:10:07 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Added README and Changes file
+------------------------------------------------------------------------
+r67 | moritz | 2007-12-27 18:33:57 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Use static linking of MSVCR80.DLL for Visual Studio project
+------------------------------------------------------------------------
+r66 | moritz | 2007-12-27 18:24:25 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Reimplemented Pause
+------------------------------------------------------------------------
+r65 | moritz | 2007-12-27 18:22:49 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Output console messages in a message box at shutdown on Windows
+------------------------------------------------------------------------
+r64 | moritz | 2007-12-27 18:11:12 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Fixed IN_Ack()
+------------------------------------------------------------------------
+r63 | moritz | 2007-12-27 18:02:06 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Added parameters for windowed mode and screen resolution. Removed some empty puts
+------------------------------------------------------------------------
+r62 | moritz | 2007-12-27 14:33:26 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Process command line arguments at program start
+------------------------------------------------------------------------
+r61 | moritz | 2007-12-27 14:17:25 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Fixed scaled Get Psyched
+------------------------------------------------------------------------
+r60 | moritz | 2007-12-27 13:26:02 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Fixed change view screen
+------------------------------------------------------------------------
+r59 | moritz | 2007-12-27 13:25:05 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Fixed painting outside the surface. Improved borders in scaled mode. Removed DrawAll* functions
+------------------------------------------------------------------------
+r58 | moritz | 2007-12-27 13:21:52 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Close only open files and free only allocated memory at shutdown
+------------------------------------------------------------------------
+r57 | moritz | 2007-12-27 13:20:25 -0500 (Thu, 27 Dec 2007) | 1 line
+
+Readded fizzlein when reviving player
+------------------------------------------------------------------------
+r56 | moritz | 2007-12-26 18:55:58 -0500 (Wed, 26 Dec 2007) | 1 line
+
+Compiling before committing helps...
+------------------------------------------------------------------------
+r55 | moritz | 2007-12-26 18:53:03 -0500 (Wed, 26 Dec 2007) | 1 line
+
+id_pm.cpp: Reformated, made PageOffsets a local variable, and only free memory if it has been allocated
+------------------------------------------------------------------------
+r54 | moritz | 2007-12-26 17:35:26 -0500 (Wed, 26 Dec 2007) | 1 line
+
+Switched to software surfaces to resolve problems with the palette in fullscreen on my system
+------------------------------------------------------------------------
+r53 | moritz | 2007-12-25 19:27:31 -0500 (Tue, 25 Dec 2007) | 1 line
+
+Changed another pointer check
+------------------------------------------------------------------------
+r52 | Moritz | 2007-12-25 19:20:14 -0500 (Tue, 25 Dec 2007) | 1 line
+
+Added project files for Visual Studio 2005
+------------------------------------------------------------------------
+r51 | Moritz | 2007-12-25 18:33:42 -0500 (Tue, 25 Dec 2007) | 1 line
+
+Fixed fade in when starting a new level
+------------------------------------------------------------------------
+r50 | Moritz | 2007-12-25 17:36:02 -0500 (Tue, 25 Dec 2007) | 1 line
+
+Switched default graphics mode to 640x400 fullscreen
+------------------------------------------------------------------------
+r49 | Moritz | 2007-12-25 17:21:19 -0500 (Tue, 25 Dec 2007) | 1 line
+
+Fixed signon screen for Windows in fullscreen mode
+------------------------------------------------------------------------
+r48 | Moritz | 2007-12-25 16:21:58 -0500 (Tue, 25 Dec 2007) | 1 line
+
+Fixed CA_CacheScreen for bufferPitch!=screenPitch
+------------------------------------------------------------------------
+r47 | moritz | 2007-10-19 16:33:20 -0500 (Fri, 19 Oct 2007) | 1 line
+
+Small fix (perhaps not noticable)
+------------------------------------------------------------------------
+r46 | moritz | 2007-10-16 19:21:50 -0500 (Tue, 16 Oct 2007) | 1 line
+
+Added input grabbing with scrolllock. Added mouse support when input is grabbed.
+------------------------------------------------------------------------
+r45 | moritz | 2007-10-03 12:57:36 -0500 (Wed, 03 Oct 2007) | 1 line
+
+Fixed FKeys for US_ControlPanel. Fixed music not continuing when quick loading with save game selection.
+------------------------------------------------------------------------
+r44 | moritz | 2007-10-03 12:34:02 -0500 (Wed, 03 Oct 2007) | 1 line
+
+Don't call A_DeathScream() twice on two bosses
+------------------------------------------------------------------------
+r43 | moritz | 2007-10-03 12:00:40 -0500 (Wed, 03 Oct 2007) | 1 line
+
+Let enemy shoot sounds play also if the player cannot see the enemy
+------------------------------------------------------------------------
+r42 | moritz | 2007-10-03 11:58:55 -0500 (Wed, 03 Oct 2007) | 1 line
+
+Assign player and boss weapon fire to special sound channels to avoid gattling gun fire stopping more important sounds
+------------------------------------------------------------------------
+r41 | moritz | 2007-10-03 11:56:55 -0500 (Wed, 03 Oct 2007) | 1 line
+
+Fixed sound overflow during resampling...
+------------------------------------------------------------------------
+r40 | moritz | 2007-10-03 07:10:13 -0500 (Wed, 03 Oct 2007) | 1 line
+
+Readded VC8 support
+------------------------------------------------------------------------
+r39 | moritz | 2007-09-30 17:58:13 -0500 (Sun, 30 Sep 2007) | 1 line
+
+Fixed 'Get Psyched\!' on higher resolutions
+------------------------------------------------------------------------
+r38 | moritz | 2007-09-30 17:32:10 -0500 (Sun, 30 Sep 2007) | 1 line
+
+Fixed pointer issues with actorat. Improved 'Lets see that again' a bit
+------------------------------------------------------------------------
+r37 | moritz | 2007-09-30 16:02:18 -0500 (Sun, 30 Sep 2007) | 1 line
+
+Fixed digi sounds
+------------------------------------------------------------------------
+r36 | moritz | 2007-09-30 15:40:14 -0500 (Sun, 30 Sep 2007) | 1 line
+
+Fixed crash when dieing at non 320x200
+------------------------------------------------------------------------
+r35 | moritz | 2007-09-30 08:23:43 -0500 (Sun, 30 Sep 2007) | 1 line
+
+Added scaling for higher resolutions
+------------------------------------------------------------------------
+r34 | tron | 2007-09-30 02:18:17 -0500 (Sun, 30 Sep 2007) | 1 line
+
+Remove unused/non-existent variables and make variables static.
+------------------------------------------------------------------------
+r33 | moritz | 2007-09-29 17:02:08 -0500 (Sat, 29 Sep 2007) | 1 line
+
+Removed several dependencies on 320x200 resolution
+------------------------------------------------------------------------
+r32 | tron | 2007-09-29 16:58:36 -0500 (Sat, 29 Sep 2007) | 1 line
+
+Set the window title.
+------------------------------------------------------------------------
+r31 | tron | 2007-09-29 16:34:05 -0500 (Sat, 29 Sep 2007) | 1 line
+
+Replace strcpy() + itoa() + strcat() + strcat() by a single sprintf().
+------------------------------------------------------------------------
+r30 | tron | 2007-09-29 16:19:03 -0500 (Sat, 29 Sep 2007) | 1 line
+
+Remove the obsolete and commented out event thread.
+------------------------------------------------------------------------
+r29 | tron | 2007-09-29 16:10:09 -0500 (Sat, 29 Sep 2007) | 1 line
+
+Inline VW_DrawPropString() into its only caller VWB_DrawPropString().
+------------------------------------------------------------------------
+r28 | tron | 2007-09-28 01:39:37 -0500 (Fri, 28 Sep 2007) | 1 line
+
+Do not stat() and then open(). Just try to open().
+------------------------------------------------------------------------
+r27 | tron | 2007-09-28 01:31:48 -0500 (Fri, 28 Sep 2007) | 1 line
+
+Include necessary headers for stat().
+------------------------------------------------------------------------
+r26 | moritz | 2007-09-27 17:38:06 -0500 (Thu, 27 Sep 2007) | 1 line
+
+Replaced DOS findfirst calls by stat constructs. Lowercased some file names
+------------------------------------------------------------------------
+r25 | moritz | 2007-09-27 17:10:54 -0500 (Thu, 27 Sep 2007) | 1 line
+
+Fixed all long variables for 64bit. Fixed FizzleFade (off-by-one error). Probably fixed saving config file
+------------------------------------------------------------------------
+r24 | tron | 2007-09-27 15:30:27 -0500 (Thu, 27 Sep 2007) | 1 line
+
+Remove stale debug code.
+------------------------------------------------------------------------
+r23 | moritz | 2007-09-26 14:31:12 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Fixed casts from pointers to integers for 64bit systems
+------------------------------------------------------------------------
+r22 | moritz | 2007-09-26 14:28:20 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Fixed F-keys in wl_play.cpp:CheckKeys
+------------------------------------------------------------------------
+r21 | tron | 2007-09-26 13:54:16 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Implement itoa() and ltoa().
+------------------------------------------------------------------------
+r20 | tron | 2007-09-26 13:45:47 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Put some Windows only magic to deactivate the system menu of the window under #if defined _WIN32.
+------------------------------------------------------------------------
+r19 | tron | 2007-09-26 13:22:51 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Spell stricmp() the ANSI way: strcasecmp().
+------------------------------------------------------------------------
+r18 | tron | 2007-09-26 13:11:52 -0500 (Wed, 26 Sep 2007) | 1 line
+
+There is no __argc and __argv. Pass argc and argv as parameters. TODO0000: really get rid of the last remaining __argc and __argv which are implemented as global variables for now.
+------------------------------------------------------------------------
+r17 | tron | 2007-09-26 13:02:18 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Remove stale debug code.
+------------------------------------------------------------------------
+r16 | tron | 2007-09-26 12:58:29 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Remove a call to getch().
+------------------------------------------------------------------------
+r15 | tron | 2007-09-26 12:57:09 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Force DirectX video output only on Windows.
+------------------------------------------------------------------------
+r14 | tron | 2007-09-26 12:52:29 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Include necessary headers.
+------------------------------------------------------------------------
+r13 | tron | 2007-09-26 12:43:58 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Do not set O_BINARY on every open() call. It is set globally via _fmode for Windows.
+------------------------------------------------------------------------
+r12 | tron | 2007-09-26 12:32:32 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Do not include Windows/DOS headers.
+------------------------------------------------------------------------
+r11 | tron | 2007-09-26 12:24:27 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Spell all data files in lowercase.
+------------------------------------------------------------------------
+r10 | tron | 2007-09-26 06:12:47 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Use lseek() instead of the MSism filelength().
+------------------------------------------------------------------------
+r9 | tron | 2007-09-26 05:37:51 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Use CA_LoadFile() in CAL_SetupAudioFile() instead of duplicating the code.
+------------------------------------------------------------------------
+r8 | tron | 2007-09-26 05:31:36 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Remove the unused function CA_ReadFile().
+------------------------------------------------------------------------
+r7 | tron | 2007-09-26 05:28:48 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Ignore some files.
+------------------------------------------------------------------------
+r6 | tron | 2007-09-26 05:28:00 -0500 (Wed, 26 Sep 2007) | 1 line
+
+const correctness.
+------------------------------------------------------------------------
+r5 | tron | 2007-09-26 05:23:33 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Replace inline assembler fixed point multiplication by simple C expression.
+------------------------------------------------------------------------
+r4 | tron | 2007-09-26 05:18:15 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Fix case of include files.
+------------------------------------------------------------------------
+r3 | tron | 2007-09-26 05:13:42 -0500 (Wed, 26 Sep 2007) | 1 line
+
+Add a Makefile.
+------------------------------------------------------------------------
+r2 | moritz | 2007-09-25 16:35:25 -0500 (Tue, 25 Sep 2007) | 1 line
+
+Rewritten from Wolf4GW
+------------------------------------------------------------------------
+r1 | tron | 2006-10-27 03:28:54 -0500 (Fri, 27 Oct 2006) | 1 line
+
+Initial import
+------------------------------------------------------------------------
