@@ -546,18 +546,7 @@ void GiveExtraMan (void)
 void DrawScore (void)
 {
     if(viewsize == 21 && ingame) return;
-
-    if (gamestate.score >= 1000000) 
-    { 
-        gamestate.score = -gamestate.score;     // temp marker 
-        LatchNumber (5,16,7,gamestate.score); 
-        gamestate.score = -gamestate.score; 
-    } 
-    else 
-    { 
-        VWB_Bar(43+(screenWidth-scaleFactor*320)/2,177+(screenHeight-scaleFactor*200),56,15,0x97);   // clear score area 
-        LatchNumber (6,16,6,gamestate.score); 
-    } 
+    LatchNumber (6,16,6,gamestate.score)
 }
 
 /*
