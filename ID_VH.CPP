@@ -211,10 +211,7 @@ void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 
 void LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum)
 {
-    if (gamestate.score < 0) 
-        VL_LatchToScreenScaledCoord (latchpics[2+picnum-LATCHPICS_LUMP_START], (scx*8+3*scaleFactor), scy); 
-    else 
-    	VL_LatchToScreenScaledCoord (latchpics[2+picnum-LATCHPICS_LUMP_START], scx*8, scy);
+    VL_LatchToScreenScaledCoord (latchpics[2+picnum-LATCHPICS_LUMP_START], scx*8, scy);
 }
 
 
