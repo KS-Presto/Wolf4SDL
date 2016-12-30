@@ -546,7 +546,7 @@ void GiveExtraMan (void)
 void DrawScore (void)
 {
     if(viewsize == 21 && ingame) return;
-    LatchNumber (6,16,6,gamestate.score)
+    LatchNumber (6,16,6,gamestate.score);
 }
 
 /*
