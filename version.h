@@ -53,5 +53,6 @@
 
 #define ADDEDFIX              // Post-revision 262 fixes described in http://diehardwolfers.areyep.com/viewtopic.php?t=6693
 
+#define LWUDPCOMMS            // Enables UDP networked communications for multiplayer support
 
 #endif

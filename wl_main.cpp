@@ -674,6 +674,9 @@ boolean LoadTheGame(FILE *file,int x,int y)
 
 void ShutdownId (void)
 {
+#ifdef LWUDPCOMMS
+    Comms::shutdown ();
+#endif
     US_Shutdown ();         // This line is completely useless...
     SD_Shutdown ();
     PM_Shutdown ();
@@ -1257,6 +1260,9 @@ static void InitGame()
     SD_Startup ();
     CA_Startup ();
     US_Startup ();
+#ifdef LWUDPCOMMS
+    Comms::startup ();
+#endif
 
     // TODO: Will any memory checking be needed someday??
 #ifdef NOTYET
