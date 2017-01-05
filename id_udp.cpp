@@ -18,10 +18,62 @@ Refer to LW_UDPCOMMS for a general description of what this is
     #include <unistd.h>
 #endif
 #include "SDL_net.h"
-#include "id_udp.h"
 
 #include "wl_def.h"
 #pragma hdrstop
+
+using namespace Comms;
+
+namespace Comms
+{
+    Uint16 port = 0;
+    UDPsocket udpsock;
+}
+
+Parameter::Parameter(
+    char **argv_,
+    const int argc_,
+    int &i_,
+    bool &hasError_,
+    bool &showHelp_
+    ) :
+    argv(argv_),
+    argc(argc_),
+    i(i_),
+    hasError(hasError_),
+    showHelp(showHelp_)
+{
+}
+
+#define IFARG(str) if(!strcmp(arg, (str)))
+
+bool Parameter::check(const char *arg)
+{
+    IFARG("--port")
+    {
+        if(++i >= argc)
+        {
+            printf("The port option is missing the udp server port "
+                "argument!\n");
+            hasError = true;
+        }
+        else
+        {
+            Comms::port = atoi(argv[i]);
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+const char *Comms::parameterHelp(void)
+{
+    return " --port                 UDP server port\n";
+}
 
 void Comms::startup(void)
 {
@@ -46,9 +98,19 @@ void Comms::startup(void)
     {
         Quit("SDLNet_Init: %s\n", SDLNet_GetError());
     }
+
+    // create a UDPsocket on port
+    udpsock = SDLNet_UDP_Open(port);
+    if(!udpsock)
+    {
+        Quit("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
+    }
 }
 
 void Comms::shutdown(void)
 {
+    SDLNet_UDP_Close(udpsock);
+    udpsock = NULL;
+
     SDLNet_Quit();
 }

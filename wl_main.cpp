@@ -1884,6 +1884,11 @@ void CheckParameters(int argc, char *argv[])
             param_ignorenumchunks = true;
         else IFARG("--help")
             showHelp = true;
+        else if (Comms::Parameter(argv, argc, i, hasError,
+            showHelp).check(arg))
+        {
+            // do nothing
+        }
         else hasError = true;
     }
     if(hasError || showHelp)
@@ -1934,7 +1939,8 @@ void CheckParameters(int argc, char *argv[])
             "                        (default: 0 -> .sod, 1-3 -> .sd*)\n"
             " --goodtimes            Disable copy protection quiz\n"
 #endif
-            , defaultSampleRate
+            "%s"
+            , defaultSampleRate, Comms::parameterHelp()
         );
         exit(1);
     }
