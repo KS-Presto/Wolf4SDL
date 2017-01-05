@@ -28,6 +28,8 @@ namespace Comms
 {
     Uint16 port = 0;
     UDPsocket udpsock;
+    IPaddress bindToIpaddr;
+    int channel = -1;
 }
 
 Parameter::Parameter(
@@ -64,6 +66,37 @@ bool Parameter::check(const char *arg)
 
         return true;
     }
+    else IFARG("--bindto")
+    {
+        if(++i >= argc)
+        {
+            printf("The bindto option is missing the host argument!\n");
+            hasError = true;
+            return true;
+        }
+
+        const char *host = argv[i];
+
+        if(++i >= argc)
+        {
+            printf("The bindto option is missing the port argument!\n");
+            hasError = true;
+            return true;
+        }
+
+        const int port = atoi(argv[i]);
+
+        if (SDLNet_ResolveHost(&Comms::bindToIpaddr,
+            host, port) == -1)
+        {
+            printf("IP address could not be resolved "
+                "from %s:%d!\n", host, port);
+            hasError = true;
+            return true;
+        }
+
+        return true;
+    }
     else
     {
         return false;
@@ -72,7 +105,8 @@ bool Parameter::check(const char *arg)
 
 const char *Comms::parameterHelp(void)
 {
-    return " --port                 UDP server port\n";
+    return " --port                 UDP server port\n"
+           " --bindto <host> <port> Binds UDP socket to an address\n";
 }
 
 void Comms::startup(void)
@@ -105,10 +139,19 @@ void Comms::startup(void)
     {
         Quit("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
     }
+
+    // Bind address to the first free channel
+    channel = SDLNet_UDP_Bind(udpsock, -1, &bindToIpaddr);
+    if (channel == -1)
+    {
+        Quit("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+    }
 }
 
 void Comms::shutdown(void)
 {
+    SDLNet_UDP_Unbind(udpsock, channel);
+
     SDLNet_UDP_Close(udpsock);
     udpsock = NULL;
 
