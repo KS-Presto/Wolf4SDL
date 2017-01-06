@@ -243,16 +243,15 @@ namespace Comms
         class World
         {
         public:
-            int32_t timeCount;
+            int peeruid;
             Player::Vec players;
 
-            World() : timeCount(0)
+            World()
             {
             }
 
             void serialize(Stream &stream)
             {
-                stream & timeCount;
                 stream & players;
             }
         };

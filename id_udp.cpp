@@ -28,30 +28,41 @@ using namespace Comms;
 
 namespace Comms
 {
+    namespace TransmitState
+    {
+        enum e
+        {
+            tx,
+            rx,
+        };
+    }
+
     class Peer
     {
     public:
         typedef std::vector<Peer> Vec;
 
+        int id;
         IPaddress address;
         Protocol::World world;
 
-        explicit Peer(IPaddress address_) : address(address_)
+        Peer(int id_, IPaddress address_) : id(id_), address(address_)
         {
         }
     };
 
     const int channel = 0;
     const int maxpacketsize = 1024;
-    const int32_t sendrate = 70;
+    const int32_t transmitrate = 70;
 
     Uint16 port = 0;
     int peeruid = 0;
     UDPsocket udpsock;
     UDPpacket *packet = NULL;
-    int32_t sendTics = 0;
+    int32_t transmitTics = 0;
     Protocol::World world;
     Peer::Vec peers;
+    TransmitState::e transmitState = TransmitState::tx;
 
     void fillPacket(void);
 }
@@ -201,18 +212,39 @@ void Comms::fillPacket(void)
 
 void Comms::poll(void)
 {
-    sendTics += tics;
-    if (sendTics >= sendrate)
+    transmitTics += tics;
+    if (transmitTics >= transmitrate)
     {
-        sendTics = 0;
+        transmitTics = 0;
 
-        fillPacket();
-
-        int numsent = SDLNet_UDP_Send(udpsock,
-            packet->channel, packet);
-        if (!numsent)
+        if (transmitState == TransmitState::tx)
         {
-            printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
+            fillPacket();
+
+            int numsent = SDLNet_UDP_Send(udpsock,
+                packet->channel, packet);
+            if (!numsent)
+            {
+                printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
+            }
+
+            transmitState = TransmitState::rx;
+        }
+        else if (transmitState == TransmitState::rx)
+        {
+            int numrecv = SDLNet_UDP_Recv(udpsock, packet);
+            if (numrecv == -1)
+            {
+                printf("SDLNet_UDP_Recv: %s\n", SDLNet_GetError());
+            }
+            else if (numrecv)
+            {
+                // do something with packet
+            }
+            else
+            {
+                transmitState = TransmitState::tx;
+            }
         }
     }
 }
@@ -264,6 +296,15 @@ bool Parameter::check(const char *arg)
     {
         if(++i >= argc)
         {
+            printf("The addpeer option is missing the id argument!\n");
+            hasError = true;
+            return true;
+        }
+
+        const int id = atoi(argv[i]);
+
+        if(++i >= argc)
+        {
             printf("The addpeer option is missing the host argument!\n");
             hasError = true;
             return true;
@@ -289,7 +330,7 @@ bool Parameter::check(const char *arg)
             return true;
         }
 
-        peers.push_back(Peer(address));
+        peers.push_back(Peer(id, address));
 
         return true;
     }
@@ -316,9 +357,9 @@ bool Parameter::check(const char *arg)
 
 const char *Comms::parameterHelp(void)
 {
-    return " --port                     UDP server port\n"
-           " --addpeer <host> <port>    Binds UDP socket to address\n"
-           " --peeruid <uid>            Peer unique id\n"
+    return " --port                          UDP server port\n"
+           " --addpeer <id> <host> <port>    Binds UDP socket to peer\n"
+           " --peeruid <uid>                 Peer unique id\n"
            ;
 }
 
