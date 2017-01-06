@@ -68,15 +68,26 @@ namespace Comms
 {
     namespace Protocol
     {
+        namespace StreamDirection
+        {
+            enum e
+            {
+                in,
+                out
+            };
+        }
+
         class Stream
         {
         public:
+            typedef StreamDirection::e Direction;
+
             uint8_t *data;
             size_t sizeleft;
-            bool in;
+            Direction dir;
 
-            Stream(uint8_t *data_, size_t maxsize_, bool in_) :
-                data(data_), sizeleft(maxsize_), in(in_)
+            Stream(uint8_t *data_, size_t maxsize_, Direction dir_) :
+                data(data_), sizeleft(maxsize_), dir(dir_)
             {
             }
 
@@ -87,11 +98,11 @@ namespace Comms
                     throw "ran out of space in stream";
                 }
 
-                if (in)
+                if (dir == StreamDirection::in)
                 {
                     memcpy(p, data, sz);
                 }
-                else
+                else if (dir == StreamDirection::out)
                 {
                     memcpy(data, p, sz);
                 }
@@ -116,11 +127,20 @@ namespace Comms
             }
         };
 
-        void serialize(Stream &stream, int &x);
+        inline void serialize(Stream &stream, int &x)
+        {
+            stream.serialize(x);
+        }
 
-        void serialize(Stream &stream, short &x);
+        inline void serialize(Stream &stream, short &x)
+        {
+            stream.serialize(x);
+        }
 
-        void serialize(Stream &stream, unsigned int &x);
+        inline void serialize(Stream &stream, unsigned int &x)
+        {
+            stream.serialize(x);
+        }
 
         template <typename T>
         void serializeEnum(Stream &stream, T &x)
@@ -138,7 +158,7 @@ namespace Comms
             size_type count = x.size();
             stream & count;
 
-            if (stream.in)
+            if (stream.dir == StreamDirection::in)
             {
                 x.clear();
                 for (size_type i = 0; i < count; i++)
@@ -148,7 +168,7 @@ namespace Comms
                     x.push_back(y);
                 }
             }
-            else
+            else if (stream.dir == StreamDirection::out)
             {
                 for (size_type i = 0; i < count; i++)
                 {
@@ -191,6 +211,11 @@ namespace Comms
             int32_t x,y;
             short angle;
 
+            Player() : health(0), ammo(0), weapon(Weapon::knife),
+                x(0), y(0), angle(0)
+            {
+            }
+
             void serialize(Stream &stream)
             {
                 stream & health;
@@ -212,6 +237,10 @@ namespace Comms
         public:
             int32_t timeCount;
             Player::Vec players;
+
+            World() : timeCount(0)
+            {
+            }
 
             void serialize(Stream &stream)
             {

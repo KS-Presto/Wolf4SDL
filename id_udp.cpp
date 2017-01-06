@@ -27,13 +27,31 @@ using namespace Comms;
 
 namespace Comms
 {
+    class Peer
+    {
+    public:
+        typedef std::vector<Peer> Vec;
+
+        IPaddress address;
+        Protocol::World world;
+
+        explicit Peer(IPaddress address_) : address(address_)
+        {
+        }
+    };
+
+    const int channel = 0;
+    const int maxpacketsize = 1024;
+    const int32_t sendrate = 70;
+
     Uint16 port = 0;
     UDPsocket udpsock;
-    IPaddress bindToIpaddr;
-    int channel = -1;
     UDPpacket *packet = NULL;
+    int32_t sendTics = 0;
+    Protocol::World world;
+    Peer::Vec peers;
 
-    bool buildPacket(void);
+    void fillPacket(void);
 }
 
 void Comms::startup(void)
@@ -55,24 +73,38 @@ void Comms::startup(void)
     //    Quit("SDL_Init: %s\n", SDL_GetError());
     //    exit(1);
     //}
-    if(SDLNet_Init()==-1)
+    if (SDLNet_Init() == -1)
     {
         Quit("SDLNet_Init: %s\n", SDLNet_GetError());
     }
 
     // create a UDPsocket on port
     udpsock = SDLNet_UDP_Open(port);
-    if(!udpsock)
+    if (!udpsock)
     {
         Quit("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
     }
 
-    // Bind address to the first free channel
-    channel = SDLNet_UDP_Bind(udpsock, -1, &bindToIpaddr);
-    if (channel == -1)
+    // Bind addresses to channel
+    for (Peer::Vec::size_type i = 0; i < peers.size(); i++)
     {
-        Quit("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+        Peer &peer = peers[i];
+
+        const int ret = SDLNet_UDP_Bind(udpsock, channel,
+            &peer.address);
+        if (ret != channel)
+        {
+            Quit("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+        }
     }
+
+    packet = SDLNet_AllocPacket(maxpacketsize);
+    if (!packet)
+    {
+        Quit("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
+    }
+
+    packet->channel = channel;
 }
 
 void Comms::shutdown(void)
@@ -91,26 +123,24 @@ void Comms::shutdown(void)
     SDLNet_Quit();
 }
 
-bool Comms::buildPacket(void)
+void Comms::fillPacket(void)
 {
-    if (!packet)
-    {
-        packet = SDLNet_AllocPacket(1024);
-        if(!packet)
-        {
-            printf("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
-            return false;
-            // perhaps do something else since you can't make this packet
-        }
-    }
+    using namespace Protocol;
 
-    return true;
+    Stream stream(packet->data, maxpacketsize,
+        StreamDirection::out);
+    stream & world;
+
+    packet->len = maxpacketsize - stream.sizeleft;
 }
 
 void Comms::poll(void)
 {
-    if (buildPacket())
+    sendTics += tics;
+    if (sendTics >= sendrate)
     {
+        fillPacket();
+
         int numsent = SDLNet_UDP_Send(udpsock,
             packet->channel, packet);
         if (!numsent)
@@ -163,11 +193,11 @@ bool Parameter::check(const char *arg)
 
         return true;
     }
-    else IFARG("--bindto")
+    else IFARG("--addpeer")
     {
         if(++i >= argc)
         {
-            printf("The bindto option is missing the host argument!\n");
+            printf("The addpeer option is missing the host argument!\n");
             hasError = true;
             return true;
         }
@@ -176,21 +206,23 @@ bool Parameter::check(const char *arg)
 
         if(++i >= argc)
         {
-            printf("The bindto option is missing the port argument!\n");
+            printf("The addpeer option is missing the port argument!\n");
             hasError = true;
             return true;
         }
 
         const int port = atoi(argv[i]);
 
-        if (SDLNet_ResolveHost(&Comms::bindToIpaddr,
-            host, port) == -1)
+        IPaddress address;
+        if (SDLNet_ResolveHost(&address, host, port) == -1)
         {
             printf("IP address could not be resolved "
                 "from %s:%d!\n", host, port);
             hasError = true;
             return true;
         }
+
+        peers.push_back(Peer(address));
 
         return true;
     }
@@ -202,7 +234,7 @@ bool Parameter::check(const char *arg)
 
 const char *Comms::parameterHelp(void)
 {
-    return " --port                 UDP server port\n"
-           " --bindto <host> <port> Binds UDP socket to an address\n";
+    return " --port                     UDP server port\n"
+           " --addpeer <host> <port>    Binds UDP socket to address\n";
 }
 
