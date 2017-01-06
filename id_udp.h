@@ -1,6 +1,35 @@
 #ifndef __ID_UDP__
 #define __ID_UDP__
 
+#include <stdint.h>
+#include <vector>
+
+/*
+=====================================================================
+
+                            COMMS CLIENT API
+
+=====================================================================
+*/
+
+namespace Comms
+{
+    void startup(void);
+
+    void shutdown(void);
+
+    void poll(void);
+}
+
+
+/*
+=====================================================================
+
+                        COMMS PARAMETER HANDLING
+
+=====================================================================
+*/
+
 namespace Comms
 {
     class Parameter
@@ -24,10 +53,178 @@ namespace Comms
     };
 
     const char *parameterHelp(void);
+}
 
-    void startup(void);
 
-    void shutdown(void);
+/*
+=====================================================================
+
+                           COMMS PROTOCOL
+
+=====================================================================
+*/
+
+namespace Comms
+{
+    namespace Protocol
+    {
+        class Stream
+        {
+        public:
+            uint8_t *data;
+            size_t sizeleft;
+            bool in;
+
+            Stream(uint8_t *data_, size_t maxsize_, bool in_) :
+                data(data_), sizeleft(maxsize_), in(in_)
+            {
+            }
+
+            void serializeRaw(void *p, size_t sz)
+            {
+                if (sz > sizeleft)
+                {
+                    throw "ran out of space in stream";
+                }
+
+                if (in)
+                {
+                    memcpy(p, data, sz);
+                }
+                else
+                {
+                    memcpy(data, p, sz);
+                }
+
+                data += sz;
+                sizeleft -= sz;
+            }
+
+            void serialize(int &x)
+            {
+                serializeRaw(&x, sizeof(x));
+            }
+
+            void serialize(short &x)
+            {
+                serializeRaw(&x, sizeof(x));
+            }
+
+            void serialize(unsigned int &x)
+            {
+                serializeRaw(&x, sizeof(x));
+            }
+        };
+
+        void serialize(Stream &stream, int &x);
+
+        void serialize(Stream &stream, short &x);
+
+        void serialize(Stream &stream, unsigned int &x);
+
+        template <typename T>
+        void serializeEnum(Stream &stream, T &x)
+        {
+            int y = (int)x;
+            serialize(stream, y);
+            x = (T)y;
+        }
+
+        template <typename T>
+        void serialize(Stream &stream, std::vector<T> &x)
+        {
+            typedef typename std::vector<T>::size_type size_type;
+
+            size_type count = x.size();
+            stream & count;
+
+            if (stream.in)
+            {
+                x.clear();
+                for (size_type i = 0; i < count; i++)
+                {
+                    T y;
+                    stream & y;
+                    x.push_back(y);
+                }
+            }
+            else
+            {
+                for (size_type i = 0; i < count; i++)
+                {
+                    stream & x[i];
+                }
+            }
+        }
+
+        template <typename T>
+        Stream &operator&(Stream &stream, T &x)
+        {
+            serialize(stream, x);
+            return stream;
+        }
+
+        namespace Weapon
+        {
+            enum e
+            {
+                knife,
+                pistol,
+                machineGun,
+                chainGun
+            };
+
+            inline void serialize(Stream &stream, enum e &x)
+            {
+                serializeEnum(stream, x);
+            }
+        }
+
+        class Player
+        {
+        public:
+            typedef std::vector<Player> Vec;
+
+            short health;
+            short ammo;
+            Weapon::e weapon;
+            int32_t x,y;
+            short angle;
+
+            void serialize(Stream &stream)
+            {
+                stream & health;
+                stream & ammo;
+                stream & weapon;
+                stream & x;
+                stream & y;
+                stream & angle;
+            }
+        };
+
+        inline void serialize(Stream &stream, Player &x)
+        {
+            x.serialize(stream);
+        }
+
+        class World
+        {
+        public:
+            int32_t timeCount;
+            Player::Vec players;
+
+            void serialize(Stream &stream)
+            {
+                stream & timeCount;
+                stream & players;
+            }
+        };
+
+        inline void serialize(Stream &stream, World &x)
+        {
+            x.serialize(stream);
+        }
+    }
 }
 
 #endif

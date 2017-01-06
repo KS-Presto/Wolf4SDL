@@ -1,13 +1,5 @@
 // ID_UDP.C
 
-/*
-=============================================================================
-
-Refer to LW_UDPCOMMS for a general description of what this is
-
-=============================================================================
-*/
-
 #include <sys/types.h>
 #if defined _WIN32
     #include <io.h>
@@ -24,13 +16,118 @@ Refer to LW_UDPCOMMS for a general description of what this is
 
 using namespace Comms;
 
+
+/*
+=====================================================================
+
+                            COMMS CLIENT API
+
+=====================================================================
+*/
+
 namespace Comms
 {
     Uint16 port = 0;
     UDPsocket udpsock;
     IPaddress bindToIpaddr;
     int channel = -1;
+    UDPpacket *packet = NULL;
+
+    bool buildPacket(void);
 }
+
+void Comms::startup(void)
+{
+    SDL_version compile_version;
+    const SDL_version *link_version = SDLNet_Linked_Version();
+    SDL_NET_VERSION(&compile_version);
+    printf("compiled with SDL_net version: %d.%d.%d\n", 
+            compile_version.major,
+            compile_version.minor,
+            compile_version.patch);
+    printf("running with SDL_net version: %d.%d.%d\n", 
+            link_version->major,
+            link_version->minor,
+            link_version->patch);
+
+    //if(SDL_Init(0)==-1)
+    //{
+    //    Quit("SDL_Init: %s\n", SDL_GetError());
+    //    exit(1);
+    //}
+    if(SDLNet_Init()==-1)
+    {
+        Quit("SDLNet_Init: %s\n", SDLNet_GetError());
+    }
+
+    // create a UDPsocket on port
+    udpsock = SDLNet_UDP_Open(port);
+    if(!udpsock)
+    {
+        Quit("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
+    }
+
+    // Bind address to the first free channel
+    channel = SDLNet_UDP_Bind(udpsock, -1, &bindToIpaddr);
+    if (channel == -1)
+    {
+        Quit("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
+    }
+}
+
+void Comms::shutdown(void)
+{
+    if (packet)
+    {
+        SDLNet_FreePacket(packet);
+        packet = NULL;
+    }
+
+    SDLNet_UDP_Unbind(udpsock, channel);
+
+    SDLNet_UDP_Close(udpsock);
+    udpsock = NULL;
+
+    SDLNet_Quit();
+}
+
+bool Comms::buildPacket(void)
+{
+    if (!packet)
+    {
+        packet = SDLNet_AllocPacket(1024);
+        if(!packet)
+        {
+            printf("SDLNet_AllocPacket: %s\n", SDLNet_GetError());
+            return false;
+            // perhaps do something else since you can't make this packet
+        }
+    }
+
+    return true;
+}
+
+void Comms::poll(void)
+{
+    if (buildPacket())
+    {
+        int numsent = SDLNet_UDP_Send(udpsock,
+            packet->channel, packet);
+        if (!numsent)
+        {
+            printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
+        }
+    }
+}
+
+
+/*
+=====================================================================
+
+                        COMMS PARAMETER HANDLING
+
+=====================================================================
+*/
 
 Parameter::Parameter(
     char **argv_,
@@ -109,51 +206,3 @@ const char *Comms::parameterHelp(void)
            " --bindto <host> <port> Binds UDP socket to an address\n";
 }
 
-void Comms::startup(void)
-{
-    SDL_version compile_version;
-    const SDL_version *link_version = SDLNet_Linked_Version();
-    SDL_NET_VERSION(&compile_version);
-    printf("compiled with SDL_net version: %d.%d.%d\n", 
-            compile_version.major,
-            compile_version.minor,
-            compile_version.patch);
-    printf("running with SDL_net version: %d.%d.%d\n", 
-            link_version->major,
-            link_version->minor,
-            link_version->patch);
-
-    //if(SDL_Init(0)==-1)
-    //{
-    //    Quit("SDL_Init: %s\n", SDL_GetError());
-    //    exit(1);
-    //}
-    if(SDLNet_Init()==-1)
-    {
-        Quit("SDLNet_Init: %s\n", SDLNet_GetError());
-    }
-
-    // create a UDPsocket on port
-    udpsock = SDLNet_UDP_Open(port);
-    if(!udpsock)
-    {
-        Quit("SDLNet_UDP_Open: %s\n", SDLNet_GetError());
-    }
-
-    // Bind address to the first free channel
-    channel = SDLNet_UDP_Bind(udpsock, -1, &bindToIpaddr);
-    if (channel == -1)
-    {
-        Quit("SDLNet_UDP_Bind: %s\n", SDLNet_GetError());
-    }
-}
-
-void Comms::shutdown(void)
-{
-    SDLNet_UDP_Unbind(udpsock, channel);
-
-    SDLNet_UDP_Close(udpsock);
-    udpsock = NULL;
-
-    SDLNet_Quit();
-}
