@@ -1,5 +1,6 @@
 // ID_UDP.C
 
+#include <algorithm>
 #include <sys/types.h>
 #if defined _WIN32
     #include <io.h>
@@ -45,6 +46,7 @@ namespace Comms
     const int32_t sendrate = 70;
 
     Uint16 port = 0;
+    int peeruid = 0;
     UDPsocket udpsock;
     UDPpacket *packet = NULL;
     int32_t sendTics = 0;
@@ -123,9 +125,72 @@ void Comms::shutdown(void)
     SDLNet_Quit();
 }
 
+namespace Comms
+{
+    namespace Protocol
+    {
+        class PlayerHasPeerUid
+        {
+            int peeruid;
+
+        public:
+            PlayerHasPeerUid(int peeruid_) : peeruid(peeruid_)
+            {
+            }
+
+            bool operator()(const Player &player) const
+            {
+                return player.peeruid == peeruid;
+            }
+        };
+    }
+}
+
 void Comms::fillPacket(void)
 {
     using namespace Protocol;
+
+    // add this player to world if not there already
+    {
+        Player::Vec &players = world.players;
+        Player::Vec::iterator it = std::find_if(players.begin(),
+            players.end(), PlayerHasPeerUid(peeruid));
+        if (peeruid != 0 && it == players.end())
+        {
+            players.push_back(Player(peeruid));
+        }
+    }
+
+    // update our player
+    {
+        Player::Vec &players = world.players;
+        Player::Vec::iterator it = std::find_if(players.begin(),
+            players.end(), PlayerHasPeerUid(peeruid));
+        if (it != players.end())
+        {
+            Player &protPlayer = *it;
+            protPlayer.x = player->x;
+            protPlayer.y = player->y;
+            protPlayer.angle = player->angle;
+            protPlayer.health = gamestate.health;
+            protPlayer.ammo = gamestate.ammo;
+            switch (gamestate.weapon)
+            {
+                case wp_knife:
+                    protPlayer.weapon = Weapon::knife;
+                    break;
+                case wp_pistol:
+                    protPlayer.weapon = Weapon::pistol;
+                    break;
+                case wp_machinegun:
+                    protPlayer.weapon = Weapon::machineGun;
+                    break;
+                case wp_chaingun:
+                    protPlayer.weapon = Weapon::chainGun;
+                    break;
+            }
+        }
+    }
 
     Stream stream(packet->data, maxpacketsize,
         StreamDirection::out);
@@ -139,6 +204,8 @@ void Comms::poll(void)
     sendTics += tics;
     if (sendTics >= sendrate)
     {
+        sendTics = 0;
+
         fillPacket();
 
         int numsent = SDLNet_UDP_Send(udpsock,
@@ -226,6 +293,21 @@ bool Parameter::check(const char *arg)
 
         return true;
     }
+    else IFARG("--peeruid")
+    {
+        if(++i >= argc)
+        {
+            printf("The peeruid option is missing the uid "
+                "argument!\n");
+            hasError = true;
+        }
+        else
+        {
+            Comms::peeruid = atoi(argv[i]);
+        }
+
+        return true;
+    }
     else
     {
         return false;
@@ -235,6 +317,8 @@ bool Parameter::check(const char *arg)
 const char *Comms::parameterHelp(void)
 {
     return " --port                     UDP server port\n"
-           " --addpeer <host> <port>    Binds UDP socket to address\n";
+           " --addpeer <host> <port>    Binds UDP socket to address\n"
+           " --peeruid <uid>            Peer unique id\n"
+           ;
 }
 

@@ -1345,6 +1345,10 @@ void PlayLoop (void)
                 playstate = ex_abort;
             }
         }
+
+#ifdef LWUDPCOMMS
+        Comms::poll();
+#endif
     }
     while (!playstate && !startgame);
 

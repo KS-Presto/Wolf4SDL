@@ -17,6 +17,7 @@ CFLAGS_SDL  ?= $(shell $(SDL_CONFIG) --cflags)
 LDFLAGS_SDL ?= $(shell $(SDL_CONFIG) --libs)
 
 
+CFLAGS += -g -O0
 CFLAGS += $(CFLAGS_SDL)
 
 #CFLAGS += -Wall
@@ -91,7 +92,7 @@ all: $(BINARY)
 ifndef NO_DEPS
 depend: $(DEPS)
 
-ifeq ($(findstring $(MAKECMDGOALS), clean depend Data),)
+ifeq ($(findstring $(MAKECMDGOALS), clean depend Data run debug-run),)
 -include $(DEPS)
 endif
 endif
@@ -124,3 +125,17 @@ install: $(BINARY)
 	@echo '===> INSTALL'
 	$(Q)$(INSTALL) -d $(PREFIX)/bin
 	$(Q)$(INSTALL_PROGRAM) $(BINARY) $(PREFIX)/bin
+
+GAMEFOLDER ?= $(HOME)/tasks/tr/split_wolf4sdl/games/wolf3d_full/
+GAMEARGS   += --windowed
+GAMEARGS   += --res 640 400
+GAMEARGS   += --tedlevel 0
+GAMEARGS   += --port 6666
+GAMEARGS   += --peeruid 1
+GAMEARGS   += --addpeer localhost 6667
+
+run: $(BINARY)
+	( cd $(GAMEFOLDER); $(PWD)/wolf3d $(GAMEARGS) )
+
+debug-run: $(BINARY)
+	( cd $(GAMEFOLDER); gdb --args $(PWD)/wolf3d $(GAMEARGS) )

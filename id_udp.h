@@ -205,19 +205,27 @@ namespace Comms
         public:
             typedef std::vector<Player> Vec;
 
+            int peeruid;
             short health;
             short ammo;
             Weapon::e weapon;
             int32_t x,y;
             short angle;
 
-            Player() : health(0), ammo(0), weapon(Weapon::knife),
+            explicit Player() : peeruid(0), health(0), ammo(0),
+                weapon(Weapon::knife), x(0), y(0), angle(0)
+            {
+            }
+
+            explicit Player(int peeruid_) : peeruid(peeruid_),
+                health(0), ammo(0), weapon(Weapon::knife),
                 x(0), y(0), angle(0)
             {
             }
 
             void serialize(Stream &stream)
             {
+                stream & peeruid;
                 stream & health;
                 stream & ammo;
                 stream & weapon;
