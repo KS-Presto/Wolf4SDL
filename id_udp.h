@@ -243,7 +243,6 @@ namespace Comms
         class World
         {
         public:
-            int peeruid;
             Player::Vec players;
 
             World()
@@ -257,6 +256,28 @@ namespace Comms
         };
 
         inline void serialize(Stream &stream, World &x)
+        {
+            x.serialize(stream);
+        }
+
+        class DataLayer
+        {
+        public:
+            int sendingPeerUid;
+            World world;
+
+            DataLayer() : sendingPeerUid(0)
+            {
+            }
+
+            void serialize(Stream &stream)
+            {
+                stream & sendingPeerUid;
+                stream & world;
+            }
+        };
+
+        inline void serialize(Stream &stream, DataLayer &x)
         {
             x.serialize(stream);
         }
