@@ -28,15 +28,6 @@ using namespace Comms;
 
 namespace Comms
 {
-    namespace TransmitState
-    {
-        enum e
-        {
-            tx,
-            rx,
-        };
-    }
-
     class Peer
     {
     public:
@@ -50,6 +41,21 @@ namespace Comms
         Peer(int uid_, IPaddress address_) : uid(uid_),
             address(address_), expectingResp(false)
         {
+        }
+    };
+
+    class PeerHasUid
+    {
+        int uid;
+
+    public:
+        explicit PeerHasUid(int uid_) : uid(uid_)
+        {
+        }
+
+        bool operator()(Peer &peer) const
+        {
+            return peer.uid == uid;
         }
     };
 
@@ -69,6 +75,15 @@ namespace Comms
         }
     };
 
+    class PeerIsExpectingResp
+    {
+    public:
+        bool operator()(Peer &peer) const
+        {
+            return peer.expectingResp;
+        }
+    };
+
     const int channel = 0;
     const int maxpacketsize = 1024;
     const int32_t maxWaitResponseTics = 30;
@@ -80,7 +95,7 @@ namespace Comms
     int32_t transmitTics = 0;
     Protocol::DataLayer protState;
     Peer::Vec peers;
-    TransmitState::e transmitState = TransmitState::tx;
+    bool foundPeerNoResp = false;
 
     void fillPacket(Protocol::DataLayer &protState);
     void addPlayerTo(int peeruid, Protocol::DataLayer &protState);
@@ -160,37 +175,14 @@ void Comms::shutdown(void)
     SDLNet_Quit();
 }
 
-namespace Comms
-{
-    namespace Protocol
-    {
-        class PlayerHasPeerUid
-        {
-            int peeruid;
-
-        public:
-            PlayerHasPeerUid(int peeruid_) : peeruid(peeruid_)
-            {
-            }
-
-            bool operator()(const Player &player) const
-            {
-                return player.peeruid == peeruid;
-            }
-        };
-    }
-}
-
 void Comms::addPlayerTo(int peeruid, Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    Player::Vec &players = protState.world.players;
-    Player::Vec::iterator it = std::find_if(players.begin(),
-        players.end(), PlayerHasPeerUid(peeruid));
-    if (peeruid != 0 && it == players.end())
+    World &world = protState.world;
+    if (peeruid != 0 && !world.hasPlayerForPeerUid(peeruid))
     {
-        players.push_back(Player(peeruid));
+        world.players.push_back(Player(peeruid));
     }
 }
 
@@ -198,12 +190,10 @@ void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    Player::Vec &players = protState.world.players;
-    Player::Vec::iterator it = std::find_if(players.begin(),
-        players.end(), PlayerHasPeerUid(peeruid));
-    if (it != players.end())
+    World &world = protState.world;
+    if (world.hasPlayerForPeerUid(peeruid))
     {
-        Player &protPlayer = *it;
+        Player &protPlayer = world.playerForPeerUid(peeruid);
         protPlayer.x = player->x;
         protPlayer.y = player->y;
         protPlayer.angle = player->angle;
@@ -260,14 +250,23 @@ void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
 
     const int uid = rxProtState.sendingPeerUid;
 
-    // TODO: clear expectingResp for this peer
+    {
+        Peer::Vec::iterator it = std::find_if(peers.begin(),
+            peers.end(), PeerHasUid(uid));
+        if (it == peers.end())
+        {
+            // unknown peer so ignore packet
+            return;
+        }
+
+        Peer &peer = *it;
+        peer.expectingResp = false;
+    }
 
     addPlayerTo(uid, protState);
 
-    Player::Vec &players = protState.world.players;
-    Player::Vec::iterator it = std::find_if(players.begin(),
-        players.end(), PlayerHasPeerUid(uid));
-    if (it != players.end())
+    World &world = protState.world;
+    if (world.hasPlayerForPeerUid(uid))
     {
         // TODO: copy rx peer player to our state
     }
@@ -278,44 +277,45 @@ void Comms::poll(void)
     transmitTics -= tics;
     if (transmitTics < 0)
     {
-        if (transmitState == TransmitState::tx)
+        transmitTics = maxWaitResponseTics;
+
+        prepareStateForSending(protState);
+        fillPacket(protState);
+
+        int numsent = SDLNet_UDP_Send(udpsock,
+            packet->channel, packet);
+        if (!numsent)
         {
-            prepareStateForSending(protState);
-            fillPacket(protState);
-
-            int numsent = SDLNet_UDP_Send(udpsock,
-                packet->channel, packet);
-            if (!numsent)
-            {
-                printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
-            }
-
-            std::for_each(peers.begin(), peers.end(),
-                SetPeerExpectingResp(true));
-
-            transmitState = TransmitState::rx;
-            transmitTics = maxWaitResponseTics;
+            printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
         }
-        else if (transmitState == TransmitState::rx)
-        {
+
 getmore:
-            int numrecv = SDLNet_UDP_Recv(udpsock, packet);
-            if (numrecv == -1)
-            {
-                printf("SDLNet_UDP_RecvV: %s\n", SDLNet_GetError());
-            }
-            else if (numrecv)
-            {
-                Protocol::DataLayer rxProtState;
-                parsePacket(rxProtState);
-                handleStateReceived(rxProtState);
-
-                goto getmore;
-            }
-
-            transmitState = TransmitState::tx;
-            transmitTics = maxWaitResponseTics;
+        int numrecv = SDLNet_UDP_Recv(udpsock, packet);
+        if (numrecv == -1)
+        {
+            printf("SDLNet_UDP_RecvV: %s\n", SDLNet_GetError());
         }
+        else if (numrecv)
+        {
+            Protocol::DataLayer rxProtState;
+            parsePacket(rxProtState);
+            handleStateReceived(rxProtState);
+
+            goto getmore;
+        }
+
+        if (std::find_if(peers.begin(), peers.end(),
+            PeerIsExpectingResp()) != peers.end())
+        {
+            foundPeerNoResp = true;
+        }
+        else
+        {
+            foundPeerNoResp = false;
+        }
+
+        std::for_each(peers.begin(), peers.end(),
+            SetPeerExpectingResp(true));
     }
 }
 

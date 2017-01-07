@@ -2,6 +2,7 @@
 #define __ID_UDP__
 
 #include <stdint.h>
+#include <algorithm>
 #include <vector>
 
 /*
@@ -240,6 +241,21 @@ namespace Comms
             x.serialize(stream);
         }
 
+        class PlayerHasPeerUid
+        {
+            int peeruid;
+
+        public:
+            PlayerHasPeerUid(int peeruid_) : peeruid(peeruid_)
+            {
+            }
+
+            bool operator()(const Player &player) const
+            {
+                return player.peeruid == peeruid;
+            }
+        };
+
         class World
         {
         public:
@@ -252,6 +268,26 @@ namespace Comms
             void serialize(Stream &stream)
             {
                 stream & players;
+            }
+
+            bool hasPlayerForPeerUid(int peeruid) const
+            {
+                Player::Vec::const_iterator it =
+                    std::find_if(players.begin(), players.end(),
+                    PlayerHasPeerUid(peeruid));
+                return it != players.end();
+            }
+
+            Player &playerForPeerUid(int peeruid)
+            {
+                Player::Vec::iterator it =
+                    std::find_if(players.begin(), players.end(),
+                    PlayerHasPeerUid(peeruid));
+                if (it == players.end())
+                {
+                    throw "could not find player for peeruid";
+                }
+                return *it;
             }
         };
 
