@@ -98,7 +98,7 @@ namespace Comms
     bool foundPeerNoResp = false;
 
     void fillPacket(Protocol::DataLayer &protState);
-    void addPlayerTo(int peeruid, Protocol::DataLayer &protState);
+    bool addPlayerTo(int peeruid, Protocol::DataLayer &protState);
     void syncPlayerStateTo(Protocol::DataLayer &protState);
     void prepareStateForSending(Protocol::DataLayer &protState);
     void parsePacket(Protocol::DataLayer &protState);
@@ -175,25 +175,26 @@ void Comms::shutdown(void)
     SDLNet_Quit();
 }
 
-void Comms::addPlayerTo(int peeruid, Protocol::DataLayer &protState)
+bool Comms::addPlayerTo(int peeruid, Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    World &world = protState.world;
-    if (peeruid != 0 && !world.hasPlayerForPeerUid(peeruid))
+    if (peeruid != 0 && !protState.hasPlayerForPeerUid(peeruid))
     {
-        world.players.push_back(Player(peeruid));
+        protState.addPlayer(Player(peeruid));
+        return true;
     }
+
+    return false;
 }
 
 void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    World &world = protState.world;
-    if (world.hasPlayerForPeerUid(peeruid))
+    if (protState.hasPlayerForPeerUid(peeruid))
     {
-        Player &protPlayer = world.playerForPeerUid(peeruid);
+        Player &protPlayer = protState.playerForPeerUid(peeruid);
         protPlayer.x = player->x;
         protPlayer.y = player->y;
         protPlayer.angle = player->angle;
@@ -263,12 +264,21 @@ void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
         peer.expectingResp = false;
     }
 
-    addPlayerTo(uid, protState);
-
-    World &world = protState.world;
-    if (world.hasPlayerForPeerUid(uid))
+    if (addPlayerTo(uid, protState))
     {
-        // TODO: copy rx peer player to our state
+        // this is a new player in our state
+        Player &protPlayer = protState.playerForPeerUid(uid);
+
+        // copy the rx player over it
+        protPlayer = rxProtState.playerForPeerUid(uid);
+    }
+
+    if (protState.hasPlayerForPeerUid(uid))
+    {
+        Player &protPlayer = protState.playerForPeerUid(uid);
+        Player &rxProtPlayer = rxProtState.playerForPeerUid(uid);
+
+        // merge the rx player with our one
     }
 }
 

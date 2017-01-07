@@ -132,7 +132,7 @@ GAMEARGS   += --res 640 400
 GAMEARGS   += --tedlevel 0
 GAMEARGS   += --port 6666
 GAMEARGS   += --peeruid 1
-GAMEARGS   += --addpeer localhost 6667
+GAMEARGS   += --addpeer 2 localhost 6667
 
 run: $(BINARY)
 	( cd $(GAMEFOLDER); $(PWD)/wolf3d $(GAMEARGS) )

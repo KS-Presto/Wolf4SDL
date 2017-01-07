@@ -311,6 +311,21 @@ namespace Comms
                 stream & sendingPeerUid;
                 stream & world;
             }
+
+            bool hasPlayerForPeerUid(int peeruid) const
+            {
+                return world.hasPlayerForPeerUid(peeruid);
+            }
+
+            Player &playerForPeerUid(int peeruid)
+            {
+                return world.playerForPeerUid(peeruid);
+            }
+
+            void addPlayer(Player player)
+            {
+                world.players.push_back(player);
+            }
         };
 
         inline void serialize(Stream &stream, DataLayer &x)
