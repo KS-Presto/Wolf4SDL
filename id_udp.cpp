@@ -28,6 +28,43 @@ using namespace Comms;
 
 namespace Comms
 {
+    void serverTxPoll(void);
+
+    void serverRxPoll(void);
+
+    namespace PollState
+    {
+        enum e
+        {
+            serverTx,
+            serverRx,
+        };
+
+        typedef void (*Callback)(void);
+
+        Callback fns[] =
+        {
+            serverTxPoll,
+            serverRxPoll,
+        };
+
+        enum e cur;
+        int32_t tics = 0;
+
+        void set(enum e x, int32_t duration)
+        {
+            cur = x;
+            tics = duration;
+        }
+
+        void poll(void)
+        {
+            fns[cur]();
+        }
+
+        bool is(enum e x) { return cur == x; }
+    }
+
     class Peer
     {
     public:
@@ -84,6 +121,23 @@ namespace Comms
         }
     };
 
+    inline bool hasPeerWithUid(Peer::Vec &peers, int peeruid)
+    {
+        return std::find_if(peers.begin(), peers.end(),
+            PeerHasUid(peeruid)) != peers.end();
+    }
+
+    Peer &peerWithUid(Peer::Vec &peers, int peeruid)
+    {
+        Peer::Vec::iterator it = std::find_if(peers.begin(),
+            peers.end(), PeerHasUid(peeruid));
+        if (it == peers.end())
+        {
+            throw "no peer found with specified uid";
+        }
+        return *it;
+    }
+
     const int channel = 0;
     const int maxpacketsize = 1024;
     const int32_t maxWaitResponseTics = 30;
@@ -92,10 +146,11 @@ namespace Comms
     int peeruid = 0;
     UDPsocket udpsock;
     UDPpacket *packet = NULL;
-    int32_t transmitTics = 0;
     Protocol::DataLayer protState;
     Peer::Vec peers;
     bool foundPeerNoResp = false;
+    unsigned int packetSeqNum = 0;
+    PollState::e pollState = PollState::serverTx;
 
     void fillPacket(Protocol::DataLayer &protState);
     bool addPlayerTo(int peeruid, Protocol::DataLayer &protState);
@@ -223,6 +278,7 @@ void Comms::prepareStateForSending(Protocol::DataLayer &protState)
     addPlayerTo(peeruid, protState);
     syncPlayerStateTo(protState);
     protState.sendingPeerUid = peeruid;
+    protState.packetSeqNum = packetSeqNum;
 }
 
 void Comms::fillPacket(Protocol::DataLayer &protState)
@@ -251,19 +307,24 @@ void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
 
     const int uid = rxProtState.sendingPeerUid;
 
+    if (!hasPeerWithUid(peers, uid))
     {
-        Peer::Vec::iterator it = std::find_if(peers.begin(),
-            peers.end(), PeerHasUid(uid));
-        if (it == peers.end())
-        {
-            // unknown peer so ignore packet
-            return;
-        }
-
-        Peer &peer = *it;
-        peer.expectingResp = false;
+        // unknown peer so ignore packet
+        return;
     }
 
+    Peer &peer = peerWithUid(peers, uid);
+    if (rxProtState.packetSeqNum != packetSeqNum)
+    {
+        // ignore packet with wrong sequence number
+        return;
+    }
+
+    peer.expectingResp = false;
+
+    peer.protState = rxProtState;
+
+#if 0
     if (addPlayerTo(uid, protState))
     {
         // this is a new player in our state
@@ -280,53 +341,84 @@ void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
 
         // merge the rx player with our one
     }
+#endif
 }
 
-void Comms::poll(void)
+void Comms::serverTxPoll(void)
 {
-    transmitTics -= tics;
-    if (transmitTics < 0)
+    if (!foundPeerNoResp)
     {
-        transmitTics = maxWaitResponseTics;
-
         prepareStateForSending(protState);
-        fillPacket(protState);
+    }
+    fillPacket(protState);
 
-        int numsent = SDLNet_UDP_Send(udpsock,
-            packet->channel, packet);
-        if (!numsent)
-        {
-            printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
-        }
+    int numsent = SDLNet_UDP_Send(udpsock,
+        packet->channel, packet);
+    if (!numsent)
+    {
+        printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
+    }
 
+    PollState::set(PollState::serverRx, maxWaitResponseTics);
+}
+
+void Comms::serverRxPoll(void)
+{
 getmore:
-        int numrecv = SDLNet_UDP_Recv(udpsock, packet);
-        if (numrecv == -1)
-        {
-            printf("SDLNet_UDP_RecvV: %s\n", SDLNet_GetError());
-        }
-        else if (numrecv)
-        {
-            Protocol::DataLayer rxProtState;
-            parsePacket(rxProtState);
-            handleStateReceived(rxProtState);
+    int numrecv = SDLNet_UDP_Recv(udpsock, packet);
+    if (numrecv == -1)
+    {
+        printf("SDLNet_UDP_RecvV: %s\n", SDLNet_GetError());
+    }
+    else if (numrecv)
+    {
+        Protocol::DataLayer rxProtState;
+        parsePacket(rxProtState);
+        handleStateReceived(rxProtState);
 
-            goto getmore;
-        }
+        goto getmore;
+    }
 
+    PollState::tics -= tics;
+    if (PollState::tics < 0)
+    {
         if (std::find_if(peers.begin(), peers.end(),
             PeerIsExpectingResp()) != peers.end())
         {
             foundPeerNoResp = true;
+
+            PollState::set(PollState::serverTx, 0);
         }
         else
         {
             foundPeerNoResp = false;
-        }
+            packetSeqNum++;
 
-        std::for_each(peers.begin(), peers.end(),
-            SetPeerExpectingResp(true));
+            PollState::set(PollState::serverTx, 0);
+
+            std::for_each(peers.begin(), peers.end(),
+                SetPeerExpectingResp(true));
+        }
     }
+    else
+    {
+        if (std::find_if(peers.begin(), peers.end(),
+            PeerIsExpectingResp()) == peers.end())
+        {
+            foundPeerNoResp = false;
+            packetSeqNum++;
+
+            PollState::set(PollState::serverTx, 0);
+
+            std::for_each(peers.begin(), peers.end(),
+                SetPeerExpectingResp(true));
+        }
+    }
+}
+
+void Comms::poll(void)
+{
+    PollState::poll();
 }
 
 

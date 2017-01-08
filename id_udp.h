@@ -300,15 +300,17 @@ namespace Comms
         {
         public:
             int sendingPeerUid;
+            unsigned int packetSeqNum;
             World world;
 
-            DataLayer() : sendingPeerUid(0)
+            DataLayer() : sendingPeerUid(0), packetSeqNum(0)
             {
             }
 
             void serialize(Stream &stream)
             {
                 stream & sendingPeerUid;
+                stream & packetSeqNum;
                 stream & world;
             }
 
