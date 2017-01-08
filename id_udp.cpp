@@ -34,6 +34,8 @@ namespace Comms
 
     void serverFinishRxWaitPoll(void);
 
+    void clientRxPoll(void);
+
     namespace PollState
     {
         enum e
@@ -41,6 +43,7 @@ namespace Comms
             serverTx,
             serverRx,
             serverFinishRxWait,
+            clientRx,
         };
 
         typedef void (*Callback)(void);
@@ -50,9 +53,10 @@ namespace Comms
             serverTxPoll,
             serverRxPoll,
             serverFinishRxWaitPoll,
+            clientRxPoll,
         };
 
-        enum e cur;
+        enum e cur = clientRx;
         int32_t tics = 0;
 
         void set(enum e x, int32_t duration)
@@ -155,6 +159,7 @@ namespace Comms
     bool foundPeerNoResp = false;
     unsigned int packetSeqNum = 0;
     PollState::e pollState = PollState::serverTx;
+    bool server = false;
 
     void fillPacket(Protocol::DataLayer &protState);
     bool addPlayerTo(int peeruid, Protocol::DataLayer &protState);
@@ -216,6 +221,8 @@ void Comms::startup(void)
     }
 
     packet->channel = channel;
+
+    PollState::set(server ? PollState::serverTx : PollState::clientRx, 0);
 }
 
 void Comms::shutdown(void)
@@ -429,6 +436,10 @@ void Comms::serverFinishRxWaitPoll(void)
     }
 }
 
+void Comms::clientRxPoll(void)
+{
+}
+
 void Comms::poll(void)
 {
     PollState::poll();
@@ -534,6 +545,11 @@ bool Parameter::check(const char *arg)
 
         return true;
     }
+    else IFARG("--server")
+    {
+        Comms::server = true;
+        return true;
+    }
     else
     {
         return false;
@@ -542,9 +558,10 @@ bool Parameter::check(const char *arg)
 
 const char *Comms::parameterHelp(void)
 {
-    return " --port                          UDP server port\n"
+    return " --port <port>                   UDP server port\n"
            " --addpeer <uid> <host> <port>   Binds peer address to UDP socket\n"
            " --peeruid <uid>                 Peer unique id\n"
+           " --server                        Sets this peer as server\n"
            ;
 }
 
