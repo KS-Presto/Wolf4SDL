@@ -164,9 +164,11 @@ namespace Comms
     void fillPacket(Protocol::DataLayer &protState);
     bool addPlayerTo(int peeruid, Protocol::DataLayer &protState);
     void syncPlayerStateTo(Protocol::DataLayer &protState);
-    void prepareStateForSending(Protocol::DataLayer &protState);
+    void serverPrepareStateForSending(Protocol::DataLayer &protState);
     void parsePacket(Protocol::DataLayer &protState);
-    void handleStateReceived(Protocol::DataLayer &rxProtState);
+    void serverHandleStateReceived(Protocol::DataLayer &rxProtState);
+    void serverMergeFromPeer(Protocol::DataLayer &protState,
+        Protocol::DataLayer &peerProtState);
 }
 
 void Comms::startup(void)
@@ -284,12 +286,50 @@ void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
     }
 }
 
-void Comms::prepareStateForSending(Protocol::DataLayer &protState)
+void Comms::serverMergeFromPeer(Protocol::DataLayer &protState,
+    Protocol::DataLayer &peerProtState)
+{
+    using namespace Protocol;
+
+    Player::Vec &peerPlayers = peerProtState.world.players;
+
+    for (Player::Vec::iterator it = peerPlayers.begin(); it != peerPlayers.end();
+        ++it)
+    {
+        Player &peerPlayer = *it;
+        const int uid = peerPlayer.peeruid;
+
+        if (addPlayerTo(uid, protState))
+        {
+            // this is a new player in our state
+            Player &protPlayer = protState.playerForPeerUid(uid);
+
+            // copy the peer player over it
+            protPlayer = peerPlayer;
+        }
+
+        if (protState.hasPlayerForPeerUid(uid))
+        {
+            Player &protPlayer = protState.playerForPeerUid(uid);
+
+            // TODO: merge the peer player with our one
+            protPlayer = peerPlayer;
+        }
+    }
+}
+
+void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
 {
     addPlayerTo(peeruid, protState);
     syncPlayerStateTo(protState);
     protState.sendingPeerUid = peeruid;
     protState.packetSeqNum = packetSeqNum;
+
+    for (Peer::Vec::iterator it = peers.begin(); it != peers.end(); ++it)
+    {
+        Peer &peer = *it;
+        serverMergeFromPeer(protState, peer.protState);
+    }
 }
 
 void Comms::fillPacket(Protocol::DataLayer &protState)
@@ -312,7 +352,7 @@ void Comms::parsePacket(Protocol::DataLayer &rxProtState)
     stream & rxProtState;
 }
 
-void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
+void Comms::serverHandleStateReceived(Protocol::DataLayer &rxProtState)
 {
     using namespace Protocol;
 
@@ -334,32 +374,13 @@ void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
     peer.expectingResp = false;
 
     peer.protState = rxProtState;
-
-#if 0
-    if (addPlayerTo(uid, protState))
-    {
-        // this is a new player in our state
-        Player &protPlayer = protState.playerForPeerUid(uid);
-
-        // copy the rx player over it
-        protPlayer = rxProtState.playerForPeerUid(uid);
-    }
-
-    if (protState.hasPlayerForPeerUid(uid))
-    {
-        Player &protPlayer = protState.playerForPeerUid(uid);
-        Player &rxProtPlayer = rxProtState.playerForPeerUid(uid);
-
-        // merge the rx player with our one
-    }
-#endif
 }
 
 void Comms::serverTxPoll(void)
 {
     if (!foundPeerNoResp)
     {
-        prepareStateForSending(protState);
+        serverPrepareStateForSending(protState);
     }
     fillPacket(protState);
 
@@ -385,7 +406,7 @@ getmore:
     {
         Protocol::DataLayer rxProtState;
         parsePacket(rxProtState);
-        handleStateReceived(rxProtState);
+        serverHandleStateReceived(rxProtState);
 
         goto getmore;
     }
