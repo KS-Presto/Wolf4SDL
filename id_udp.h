@@ -126,6 +126,11 @@ namespace Comms
             {
                 serializeRaw(&x, sizeof(x));
             }
+
+            void serialize(unsigned long &x)
+            {
+                serializeRaw(&x, sizeof(x));
+            }
         };
 
         inline void serialize(Stream &stream, int &x)
@@ -139,6 +144,11 @@ namespace Comms
         }
 
         inline void serialize(Stream &stream, unsigned int &x)
+        {
+            stream.serialize(x);
+        }
+
+        inline void serialize(Stream &stream, unsigned long &x)
         {
             stream.serialize(x);
         }

@@ -32,12 +32,15 @@ namespace Comms
 
     void serverRxPoll(void);
 
+    void serverFinishRxWaitPoll(void);
+
     namespace PollState
     {
         enum e
         {
             serverTx,
             serverRx,
+            serverFinishRxWait,
         };
 
         typedef void (*Callback)(void);
@@ -46,6 +49,7 @@ namespace Comms
         {
             serverTxPoll,
             serverRxPoll,
+            serverFinishRxWaitPoll,
         };
 
         enum e cur;
@@ -368,7 +372,7 @@ getmore:
     int numrecv = SDLNet_UDP_Recv(udpsock, packet);
     if (numrecv == -1)
     {
-        printf("SDLNet_UDP_RecvV: %s\n", SDLNet_GetError());
+        printf("SDLNet_UDP_Recv: %s\n", SDLNet_GetError());
     }
     else if (numrecv)
     {
@@ -408,11 +412,20 @@ getmore:
             foundPeerNoResp = false;
             packetSeqNum++;
 
-            PollState::set(PollState::serverTx, 0);
+            PollState::set(PollState::serverFinishRxWait, PollState::tics);
 
             std::for_each(peers.begin(), peers.end(),
                 SetPeerExpectingResp(true));
         }
+    }
+}
+
+void Comms::serverFinishRxWaitPoll(void)
+{
+    PollState::tics -= tics;
+    if (PollState::tics < 0)
+    {
+        PollState::set(PollState::serverTx, 0);
     }
 }
 
