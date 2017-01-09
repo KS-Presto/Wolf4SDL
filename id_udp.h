@@ -221,92 +221,114 @@ namespace Comms
             }
         }
 
-        class Pickup
+        namespace PlayerEvent
         {
-        public:
-            uint8_t x, y;
-
-            Pickup() : x(0), y(0)
+            class Move
             {
-            }
+            public:
+                typedef std::vector<Move> Vec;
 
-            Pickup(uint8_t x_, uint8_t y_) : x(x_), y(y_)
-            {
-            }
+                int32_t x,y;
+                short angle;
 
-            void serialize(Stream &stream)
-            {
-                stream & x;
-                stream & y;
-            }
-        };
-
-        inline void serialize(Stream &stream, Pickup &x)
-        {
-            x.serialize(stream);
-        }
-
-        namespace PlayerEventOp
-        {
-            enum e
-            {
-                move,
-                weaponSwitch,
-                pickup,
-                attack,
-            };
-
-            inline void serialize(Stream &stream, enum e &x)
-            {
-                serializeEnum(stream, x);
-            }
-        }
-
-        class PlayerEvent
-        {
-        public:
-            typedef std::vector<PlayerEvent> Vec;
-
-            PlayerEventOp::e op;
-            int32_t x,y;
-            short angle;
-            Weapon::e weapon;
-            Pickup pickup;
-            uint8_t numAttacks;
-            int attackPeerId;
-
-            PlayerEvent() : op(PlayerEventOp::move), x(0), y(0),
-                angle(0), weapon(Weapon::knife), numAttacks(0), attackPeerId(0)
-            {
-            }
-
-            void serialize(Stream &stream)
-            {
-                stream & op;
-                switch (op)
+                Move() : x(0), y(0), angle(0)
                 {
-                case PlayerEventOp::move:
+                }
+
+                void serialize(Stream &stream)
+                {
                     stream & x;
                     stream & y;
                     stream & angle;
-                    break;
-                case PlayerEventOp::weaponSwitch:
-                    stream & weapon;
-                    break;
-                case PlayerEventOp::pickup:
-                    stream & pickup;
-                    break;
-                case PlayerEventOp::attack:
-                    stream & numAttacks;
-                    stream & attackPeerId;
-                    break;
                 }
-            }
-        };
+            };
 
-        inline void serialize(Stream &stream, PlayerEvent &x)
+            inline void serialize(Stream &stream, Move &x)
+            {
+                x.serialize(stream);
+            }
+        }
+
+        namespace PlayerEvent
         {
-            x.serialize(stream);
+            class WeaponSwitch
+            {
+            public:
+                typedef std::vector<WeaponSwitch> Vec;
+
+                Weapon::e weapon;
+
+                WeaponSwitch() : weapon(Weapon::knife)
+                {
+                }
+
+                void serialize(Stream &stream)
+                {
+                    stream & weapon;
+                }
+            };
+
+            inline void serialize(Stream &stream, WeaponSwitch &x)
+            {
+                x.serialize(stream);
+            }
+        }
+
+        namespace PlayerEvent
+        {
+            class Pickup
+            {
+            public:
+                typedef std::vector<Pickup> Vec;
+
+                uint8_t x, y;
+
+                Pickup() : x(0), y(0)
+                {
+                }
+
+                Pickup(uint8_t x_, uint8_t y_) : x(x_), y(y_)
+                {
+                }
+
+                void serialize(Stream &stream)
+                {
+                    stream & x;
+                    stream & y;
+                }
+            };
+
+            inline void serialize(Stream &stream, Pickup &x)
+            {
+                x.serialize(stream);
+            }
+        }
+
+        namespace PlayerEvent
+        {
+            class Attack
+            {
+            public:
+                typedef std::vector<Attack> Vec;
+
+                uint8_t count;
+                int peeruid;
+
+                Attack() : count(0), peeruid(0)
+                {
+                }
+
+                void serialize(Stream &stream)
+                {
+                    stream & count;
+                    stream & peeruid;
+                }
+            };
+
+            inline void serialize(Stream &stream, Attack &x)
+            {
+                x.serialize(stream);
+            }
         }
 
         class Player
@@ -315,12 +337,16 @@ namespace Comms
             typedef std::vector<Player> Vec;
 
             int peeruid;
-            PlayerEvent::Vec events;
             short health;
             short ammo;
             Weapon::e weapon;
             int32_t x,y;
             short angle;
+            PlayerEvent::Move::Vec moveEvents;
+            PlayerEvent::WeaponSwitch::Vec weaponSwitchEvents;
+            PlayerEvent::Pickup::Vec pickupEvents;
+            PlayerEvent::Attack::Vec attackEvents;
+            std::vector<uint8_t> eventIndices;
 
             explicit Player() : peeruid(0), health(0), ammo(0),
                 weapon(Weapon::knife), x(0), y(0), angle(0)
@@ -336,13 +362,17 @@ namespace Comms
             void serialize(Stream &stream)
             {
                 stream & peeruid;
-                stream & events;
                 stream & health;
                 stream & ammo;
                 stream & weapon;
                 stream & x;
                 stream & y;
                 stream & angle;
+                stream & moveEvents;
+                stream & weaponSwitchEvents;
+                stream & pickupEvents;
+                stream & attackEvents;
+                stream & eventIndices;
             }
         };
 
