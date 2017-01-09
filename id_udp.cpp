@@ -249,8 +249,7 @@ bool Comms::addPlayerTo(int peeruid, Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    if (peeruid != 0 && !findPlayer(protState.players,
-        PlayerHasPeerUid(peeruid)))
+    if (!findPlayer(protState.players, PlayerHasPeerUid(peeruid)))
     {
         protState.players.push_back(Player(peeruid));
         return true;
@@ -323,26 +322,25 @@ void Comms::serverMergeFromPeer(Protocol::DataLayer &protState,
     using namespace Protocol;
 
     Player::Vec &peerPlayers = peerProtState.players;
-
-    for (Player::Vec::iterator it = peerPlayers.begin(); it != peerPlayers.end();
-        ++it)
+    if (peerPlayers.size() < 1)
     {
-        Player &peerPlayer = *it;
-        const int uid = peerPlayer.peeruid;
+        return;
+    }
 
-        if (addPlayerTo(uid, protState))
-        {
-            Player &protPlayer = getPlayer(protState.players,
-                PlayerHasPeerUid(uid));
-            protPlayer = peerPlayer;
-        }
+    Player &peerPlayer = peerProtState.players[0];
+    const int uid = peerPlayer.peeruid;
 
-        if (findPlayer(protState.players, PlayerHasPeerUid(uid)))
-        {
-            Player &protPlayer = getPlayer(protState.players,
-                PlayerHasPeerUid(uid));
-            serverMergeFromPeer(protPlayer, peerPlayer);
-        }
+    if (addPlayerTo(uid, protState))
+    {
+        Player &protPlayer = getPlayer(protState.players,
+            PlayerHasPeerUid(uid));
+        protPlayer = peerPlayer;
+    }
+    else
+    {
+        Player &protPlayer = getPlayer(protState.players,
+            PlayerHasPeerUid(uid));
+        serverMergeFromPeer(protPlayer, peerPlayer);
     }
 }
 
