@@ -122,6 +122,11 @@ namespace Comms
                 serializeRaw(&x, sizeof(x));
             }
 
+            void serialize(unsigned char &x)
+            {
+                serializeRaw(&x, sizeof(x));
+            }
+
             void serialize(unsigned int &x)
             {
                 serializeRaw(&x, sizeof(x));
@@ -139,6 +144,11 @@ namespace Comms
         }
 
         inline void serialize(Stream &stream, short &x)
+        {
+            stream.serialize(x);
+        }
+
+        inline void serialize(Stream &stream, unsigned char &x)
         {
             stream.serialize(x);
         }
@@ -211,12 +221,101 @@ namespace Comms
             }
         }
 
+        class Pickup
+        {
+        public:
+            uint8_t x, y;
+
+            Pickup() : x(0), y(0)
+            {
+            }
+
+            Pickup(uint8_t x_, uint8_t y_) : x(x_), y(y_)
+            {
+            }
+
+            void serialize(Stream &stream)
+            {
+                stream & x;
+                stream & y;
+            }
+        };
+
+        inline void serialize(Stream &stream, Pickup &x)
+        {
+            x.serialize(stream);
+        }
+
+        namespace PlayerEventOp
+        {
+            enum e
+            {
+                move,
+                weaponSwitch,
+                pickup,
+                attack,
+            };
+
+            inline void serialize(Stream &stream, enum e &x)
+            {
+                serializeEnum(stream, x);
+            }
+        }
+
+        class PlayerEvent
+        {
+        public:
+            typedef std::vector<PlayerEvent> Vec;
+
+            PlayerEventOp::e op;
+            int32_t x,y;
+            short angle;
+            Weapon::e weapon;
+            Pickup pickup;
+            uint8_t numAttacks;
+            int attackPeerId;
+
+            PlayerEvent() : op(PlayerEventOp::move), x(0), y(0),
+                angle(0), weapon(Weapon::knife), numAttacks(0), attackPeerId(0)
+            {
+            }
+
+            void serialize(Stream &stream)
+            {
+                stream & op;
+                switch (op)
+                {
+                case PlayerEventOp::move:
+                    stream & x;
+                    stream & y;
+                    stream & angle;
+                    break;
+                case PlayerEventOp::weaponSwitch:
+                    stream & weapon;
+                    break;
+                case PlayerEventOp::pickup:
+                    stream & pickup;
+                    break;
+                case PlayerEventOp::attack:
+                    stream & numAttacks;
+                    stream & attackPeerId;
+                    break;
+                }
+            }
+        };
+
+        inline void serialize(Stream &stream, PlayerEvent &x)
+        {
+            x.serialize(stream);
+        }
+
         class Player
         {
         public:
             typedef std::vector<Player> Vec;
 
             int peeruid;
+            PlayerEvent::Vec events;
             short health;
             short ammo;
             Weapon::e weapon;
@@ -237,6 +336,7 @@ namespace Comms
             void serialize(Stream &stream)
             {
                 stream & peeruid;
+                stream & events;
                 stream & health;
                 stream & ammo;
                 stream & weapon;
@@ -266,44 +366,21 @@ namespace Comms
             }
         };
 
-        class World
+        inline bool findPlayer(Player::Vec &players, PlayerHasPeerUid pred)
         {
-        public:
-            Player::Vec players;
+            return std::find_if(players.begin(), players.end(), pred) !=
+                players.end();
+        }
 
-            World()
-            {
-            }
-
-            void serialize(Stream &stream)
-            {
-                stream & players;
-            }
-
-            bool hasPlayerForPeerUid(int peeruid) const
-            {
-                Player::Vec::const_iterator it =
-                    std::find_if(players.begin(), players.end(),
-                    PlayerHasPeerUid(peeruid));
-                return it != players.end();
-            }
-
-            Player &playerForPeerUid(int peeruid)
-            {
-                Player::Vec::iterator it =
-                    std::find_if(players.begin(), players.end(),
-                    PlayerHasPeerUid(peeruid));
-                if (it == players.end())
-                {
-                    throw "could not find player for peeruid";
-                }
-                return *it;
-            }
-        };
-
-        inline void serialize(Stream &stream, World &x)
+        inline Player &getPlayer(Player::Vec &players, PlayerHasPeerUid pred)
         {
-            x.serialize(stream);
+            Player::Vec::iterator it = std::find_if(players.begin(),
+                players.end(), pred);
+            if (it == players.end())
+            {
+                throw "no player found";
+            }
+            return *it;
         }
 
         class DataLayer
@@ -311,7 +388,7 @@ namespace Comms
         public:
             int sendingPeerUid;
             unsigned int packetSeqNum;
-            World world;
+            Player::Vec players;
 
             DataLayer() : sendingPeerUid(0), packetSeqNum(0)
             {
@@ -321,22 +398,7 @@ namespace Comms
             {
                 stream & sendingPeerUid;
                 stream & packetSeqNum;
-                stream & world;
-            }
-
-            bool hasPlayerForPeerUid(int peeruid) const
-            {
-                return world.hasPlayerForPeerUid(peeruid);
-            }
-
-            Player &playerForPeerUid(int peeruid)
-            {
-                return world.playerForPeerUid(peeruid);
-            }
-
-            void addPlayer(Player player)
-            {
-                world.players.push_back(player);
+                stream & players;
             }
         };
 

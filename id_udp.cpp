@@ -169,6 +169,8 @@ namespace Comms
     void serverHandleStateReceived(Protocol::DataLayer &rxProtState);
     void serverMergeFromPeer(Protocol::DataLayer &protState,
         Protocol::DataLayer &peerProtState);
+    void serverMergeFromPeer(Protocol::Player &protPlayer,
+        Protocol::Player &peerProtPlayer);
 }
 
 void Comms::startup(void)
@@ -247,9 +249,10 @@ bool Comms::addPlayerTo(int peeruid, Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    if (peeruid != 0 && !protState.hasPlayerForPeerUid(peeruid))
+    if (peeruid != 0 && !findPlayer(protState.players,
+        PlayerHasPeerUid(peeruid)))
     {
-        protState.addPlayer(Player(peeruid));
+        protState.players.push_back(Player(peeruid));
         return true;
     }
 
@@ -260,9 +263,10 @@ void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
-    if (protState.hasPlayerForPeerUid(peeruid))
+    if (findPlayer(protState.players, PlayerHasPeerUid(peeruid)))
     {
-        Player &protPlayer = protState.playerForPeerUid(peeruid);
+        Player &protPlayer = getPlayer(protState.players,
+            PlayerHasPeerUid(peeruid));
         protPlayer.x = player->x;
         protPlayer.y = player->y;
         protPlayer.angle = player->angle;
@@ -286,12 +290,39 @@ void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
     }
 }
 
+void Comms::serverMergeFromPeer(Protocol::Player &protPlayer,
+    Protocol::Player &peerProtPlayer)
+{
+    using namespace Protocol;
+
+#if 0
+    const int sz = 64;
+    std::vector<bool> map;
+    map.resize(sz * sz);
+
+    for (Pickup::Vec::size_type i = 0; i < protPlayer.pickups.size(); i++)
+    {
+        Pickup &pickup = protPlayer.pickups[i];
+        map[pickup.x + (int)pickup.y * sz] = true;
+    }
+
+    for (Pickup::Vec::size_type i = 0; i < peerProtPlayer.pickups.size(); i++)
+    {
+        Pickup &pickup = peerProtPlayer.pickups[i];
+        if (!map[pickup.x + (int)pickup.y * sz])
+        {
+            protPlayer.pickups.push_back(pickup);
+        }
+    }
+#endif
+}
+
 void Comms::serverMergeFromPeer(Protocol::DataLayer &protState,
     Protocol::DataLayer &peerProtState)
 {
     using namespace Protocol;
 
-    Player::Vec &peerPlayers = peerProtState.world.players;
+    Player::Vec &peerPlayers = peerProtState.players;
 
     for (Player::Vec::iterator it = peerPlayers.begin(); it != peerPlayers.end();
         ++it)
@@ -301,27 +332,22 @@ void Comms::serverMergeFromPeer(Protocol::DataLayer &protState,
 
         if (addPlayerTo(uid, protState))
         {
-            // this is a new player in our state
-            Player &protPlayer = protState.playerForPeerUid(uid);
-
-            // copy the peer player over it
+            Player &protPlayer = getPlayer(protState.players,
+                PlayerHasPeerUid(uid));
             protPlayer = peerPlayer;
         }
 
-        if (protState.hasPlayerForPeerUid(uid))
+        if (findPlayer(protState.players, PlayerHasPeerUid(uid)))
         {
-            Player &protPlayer = protState.playerForPeerUid(uid);
-
-            // TODO: merge the peer player with our one
-            protPlayer = peerPlayer;
+            Player &protPlayer = getPlayer(protState.players,
+                PlayerHasPeerUid(uid));
+            serverMergeFromPeer(protPlayer, peerPlayer);
         }
     }
 }
 
 void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
 {
-    addPlayerTo(peeruid, protState);
-    syncPlayerStateTo(protState);
     protState.sendingPeerUid = peeruid;
     protState.packetSeqNum = packetSeqNum;
 
