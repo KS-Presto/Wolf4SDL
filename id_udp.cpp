@@ -327,32 +327,45 @@ void Comms::serverMergeFromPeer(Protocol::DataLayer &protState,
         return;
     }
 
-    Player &peerPlayer = peerProtState.players[0];
-    const int uid = peerPlayer.peeruid;
-
-    if (addPlayerTo(uid, protState))
-    {
-        Player &protPlayer = getPlayer(protState.players,
-            PlayerHasPeerUid(uid));
-        protPlayer = peerPlayer;
-    }
-    else
-    {
-        Player &protPlayer = getPlayer(protState.players,
-            PlayerHasPeerUid(uid));
-        serverMergeFromPeer(protPlayer, peerPlayer);
-    }
 }
 
 void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
 {
+    using namespace Protocol;
+
     protState.sendingPeerUid = peeruid;
     protState.packetSeqNum = packetSeqNum;
 
+    // get all peer players in one vector
+    Player::Vec peerPlayers;
     for (Peer::Vec::iterator it = peers.begin(); it != peers.end(); ++it)
     {
         Peer &peer = *it;
-        serverMergeFromPeer(protState, peer.protState);
+        Player::Vec &players = peer.protState.players;
+        if (players.size() < 1)
+            continue;
+
+        peerPlayers.push_back(players[0]);
+    }
+
+    // apply end states
+    for (Player::Vec::size_type i = 0; i < peerPlayers.size(); i++)
+    {
+        Player &peerPlayer = peerPlayers[i];
+        const int uid = peerPlayer.peeruid;
+
+        if (addPlayerTo(uid, protState))
+        {
+            Player &protPlayer = getPlayer(protState.players,
+                PlayerHasPeerUid(uid));
+            protPlayer = peerPlayer;
+        }
+        else
+        {
+            Player &protPlayer = getPlayer(protState.players,
+                PlayerHasPeerUid(uid));
+            serverMergeFromPeer(protPlayer, peerPlayer);
+        }
     }
 }
 
