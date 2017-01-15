@@ -161,16 +161,12 @@ namespace Comms
     PollState::e pollState = PollState::serverTx;
     bool server = false;
 
-    void fillPacket(Protocol::DataLayer &protState);
+    void fillPacket(Protocol::DataLayer &protState, UDPpacket *packet);
     bool addPlayerTo(int peeruid, Protocol::DataLayer &protState);
     void syncPlayerStateTo(Protocol::DataLayer &protState);
     void serverPrepareStateForSending(Protocol::DataLayer &protState);
     void parsePacket(Protocol::DataLayer &protState);
     void serverHandleStateReceived(Protocol::DataLayer &rxProtState);
-    void serverMergeFromPeer(Protocol::DataLayer &protState,
-        Protocol::DataLayer &peerProtState);
-    void serverMergeFromPeer(Protocol::Player &protPlayer,
-        Protocol::Player &peerProtPlayer);
 }
 
 void Comms::startup(void)
@@ -289,11 +285,6 @@ void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
     }
 }
 
-void Comms::serverMergeFromPeer(Protocol::Player &protPlayer,
-    Protocol::Player &peerProtPlayer)
-{
-    using namespace Protocol;
-
 #if 0
     const int sz = 64;
     std::vector<bool> map;
@@ -314,20 +305,6 @@ void Comms::serverMergeFromPeer(Protocol::Player &protPlayer,
         }
     }
 #endif
-}
-
-void Comms::serverMergeFromPeer(Protocol::DataLayer &protState,
-    Protocol::DataLayer &peerProtState)
-{
-    using namespace Protocol;
-
-    Player::Vec &peerPlayers = peerProtState.players;
-    if (peerPlayers.size() < 1)
-    {
-        return;
-    }
-
-}
 
 void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
 {
@@ -348,7 +325,8 @@ void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
         peerPlayers.push_back(players[0]);
     }
 
-    // apply end states
+    // update server state
+    // TODO: resolve event conflicts between players
     for (Player::Vec::size_type i = 0; i < peerPlayers.size(); i++)
     {
         Player &peerPlayer = peerPlayers[i];
@@ -364,12 +342,13 @@ void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
         {
             Player &protPlayer = getPlayer(protState.players,
                 PlayerHasPeerUid(uid));
-            serverMergeFromPeer(protPlayer, peerPlayer);
+
+            protPlayer = peerPlayer;
         }
     }
 }
 
-void Comms::fillPacket(Protocol::DataLayer &protState)
+void Comms::fillPacket(Protocol::DataLayer &protState, UDPpacket *packet)
 {
     using namespace Protocol;
 
@@ -409,7 +388,6 @@ void Comms::serverHandleStateReceived(Protocol::DataLayer &rxProtState)
     }
 
     peer.expectingResp = false;
-
     peer.protState = rxProtState;
 }
 
@@ -419,7 +397,7 @@ void Comms::serverTxPoll(void)
     {
         serverPrepareStateForSending(protState);
     }
-    fillPacket(protState);
+    fillPacket(protState, packet);
 
     int numsent = SDLNet_UDP_Send(udpsock,
         packet->channel, packet);
