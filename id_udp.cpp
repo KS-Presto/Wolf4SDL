@@ -28,35 +28,31 @@ using namespace Comms;
 
 namespace Comms
 {
-    void serverTxPoll(void);
+    void txPoll(void);
 
-    void serverRxPoll(void);
+    void rxPoll(void);
 
-    void serverFinishRxWaitPoll(void);
-
-    void clientRxPoll(void);
+    void finishRxWaitPoll(void);
 
     namespace PollState
     {
         enum e
         {
-            serverTx,
-            serverRx,
-            serverFinishRxWait,
-            clientRx,
+            tx,
+            rx,
+            finishRxWait,
         };
 
         typedef void (*Callback)(void);
 
         Callback fns[] =
         {
-            serverTxPoll,
-            serverRxPoll,
-            serverFinishRxWaitPoll,
-            clientRxPoll,
+            txPoll, // tx
+            rxPoll, // rx
+            finishRxWaitPoll, // finishRxWait
         };
 
-        enum e cur = clientRx;
+        enum e cur = tx;
         int32_t tics = 0;
 
         void set(enum e x, int32_t duration)
@@ -158,15 +154,14 @@ namespace Comms
     Peer::Vec peers;
     bool foundPeerNoResp = false;
     unsigned int packetSeqNum = 0;
-    PollState::e pollState = PollState::serverTx;
     bool server = false;
 
     void fillPacket(Protocol::DataLayer &protState, UDPpacket *packet);
     bool addPlayerTo(int peeruid, Protocol::DataLayer &protState);
     void syncPlayerStateTo(Protocol::DataLayer &protState);
-    void serverPrepareStateForSending(Protocol::DataLayer &protState);
+    void prepareStateForSending(Protocol::DataLayer &protState);
     void parsePacket(Protocol::DataLayer &protState);
-    void serverHandleStateReceived(Protocol::DataLayer &rxProtState);
+    void handleStateReceived(Protocol::DataLayer &rxProtState);
 }
 
 void Comms::startup(void)
@@ -222,7 +217,7 @@ void Comms::startup(void)
 
     packet->channel = channel;
 
-    PollState::set(server ? PollState::serverTx : PollState::clientRx, 0);
+    PollState::set(server ? PollState::tx : PollState::rx, 0);
 }
 
 void Comms::shutdown(void)
@@ -306,7 +301,7 @@ void Comms::syncPlayerStateTo(Protocol::DataLayer &protState)
     }
 #endif
 
-void Comms::serverPrepareStateForSending(Protocol::DataLayer &protState)
+void Comms::prepareStateForSending(Protocol::DataLayer &protState)
 {
     using namespace Protocol;
 
@@ -368,7 +363,7 @@ void Comms::parsePacket(Protocol::DataLayer &rxProtState)
     stream & rxProtState;
 }
 
-void Comms::serverHandleStateReceived(Protocol::DataLayer &rxProtState)
+void Comms::handleStateReceived(Protocol::DataLayer &rxProtState)
 {
     using namespace Protocol;
 
@@ -391,11 +386,11 @@ void Comms::serverHandleStateReceived(Protocol::DataLayer &rxProtState)
     peer.protState = rxProtState;
 }
 
-void Comms::serverTxPoll(void)
+void Comms::txPoll(void)
 {
     if (!foundPeerNoResp)
     {
-        serverPrepareStateForSending(protState);
+        prepareStateForSending(protState);
     }
     fillPacket(protState, packet);
 
@@ -406,10 +401,10 @@ void Comms::serverTxPoll(void)
         printf("SDLNet_UDP_Send: %s\n", SDLNet_GetError());
     }
 
-    PollState::set(PollState::serverRx, maxWaitResponseTics);
+    PollState::set(PollState::rx, maxWaitResponseTics);
 }
 
-void Comms::serverRxPoll(void)
+void Comms::rxPoll(void)
 {
 getmore:
     int numrecv = SDLNet_UDP_Recv(udpsock, packet);
@@ -421,7 +416,7 @@ getmore:
     {
         Protocol::DataLayer rxProtState;
         parsePacket(rxProtState);
-        serverHandleStateReceived(rxProtState);
+        handleStateReceived(rxProtState);
 
         goto getmore;
     }
@@ -434,14 +429,14 @@ getmore:
         {
             foundPeerNoResp = true;
 
-            PollState::set(PollState::serverTx, 0);
+            PollState::set(PollState::tx, 0);
         }
         else
         {
             foundPeerNoResp = false;
             packetSeqNum++;
 
-            PollState::set(PollState::serverTx, 0);
+            PollState::set(PollState::tx, 0);
 
             std::for_each(peers.begin(), peers.end(),
                 SetPeerExpectingResp(true));
@@ -455,7 +450,7 @@ getmore:
             foundPeerNoResp = false;
             packetSeqNum++;
 
-            PollState::set(PollState::serverFinishRxWait, PollState::tics);
+            PollState::set(PollState::finishRxWait, PollState::tics);
 
             std::for_each(peers.begin(), peers.end(),
                 SetPeerExpectingResp(true));
@@ -463,17 +458,13 @@ getmore:
     }
 }
 
-void Comms::serverFinishRxWaitPoll(void)
+void Comms::finishRxWaitPoll(void)
 {
     PollState::tics -= tics;
     if (PollState::tics < 0)
     {
-        PollState::set(PollState::serverTx, 0);
+        PollState::set(PollState::tx, 0);
     }
-}
-
-void Comms::clientRxPoll(void)
-{
 }
 
 void Comms::poll(void)
