@@ -221,6 +221,52 @@ namespace Comms
             }
         }
 
+        namespace Key
+        {
+            enum e
+            {
+                gold,
+                silver,
+                bronze,
+                aqua
+            };
+
+            inline void serialize(Stream &stream, enum e &x)
+            {
+                serializeEnum(stream, x);
+            }
+
+            class Set
+            {
+                int mask;
+
+            public:
+                Set() : mask(0)
+                {
+                }
+
+                void add(enum e x)
+                {
+                    mask |= (1 << x);
+                }
+
+                bool has(enum e x) const
+                {
+                    return (mask & (1 << x)) != 0;
+                }
+
+                void serialize(Stream &stream)
+                {
+                    stream & mask;
+                }
+            };
+
+            inline void serialize(Stream &stream, Set &x)
+            {
+                x.serialize(stream);
+            }
+        }
+
         namespace PlayerEvent
         {
             class Move
@@ -342,6 +388,7 @@ namespace Comms
             Weapon::e weapon;
             int32_t x,y;
             short angle;
+            Key::Set keys;
             PlayerEvent::Move::Vec moveEvents;
             PlayerEvent::WeaponSwitch::Vec weaponSwitchEvents;
             PlayerEvent::Pickup::Vec pickupEvents;
@@ -368,6 +415,7 @@ namespace Comms
                 stream & x;
                 stream & y;
                 stream & angle;
+                stream & keys;
                 stream & moveEvents;
                 stream & weaponSwitchEvents;
                 stream & pickupEvents;
@@ -396,13 +444,15 @@ namespace Comms
             }
         };
 
-        inline bool findPlayer(Player::Vec &players, PlayerHasPeerUid pred)
+        template <class Pred>
+        bool findPlayer(Player::Vec &players, Pred pred)
         {
             return std::find_if(players.begin(), players.end(), pred) !=
                 players.end();
         }
 
-        inline Player &getPlayer(Player::Vec &players, PlayerHasPeerUid pred)
+        template <class Pred>
+        Player &getPlayer(Player::Vec &players, Pred pred)
         {
             Player::Vec::iterator it = std::find_if(players.begin(),
                 players.end(), pred);
