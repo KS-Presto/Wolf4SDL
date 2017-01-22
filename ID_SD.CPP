@@ -69,7 +69,6 @@ typedef struct
 } digiinfo;
 
 static Mix_Chunk *SoundChunks[ STARTMUSIC - STARTDIGISOUNDS];
-static byte      *SoundBuffers[STARTMUSIC - STARTDIGISOUNDS];
 
 globalsoundpos channelSoundPos[MIX_CHANNELS];
 
@@ -642,10 +641,11 @@ void SD_PrepareSound(int which)
         newsamples[i] = GetSample((float)size * (float)i / (float)destsamples,
             origsamples, size);
     }
-    SoundBuffers[which] = wavebuffer;
 
     SoundChunks[which] = Mix_LoadWAV_RW(SDL_RWFromMem(wavebuffer,
         sizeof(headchunk) + sizeof(wavechunk) + destsamples * 2), 1);
+
+    free(wavebuffer);
 }
 
 int SD_PlayDigitized(word which,int leftpos,int rightpos)
@@ -1174,7 +1174,6 @@ SD_Shutdown(void)
     for(int i = 0; i < STARTMUSIC - STARTDIGISOUNDS; i++)
     {
         if(SoundChunks[i]) Mix_FreeChunk(SoundChunks[i]);
-        if(SoundBuffers[i]) free(SoundBuffers[i]);
     }
 
     free(DigiList);
@@ -1275,7 +1274,7 @@ SD_PlaySound(soundnames sound)
         case sdm_AdLib:
 #ifdef ADDEDFIX // 2
             curAlSound = alSound = 0;                // Tricob
-            alOut(alFreqH, 0); 
+            alOut(alFreqH, 0);
 #endif
             SDL_ALPlaySound((AdLibSound *)s);
             break;
@@ -1427,7 +1426,7 @@ SD_ContinueMusic(int chunk, int startoffs)
         {
 #ifdef ADDEDFIX // 7                     // Andy, improved by Chris Chokan
             startoffs = 0;
-#else            
+#else
             Quit("SD_StartMusic: Illegal startoffs provided!");
 #endif
         }
