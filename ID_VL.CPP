@@ -212,7 +212,7 @@ void VL_FillPalette (int red, int green, int blue)
 
 void VL_SetColor	(int color, int red, int green, int blue)
 {
-    SDL_Color col = { red, green, blue };
+    SDL_Color col = { (Uint8) red, (Uint8) green, (Uint8) blue };
     curpal[color] = col;
 
     if(screenBits == 8)
@@ -737,8 +737,8 @@ void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
         }
         else
         {
-            SDL_Rect srcrect = { xsrc, ysrc, width, height };
-            SDL_Rect destrect = { scxdest, scydest, 0, 0 }; // width and height are ignored
+            SDL_Rect srcrect = { (Sint16) xsrc, (Sint16) ysrc, (Uint16) width, (Uint16) height };
+            SDL_Rect destrect = { (Sint16) scxdest, (Sint16) scydest, 0, 0 }; // width and height are ignored
             SDL_BlitSurface(source, &srcrect, curSurface, &destrect);
         }
     }
