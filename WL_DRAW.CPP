@@ -669,7 +669,12 @@ int CalcRotate (objtype *ob)
     // this isn't exactly correct, as it should vary by a trig value,
     // but it is close enough with only eight rotations
 
+#ifdef FIXCALCROTATE
+    viewangle = player->angle + (centerx - ob->viewx) / (8 * viewwidth / 320.0);
+#else
     viewangle = player->angle + (centerx - ob->viewx)/8;
+#endif
+
 
     if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
         angle = (viewangle-180) - ob->angle;
@@ -1550,7 +1555,7 @@ void    ThreeDRefresh (void)
 //
     memset(spotvis,0,maparea);
 #ifdef PLAYDEMOLIKEORIGINAL      // ADDEDFIX 30 - Chris
-    if (DEMOCOND_SDL) 
+    if (DEMOCOND_SDL)
 #endif
     spotvis[player->tilex][player->tiley] = 1;       // Detect all sprites over player fix
 

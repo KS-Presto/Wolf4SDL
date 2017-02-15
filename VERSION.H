@@ -53,5 +53,6 @@
 
 #define ADDEDFIX              // Post-revision 262 fixes described in http://diehardwolfers.areyep.com/viewtopic.php?t=6693
 
+#define FIXCALCROTATE         // Apply a modified version of Ginyu's fix to make CalcRotate more accurate at high resolutions
 
 #endif
