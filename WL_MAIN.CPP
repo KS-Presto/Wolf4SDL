@@ -1884,10 +1884,8 @@ void CheckParameters(int argc, char *argv[])
     {
         if(hasError) printf("\n");
         printf(
-            "Wolf4SDL v1.8 ($Revision: 262 $)\n"
-            "plus additional fixes marked by ADDEDFIX comment\n"
-            "or with ADDEDFIX #define in VERSION.H\n"
-            "Ported by Chaos-Software (http://www.chaos-software.de.vu)\n"
+            "Wolf4SDL v1.9R\n"
+            "Ported by Chaos-Software, additions by the community\n"
             "Original Wolfenstein 3D by id Software\n\n"
             "Usage: Wolf4SDL [options]\n"
             "Options:\n"
