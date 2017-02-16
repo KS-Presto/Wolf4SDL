@@ -1,3 +1,8 @@
+Wolf4SDL v1.9R (rolling Github release)
+ - Fixed a memory leak in ID_SD.CPP involving the superfluous SoundBuffers array
+ - Made CalcRotate more accurate 
+   (thanks to Ginyu)
+
 Additional fixes post-revision 262 (http://diehardwolfers.areyep.com/viewtopic.php?t=6693)
  - Change unsigned screenbits = -1 to 0 in id_vl.cpp  // ADDEDFIX 0
  - Typo in WL_ATMOS.CPP fixed  // ADDEDFIX 1
