@@ -1155,6 +1155,9 @@ void DoActor (objtype * ob)
 {
     void (*think) (objtype *);
 
+    if (ob->areanumber >= NUMAREAS)
+        ob->areanumber = player->areanumber;
+
     if (!ob->active && !areabyplayer[ob->areanumber])
         return;
 
