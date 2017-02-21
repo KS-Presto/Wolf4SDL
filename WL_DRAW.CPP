@@ -950,12 +950,12 @@ void DrawScaleds (void)
         if (*visspot
             || ( *(visspot-1) && !*(tilespot-1) )
             || ( *(visspot+1) && !*(tilespot+1) )
-            || ( *(visspot-65) && !*(tilespot-65) )
-            || ( *(visspot-64) && !*(tilespot-64) )
-            || ( *(visspot-63) && !*(tilespot-63) )
-            || ( *(visspot+65) && !*(tilespot+65) )
-            || ( *(visspot+64) && !*(tilespot+64) )
-            || ( *(visspot+63) && !*(tilespot+63) ) )
+            || ( *(visspot-(MAPSIZE+1)) && !*(tilespot-(MAPSIZE+1)) )
+            || ( *(visspot-(MAPSIZE)) && !*(tilespot-(MAPSIZE)) )
+            || ( *(visspot-(MAPSIZE-1)) && !*(tilespot-(MAPSIZE-1)) )
+            || ( *(visspot+(MAPSIZE+1)) && !*(tilespot+(MAPSIZE+1)) )
+            || ( *(visspot+(MAPSIZE)) && !*(tilespot+(MAPSIZE)) )
+            || ( *(visspot+(MAPSIZE-1)) && !*(tilespot+(MAPSIZE-1)) ) )
         {
             obj->active = ac_yes;
             TransformActor (obj);
