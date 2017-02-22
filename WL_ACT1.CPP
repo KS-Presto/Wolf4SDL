@@ -739,7 +739,8 @@ void MoveDoors (void)
 word pwallstate;
 word pwallpos;                  // amount a pushable wall has been moved (0-63)
 word pwallx,pwally;
-word pwalldir,pwalltile;
+byte pwalldir;
+tiletype pwalltile;
 int dirs[4][2]={{0,-1},{1,0},{0,1},{-1,0}};
 
 /*

@@ -120,6 +120,12 @@ void Quit(const char *errorStr, ...);
 #define MAXDOORS        64          // max number of sliding doors
 #define MAXWALLTILES    64          // max number of wall tiles
 
+#if WALLSHIFT >= 7
+typedef uint16_t tiletype;
+#else
+typedef uint8_t tiletype;
+#endif
+
 //
 // tile constants
 //
@@ -1010,7 +1016,7 @@ void UpdateSoundLoc(void);
 
 #define JOYSCALE                2
 
-extern  word            tilemap[MAPSIZE][MAPSIZE];      // wall values only
+extern  tiletype        tilemap[MAPSIZE][MAPSIZE];      // wall values only
 extern  byte            spotvis[MAPSIZE][MAPSIZE];
 extern  objtype         *actorat[MAPSIZE][MAPSIZE];
 
@@ -1232,8 +1238,8 @@ extern  boolean   areabyplayer[NUMAREAS];
 extern word     pwallstate;
 extern word     pwallpos;        // amount a pushable wall has been moved (0-63)
 extern word     pwallx,pwally;
-extern word     pwalldir,pwalltile;
-
+extern byte     pwalldir;
+extern tiletype pwalltile;
 
 void InitDoorList (void);
 void InitStaticList (void);

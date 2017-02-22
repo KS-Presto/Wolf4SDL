@@ -38,7 +38,7 @@ objtype *newobj, *obj, *player, *lastobj, *objfreelist, *killerobj;
 boolean noclip, ammocheat;
 int godmode, singlestep, extravbls = 0;
 
-word tilemap[MAPSIZE][MAPSIZE]; // wall values only
+tiletype tilemap[MAPSIZE][MAPSIZE]; // wall values only
 byte spotvis[MAPSIZE][MAPSIZE];
 objtype *actorat[MAPSIZE][MAPSIZE];
 
