@@ -365,7 +365,7 @@ void HitVertWall (void)
         xintercept += TILEGLOBAL;
     }
 
-    if(lastside==1 && lastintercept==xtile && lasttilehit==tilehit && !(lasttilehit & 0x40))
+    if(lastside==1 && lastintercept==xtile && lasttilehit==tilehit && !(lasttilehit & BIT_WALL))
     {
         if((pixx&3) && texture == lasttexture)
         {
@@ -393,13 +393,13 @@ void HitVertWall (void)
     postx = pixx;
     postwidth = 1;
 
-    if (tilehit & 0x40)
+    if (tilehit & BIT_WALL)
     {                                                               // check for adjacent doors
         ytile = (short)(yintercept>>TILESHIFT);
-        if ( tilemap[xtile-xtilestep][ytile]&0x80 )
+        if ( tilemap[xtile-xtilestep][ytile]&BIT_DOOR )
             wallpic = DOORWALL+3;
         else
-            wallpic = vertwall[tilehit & ~0x40];
+            wallpic = vertwall[tilehit & ~BIT_WALL];
     }
     else
         wallpic = vertwall[tilehit];
@@ -430,7 +430,7 @@ void HitHorizWall (void)
     else
         texture = TEXTUREMASK-texture;
 
-    if(lastside==0 && lastintercept==ytile && lasttilehit==tilehit && !(lasttilehit & 0x40))
+    if(lastside==0 && lastintercept==ytile && lasttilehit==tilehit && !(lasttilehit & BIT_WALL))
     {
         if((pixx&3) && texture == lasttexture)
         {
@@ -458,13 +458,13 @@ void HitHorizWall (void)
     postx = pixx;
     postwidth = 1;
 
-    if (tilehit & 0x40)
+    if (tilehit & BIT_WALL)
     {                                                               // check for adjacent doors
         xtile = (short)(xintercept>>TILESHIFT);
-        if ( tilemap[xtile][ytile-ytilestep]&0x80)
+        if ( tilemap[xtile][ytile-ytilestep]&BIT_DOOR)
             wallpic = DOORWALL+2;
         else
-            wallpic = horizwall[tilehit & ~0x40];
+            wallpic = horizwall[tilehit & ~BIT_WALL];
     }
     else
         wallpic = horizwall[tilehit];
@@ -488,7 +488,7 @@ void HitHorizDoor (void)
     int doornum;
     int texture;
 
-    doornum = tilehit&0x7f;
+    doornum = tilehit&LAST_DOORNUM;
     texture = ((xintercept-doorposition[doornum])>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
 
     if(lasttilehit==tilehit)
@@ -553,7 +553,7 @@ void HitVertDoor (void)
     int doornum;
     int texture;
 
-    doornum = tilehit&0x7f;
+    doornum = tilehit&LAST_DOORNUM;
     texture = ((yintercept-doorposition[doornum])>>TEXTUREFROMFIXEDSHIFT)&TEXTUREMASK;
 
     if(lasttilehit==tilehit)
@@ -1100,7 +1100,7 @@ void AsmRefresh()
 {
     int32_t xstep,ystep;
     longword xpartial,ypartial;
-    boolean playerInPushwallBackTile = tilemap[focaltx][focalty] == 64;
+    boolean playerInPushwallBackTile = tilemap[focaltx][focalty] == BIT_WALL;
 
     for(pixx=0;pixx<viewwidth;pixx++)
     {
@@ -1211,12 +1211,12 @@ vertentry:
             tilehit=((byte *)tilemap)[xspot];
             if(tilehit)
             {
-                if(tilehit&0x80)
+                if(tilehit&BIT_DOOR)
                 {
                     int32_t yintbuf=yintercept+(ystep>>1);
                     if((yintbuf>>16)!=(yintercept>>16))
                         goto passvert;
-                    if((word)yintbuf<doorposition[tilehit&0x7f])
+                    if((word)yintbuf<doorposition[tilehit&LAST_DOORNUM])
                         goto passvert;
                     yintercept=yintbuf;
                     xintercept=(xtile<<TILESHIFT)|0x8000;
@@ -1225,7 +1225,7 @@ vertentry:
                 }
                 else
                 {
-                    if(tilehit==64)
+                    if(tilehit==BIT_WALL)
                     {
                         if(pwalldir==di_west || pwalldir==di_east)
                         {
@@ -1366,12 +1366,12 @@ horizentry:
             tilehit=((byte *)tilemap)[yspot];
             if(tilehit)
             {
-                if(tilehit&0x80)
+                if(tilehit&BIT_DOOR)
                 {
                     int32_t xintbuf=xintercept+(xstep>>1);
                     if((xintbuf>>16)!=(xintercept>>16))
                         goto passhoriz;
-                    if((word)xintbuf<doorposition[tilehit&0x7f])
+                    if((word)xintbuf<doorposition[tilehit&LAST_DOORNUM])
                         goto passhoriz;
                     xintercept=xintbuf;
                     yintercept=(ytile<<TILESHIFT)+0x8000;
@@ -1380,7 +1380,7 @@ horizentry:
                 }
                 else
                 {
-                    if(tilehit==64)
+                    if(tilehit==BIT_WALL)
                     {
                         if(pwalldir==di_north || pwalldir==di_south)
                         {
