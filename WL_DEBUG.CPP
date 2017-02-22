@@ -196,9 +196,9 @@ void BasicOverhead (void)
                 else color = 0;  // nothing
             }
             else if (MAPSPOT(x,y,1) == PUSHABLETILE) color = 171;  // pushwall
-            else if (tile == 64) color = 158; // solid obj
-            else if (tile < 128) color = 154;  // walls
-            else if (tile < 256) color = 146;  // doors
+            else if (tile == BIT_WALL) color = 158; // solid obj
+            else if (tile < BIT_DOOR) color = 154;  // walls
+            else if (tile < BIT_ALLTILES) color = 146;  // doors
 
             VWB_Bar(x*z+offx, y*z+offy,z,z,color);
         }
@@ -500,7 +500,7 @@ int DebugKeys (void)
         US_Print ("\nf 1:"); US_PrintUnsigned (player->areanumber);
         US_Print (" 2:");    US_PrintUnsigned (MAPSPOT(player->tilex,player->tiley,1));
         US_Print (" 3:");
-        if ((unsigned)(uintptr_t)actorat[player->tilex][player->tiley] < 256)
+        if ((unsigned)(uintptr_t)actorat[player->tilex][player->tiley] < BIT_ALLTILES)
             US_PrintUnsigned (spotvis[player->tilex][player->tiley]);
         else
             US_PrintUnsigned (actorat[player->tilex][player->tiley]->flags);
