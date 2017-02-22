@@ -1232,7 +1232,7 @@ extern  boolean   areabyplayer[NUMAREAS];
 extern word     pwallstate;
 extern word     pwallpos;        // amount a pushable wall has been moved (0-63)
 extern word     pwallx,pwally;
-extern byte     pwalldir,pwalltile;
+extern word     pwalldir,pwalltile;
 
 
 void InitDoorList (void);
