@@ -1160,10 +1160,10 @@ void Cmd_Use (void)
         SD_PlaySound (LEVELDONESND);
         SD_WaitSoundDone();
     }
-    else if (!buttonheld[bt_use] && doornum & 0x80)
+    else if (!buttonheld[bt_use] && doornum & BIT_DOOR)
     {
         buttonheld[bt_use] = true;
-        OperateDoor (doornum & ~0x80);
+        OperateDoor (doornum & ~BIT_DOOR);
     }
     else
         SD_PlaySound (DONOTHINGSND);
