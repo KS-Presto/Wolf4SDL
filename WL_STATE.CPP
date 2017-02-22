@@ -158,7 +158,7 @@ void NewState (objtype *ob, statetype *state)
     temp=(uintptr_t)actorat[x][y];                  \
     if (temp)                                       \
     {                                               \
-        if (temp<256)                               \
+        if (temp<BIT_ALLTILES)                      \
             return false;                           \
         if (((objtype *)temp)->flags&FL_SHOOTABLE)  \
             return false;                           \
@@ -171,7 +171,7 @@ void NewState (objtype *ob, statetype *state)
                 doornum = temp&63;                      \
             else                                        \
             {                                           \
-                doornum = (int) temp & 127;             \
+                doornum = (int) temp & LAST_DOORNUM;    \
                 if (ob->obclass != ghostobj             \
                     && ob->obclass != spectreobj)       \
                 {                                       \
@@ -182,7 +182,7 @@ void NewState (objtype *ob, statetype *state)
             }
 #else
     #define DOORCHECK                                   \
-            doornum = (int) temp & 127;                 \
+            doornum = (int) temp & LAST_DOORNUM;        \
             if (ob->obclass != ghostobj                 \
                 && ob->obclass != spectreobj)           \
             {                                           \
@@ -197,9 +197,9 @@ void NewState (objtype *ob, statetype *state)
     temp=(uintptr_t)actorat[x][y];                      \
     if (temp)                                           \
     {                                                   \
-        if (temp<128)                                   \
+        if (temp<BIT_DOOR)                              \
             return false;                               \
-        if (temp<256)                                   \
+        if (temp<BIT_ALLTILES)                          \
         {                                               \
             DOORCHECK                                   \
         }                                               \
@@ -1141,13 +1141,13 @@ boolean CheckLine (objtype *ob)
             if (!value)
                 continue;
 
-            if (value<128 || value>256)
+            if (value<BIT_DOOR || value>BIT_ALLTILES)
                 return false;
 
             //
             // see if the door is open enough
             //
-            value &= ~0x80;
+            value &= ~BIT_DOOR;
             intercept = yfrac-ystep/2;
 
             if (intercept>doorposition[value])
@@ -1195,13 +1195,13 @@ boolean CheckLine (objtype *ob)
             if (!value)
                 continue;
 
-            if (value<128 || value>256)
+            if (value<BIT_DOOR || value>BIT_ALLTILES)
                 return false;
 
             //
             // see if the door is open enough
             //
-            value &= ~0x80;
+            value &= ~BIT_DOOR;
             intercept = xfrac-xstep/2;
 
             if (intercept>doorposition[value])
