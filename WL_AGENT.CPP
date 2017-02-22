@@ -703,7 +703,7 @@ void GiveKey (int key)
 void GetBonus (statobj_t *check)
 {
     if (playstate == ex_died)   // ADDEDFIX 31 - Chris
-        return; 
+        return;
 
     switch (check->itemnumber)
     {
@@ -863,7 +863,7 @@ boolean TryMove (objtype *ob)
             check = actorat[x][y];
             if (check && !ISPOINTER(check))
             {
-                if(tilemap[x][y]==64 && x==pwallx && y==pwally)   // back of moving pushwall?
+                if(tilemap[x][y]==BIT_WALL && x==pwallx && y==pwally)   // back of moving pushwall?
                 {
                     switch(pwalldir)
                     {
