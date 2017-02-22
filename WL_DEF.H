@@ -107,6 +107,14 @@ void Quit(const char *errorStr, ...);
 #define MAXTICS 10
 #define DEMOTICS        4
 
+#define WALLSHIFT       6
+
+#define BIT_WALL        (1<<WALLSHIFT)
+#define BIT_DOOR        (1<<(WALLSHIFT+1))
+#define BIT_ALLTILES    (1<<(WALLSHIFT+2))
+#define LAST_WALLNUM    BIT_WALL-1
+#define LAST_DOORNUM    BIT_DOOR-1
+
 #define MAXACTORS       150         // max number of nazis, etc / map
 #define MAXSTATS        400         // max number of lamps, bonus, etc
 #define MAXDOORS        64          // max number of sliding doors
