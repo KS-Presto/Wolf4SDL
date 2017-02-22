@@ -888,7 +888,8 @@ visobj_t *visptr,*visstep,*farthest;
 void DrawScaleds (void)
 {
     int      i,least,numvisable,height;
-    byte     *tilespot,*visspot;
+    byte     *visspot;
+    word     *tilespot;
     unsigned spotloc;
 
     statobj_t *statptr;
@@ -1208,7 +1209,7 @@ vertentry:
                 break;
             }
             if(xspot>=maparea) break;
-            tilehit=((byte *)tilemap)[xspot];
+            tilehit=((word *)tilemap)[xspot];
             if(tilehit)
             {
                 if(tilehit&BIT_DOOR)
@@ -1363,7 +1364,7 @@ horizentry:
                 break;
             }
             if(yspot>=maparea) break;
-            tilehit=((byte *)tilemap)[yspot];
+            tilehit=((word *)tilemap)[yspot];
             if(tilehit)
             {
                 if(tilehit&BIT_DOOR)
