@@ -1558,6 +1558,8 @@ void    ThreeDRefresh (void)
 #ifdef PLAYDEMOLIKEORIGINAL      // ADDEDFIX 30 - Chris
     if (DEMOCOND_SDL)
 #endif
+    if (!tilemap[player->tilex][player->tiley] ||
+         tilemap[player->tilex][player->tiley] & BIT_DOOR)
     spotvis[player->tilex][player->tiley] = 1;       // Detect all sprites over player fix
 
     vbuf = VL_LockSurface(screenBuffer);

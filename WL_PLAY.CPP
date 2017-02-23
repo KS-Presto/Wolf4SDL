@@ -211,7 +211,7 @@ int songs[] = {
     XFUNKIE_MUS,
     XDEATH_MUS,
     XGETYOU_MUS,                // DON'T KNOW
-    ULTIMATE_MUS,               // Trans Gr”sse
+    ULTIMATE_MUS,               // Trans Grosse
 
     DUNGEON_MUS,
     GOINGAFT_MUS,
@@ -1155,10 +1155,7 @@ void DoActor (objtype * ob)
 {
     void (*think) (objtype *);
 
-    if (ob->areanumber >= NUMAREAS)
-        ob->areanumber = player->areanumber;
-
-    if (!ob->active && !areabyplayer[ob->areanumber])
+    if (!ob->active && ob->areanumber < NUMAREAS && !areabyplayer[ob->areanumber])
         return;
 
     if (!(ob->flags & (FL_NONMARK | FL_NEVERMARK)))
