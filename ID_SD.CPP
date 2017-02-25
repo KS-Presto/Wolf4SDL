@@ -261,7 +261,7 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
             if(pcSound)
             {
                 // The PC speaker sample rate is 140Hz (see SDL_t0SlowAsmService)
-		current_remaining = param_samplerate / 140;
+                current_remaining = param_samplerate / 140;
 
                 if(*pcSound!=pcLastSample)
                 {
