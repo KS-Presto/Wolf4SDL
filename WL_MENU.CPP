@@ -105,7 +105,7 @@ CP_itemtype SndMenu[] = {
     {1, "", 0},
 #else
     {1, STR_NONE, 0},
-    {0, STR_PC, 0},
+    {1, STR_PC, 0},
     {1, STR_ALSB, 0},
     {0, "", 0},
     {0, "", 0},
