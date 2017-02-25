@@ -6,6 +6,7 @@ Wolf4SDL v1.9R (rolling Github release)
  - Replaced some magic numbers with the relevant MAPSIZE macro (thanks to Chris)
  - Replaced all tilemap-relevant magic numbers with appropriate macros and allowed
    modification of the maximum wall tiles and doors (thanks to Chris)
+ - Added PC speaker sound emulation (thanks to ljbade and Chris)
 
 Additional fixes post-revision 262 (http://diehardwolfers.areyep.com/viewtopic.php?t=6693)
  - Change unsigned screenbits = -1 to 0 in id_vl.cpp  // ADDEDFIX 0
