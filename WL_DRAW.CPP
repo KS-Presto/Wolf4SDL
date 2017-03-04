@@ -1097,6 +1097,17 @@ void CalcTics (void)
 
 //==========================================================================
 
+bool RefreshCorner (bool flip)
+{
+    if (tilemap[xtile][ytile] && (xtile-xtilestep) == (xintercept>>TILESHIFT) && (ytile-ytilestep) == (yintercept>>TILESHIFT))
+    {
+        if (lastside == flip) return true;
+        if (lasttilehit&(MAXWALLTILES<<1)) lastside=3;
+        tilehit = lasttilehit;
+    }
+    return false;
+}
+
 void AsmRefresh()
 {
     int32_t xstep,ystep;
@@ -1210,12 +1221,13 @@ vertentry:
             }
             if(xspot>=maparea) break;
             tilehit=((tiletype *)tilemap)[xspot];
+            if (RefreshCorner(false)) goto horizentry;
             if(tilehit)
             {
                 if(tilehit&BIT_DOOR)
                 {
                     int32_t yintbuf=yintercept+(ystep>>1);
-                    if((yintbuf>>16)!=(yintercept>>16))
+                    if((yintbuf>>16)!=(yintercept>>16) && lastside!=3)
                         goto passvert;
                     if((word)yintbuf<doorposition[tilehit&LAST_DOORNUM])
                         goto passvert;
@@ -1365,12 +1377,13 @@ horizentry:
             }
             if(yspot>=maparea) break;
             tilehit=((tiletype *)tilemap)[yspot];
+            if (RefreshCorner(true)) goto vertentry;
             if(tilehit)
             {
                 if(tilehit&BIT_DOOR)
                 {
                     int32_t xintbuf=xintercept+(xstep>>1);
-                    if((xintbuf>>16)!=(xintercept>>16))
+                    if((xintbuf>>16)!=(xintercept>>16) && lastside!=3)
                         goto passhoriz;
                     if((word)xintbuf<doorposition[tilehit&LAST_DOORNUM])
                         goto passhoriz;
