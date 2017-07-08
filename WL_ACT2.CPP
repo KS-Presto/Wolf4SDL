@@ -848,7 +848,8 @@ statetype s_gretelshoot8        = {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_grete
 ===============
 */
 
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
+void SpawnStand (enemy_t which, int tilex, int tiley, int dir,
+    short difficulty)
 {
     word *map;
     word tile;
@@ -910,6 +911,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
     newobj->hitpoints = starthitpoints[gamestate.difficulty][which];
     newobj->dir = (dirtype)(dir * 2);
     newobj->flags |= FL_SHOOTABLE;
+    newobj->difficulty = difficulty;
 }
 
 
@@ -986,7 +988,8 @@ void SpawnGretel (int tilex, int tiley)
 ===============
 */
 
-void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
+void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir,
+    short difficulty)
 {
     switch (which)
     {
@@ -1032,6 +1035,7 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
     newobj->distance = TILEGLOBAL;
     newobj->flags |= FL_SHOOTABLE;
     newobj->active = ac_yes;
+    newobj->difficulty = difficulty;
 
     actorat[newobj->tilex][newobj->tiley] = NULL;           // don't use original spot
 
@@ -3901,3 +3905,885 @@ void    A_StartDeathCam (objtype *ob)
 }
 
 #endif
+
+/*
+============================================================================
+
+                                 OBJECT
+
+============================================================================
+*/
+
+namespace Object
+{
+    const lwlib::Point2f getPos(objtype *ob)
+    {
+        return lwlib::vec2f(fixedpt_toconst(ob->x), 
+            fixedpt_toconst(ob->y));
+    }
+
+    void setPos(objtype *ob, const lwlib::Point2f pos)
+    {
+        ob->x = fixedpt_rconst(pos.v[0]);
+        ob->y = fixedpt_rconst(pos.v[1]);
+
+        ob->tilex = (short)(ob->x >> TILESHIFT);
+        ob->tiley = (short)(ob->y >> TILESHIFT);
+    }
+
+    bool shootable(objtype *ob)
+    {
+        return ob->flags & FL_SHOOTABLE;
+    }
+}
+
+
+/*
+============================================================================
+
+                                 TRIGGER
+
+============================================================================
+*/
+
+namespace Trigger
+{
+    namespace System
+    {
+        typedef int Index;
+
+        static const int limit = 5;
+    }
+
+    namespace SpecialObjects
+    {
+        enum e
+        {
+            enemySpawn,
+            spawnAreaTrigger,
+            spawnSpotTrigger,
+            alertEnemy,
+            lockDoors,
+            releaseDoors,
+            max,
+        };
+    }
+
+    namespace Codes
+    {
+        static const word avail[System::limit][SpecialObjects::max] =
+        {
+            { 260, 261, 262, 263, 264, 285 },
+            { 265, 266, 267, 268, 269, 286 },
+            { 270, 271, 272, 273, 274, 287 },
+            { 275, 276, 277, 278, 279, 288 },
+            { 280, 281, 282, 283, 284, 289 },
+        };
+
+        word enemySpawn(Trigger::System::Index systemIndex)
+        {
+            return avail[systemIndex][SpecialObjects::enemySpawn];
+        }
+
+        word spawnAreaTrigger(Trigger::System::Index systemIndex)
+        {
+            return avail[systemIndex][SpecialObjects::spawnAreaTrigger];
+        }
+
+        word spawnSpotTrigger(Trigger::System::Index systemIndex)
+        {
+            return avail[systemIndex][SpecialObjects::spawnSpotTrigger];
+        }
+
+        word alertEnemy(Trigger::System::Index systemIndex)
+        {
+            return avail[systemIndex][SpecialObjects::alertEnemy];
+        }
+
+        word lockDoors(Trigger::System::Index systemIndex)
+        {
+            return avail[systemIndex][SpecialObjects::lockDoors];
+        }
+
+        word releaseDoors(Trigger::System::Index systemIndex)
+        {
+            return avail[systemIndex][SpecialObjects::releaseDoors];
+        }
+
+        bool isEnemySpawn(word code, System::Index &systemIndex)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                if (enemySpawn(i) == code)
+                {
+                    systemIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool isSpawnAreaTrigger(word code, System::Index &systemIndex)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                if (spawnAreaTrigger(i) == code)
+                {
+                    systemIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool isSpawnSpotTrigger(word code, System::Index &systemIndex)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                if (spawnSpotTrigger(i) == code)
+                {
+                    systemIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool isAlertEnemy(word code, System::Index &systemIndex)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                if (alertEnemy(i) == code)
+                {
+                    systemIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool isLockDoors(word code, System::Index &systemIndex)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                if (lockDoors(i) == code)
+                {
+                    systemIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        bool isReleaseDoors(word code, System::Index &systemIndex)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                if (releaseDoors(i) == code)
+                {
+                    systemIndex = i;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    namespace TileMap
+    {
+        typedef std::vector<lwlib::Point2i> PosVec;
+
+        void getNextTo(lwlib::Point2i pos, PosVec &posVec)
+        {
+            static const int xoff[8] = { 1, 0, -1, 0, 1, 1, -1, -1 };
+            static const int yoff[8] = { 0, 1, 0, -1, 1, -1, 1, -1 };
+
+            for (int i = 0; i < 8; i++)
+            {
+                const int xn = pos.v[0] + xoff[i];
+                const int yn = pos.v[1] + yoff[i];
+
+                if (xn >= 0 && xn < MAPSIZE && yn >= 0 && yn < MAPSIZE)
+                {
+                    posVec.push_back(lwlib::vec2i(xn, yn));
+                }
+            }
+        }
+    }
+
+    bool foundEnemySpawnNextTo(int x, int y, System::Index &systemIndex)
+    {
+        TileMap::PosVec posVec;
+        TileMap::getNextTo(lwlib::vec2i(x, y), posVec);
+
+        for (TileMap::PosVec::size_type i = 0; i < posVec.size(); i++)
+        {
+            lwlib::Point2i pos = posVec[i];
+
+            int xn, yn;
+            vec2_get(pos, xn, yn);
+
+            if (Codes::isEnemySpawn(MAPSPOT(xn, yn, 1), systemIndex))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    bool foundAlertEnemyNextTo(int x, int y, System::Index &systemIndex)
+    {
+        TileMap::PosVec posVec;
+        TileMap::getNextTo(lwlib::vec2i(x, y), posVec);
+
+        for (TileMap::PosVec::size_type i = 0; i < posVec.size(); i++)
+        {
+            lwlib::Point2i pos = posVec[i];
+
+            int xn, yn;
+            vec2_get(pos, xn, yn);
+
+            if (Codes::isAlertEnemy(MAPSPOT(xn, yn, 1), systemIndex))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    namespace SpawnTriggerObject
+    {
+        static const int maxEnemySpawns = 32;
+
+        class GameState
+        {
+        public:
+            typedef struct
+            {
+                enemy_t which;
+                int x, y;
+                int dir;
+                bool patrol;
+                bool alert;
+                short difficulty;
+                int oid;
+            } EnemySpawn;
+
+        private:
+            System::Index systemIndex;
+
+            typedef struct
+            {
+                EnemySpawn enemySpawns[maxEnemySpawns];
+                int numEnemySpawns;
+                bool lockDoors;
+                bool releaseDoors;
+            } Data;
+
+            Data &data(void) const
+            {
+                const int arrsize = sizeof(gamestate.spawntriggerdata) /
+                    sizeof(gamestate.spawntriggerdata[0]);
+                assert(systemIndex >= 0 && systemIndex < arrsize);
+                assert(sizeof(Data) <= 
+                    sizeof(gamestate.spawntriggerdata[systemIndex]));
+                return 
+                    *((Data *)(&gamestate.spawntriggerdata[systemIndex][0]));
+            }
+
+        public:
+            explicit GameState(System::Index systemIndex_) :
+                systemIndex(systemIndex_)
+            {
+            }
+
+            EnemySpawn &enemySpawn(int index) const
+            {
+                return data().enemySpawns[index];
+            }
+
+            int &numEnemySpawns(void) const
+            {
+                return data().numEnemySpawns;
+            }
+
+            bool &lockDoors(void) const
+            {
+                return data().lockDoors;
+            }
+
+            bool &releaseDoors(void) const
+            {
+                return data().releaseDoors;
+            }
+
+            void reset(void) const
+            {
+                memset(&data(), 0, sizeof(data()));
+            }
+        };
+
+        class State
+        {
+            objtype *ob;
+
+            typedef struct
+            {
+                System::Index systemIndex;
+                SpecialObjects::e specialObj;
+                bool valid;
+            } Data;
+
+            Data &data(void) const
+            {
+                assert(sizeof(Data) <= sizeof(ob->spawntriggerdata));
+                return *((Data *)(&ob->spawntriggerdata[0]));
+            }
+
+        public:
+            explicit State(objtype *ob_) : ob(ob_)
+            {
+            }
+
+            System::Index &systemIndex(void) const
+            {
+                return data().systemIndex;
+            }
+
+            SpecialObjects::e &specialObj(void) const
+            {
+                return data().specialObj;
+            }
+
+            bool &valid(void) const
+            {
+                return data().valid;
+            }
+        };
+
+        void idle(objtype *ob);
+
+        statetype s_idle              = {false,SPR_DEMO,0,(statefunc)idle,NULL,&s_idle};
+
+        void spawnEnemies(objtype *ob)
+        {
+            const System::Index systemIndex = State(ob).systemIndex();
+
+            GameState gs(systemIndex);
+
+            for (int i = 0; i < gs.numEnemySpawns(); i++)
+            {
+                GameState::EnemySpawn &es = gs.enemySpawn(i);
+                if (!es.patrol)
+                {
+                    SpawnStand(es.which, es.x, es.y, es.dir, es.difficulty);
+                }
+                else
+                {
+                    SpawnPatrol(es.which, es.x, es.y, es.dir, es.difficulty);
+                }
+
+                objtype *enemyObj = actorat[es.x][es.y];
+                es.oid = (enemyObj - objlist) + 1;
+
+                if (es.alert)
+                {
+                    FirstSighting(enemyObj);
+                }
+            }
+        }
+
+        void idle(objtype *ob)
+        {
+            bool playerInArea = false;
+
+            const SpecialObjects::e specialObj = State(ob).specialObj();
+            if (specialObj == SpecialObjects::spawnAreaTrigger &&
+                player->areanumber == ob->areanumber)
+            {
+                playerInArea = true;
+            }
+            else if (specialObj == SpecialObjects::spawnSpotTrigger &&
+                player->tilex == ob->tilex &&
+                player->tiley == ob->tiley)
+            {
+                playerInArea = true;
+            }
+
+            if (playerInArea)
+            {
+                ob->state = NULL;
+                spawnEnemies(ob);
+
+                for (objtype *check = objlist; check; check = check->next)
+                {
+                    if (State(check).valid() && State(check).systemIndex() == 
+                        State(ob).systemIndex())
+                    {
+                        check->state = NULL;
+                    }
+                }
+
+                const int systemIndex = State(ob).systemIndex();
+                if (GameState(systemIndex).lockDoors())
+                {
+                    DoorLock::tripped(player->areanumber,
+                        State(ob).systemIndex());
+                }
+                else if (GameState(systemIndex).releaseDoors())
+                {
+                    DoorRelease::tripped(player->areanumber);
+                }
+            }
+        }
+
+        void spawn(int x, int y, System::Index systemIndex,
+            SpecialObjects::e specialObj)
+        {
+            SpawnNewObj(x, y, &s_idle);
+            newobj->obclass = inertobj;
+            newobj->active = ac_yes;
+            newobj->flags = FL_NEVERMARK;
+            State(newobj).systemIndex() = systemIndex;
+            State(newobj).specialObj() = specialObj;
+            State(newobj).valid() = true;
+        }
+
+        void gotEnemy(enemy_t which, int x, int y, int dir,
+            bool patrol, short difficulty, System::Index systemIndex)
+        {
+            GameState gs(systemIndex);
+            if (gs.numEnemySpawns() < maxEnemySpawns)
+            {
+                GameState::EnemySpawn enemySpawn;
+                memset(&enemySpawn, 0, sizeof(enemySpawn));
+                enemySpawn.which = which;
+                enemySpawn.x = x;
+                enemySpawn.y = y;
+                enemySpawn.dir = dir;
+                enemySpawn.patrol = patrol;
+
+                {
+                    System::Index systemInd;
+                    enemySpawn.alert = foundAlertEnemyNextTo(x, y, systemInd);
+                }
+
+                enemySpawn.difficulty = difficulty;
+
+                gs.enemySpawn(gs.numEnemySpawns()++) = enemySpawn;
+            }
+        }
+
+        void reset(void)
+        {
+            for (System::Index i = 0; i < System::limit; i++)
+            {
+                GameState(i).reset();
+            }
+        }
+
+        bool anyAlive(System::Index systemIndex)
+        {
+            GameState gs(systemIndex);
+            for (int i = 0; i < gs.numEnemySpawns(); i++)
+            {
+                GameState::EnemySpawn &enemySpawn = gs.enemySpawn(i);
+                if (enemySpawn.oid != 0)
+                {
+                    objtype *enemyObj = objlist + (enemySpawn.oid - 1);
+                    if (enemyObj->flags & FL_SHOOTABLE)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        void setLockDoors(System::Index systemIndex)
+        {
+            GameState(systemIndex).lockDoors() = true;
+        }
+
+        void setReleaseDoors(System::Index systemIndex)
+        {
+            GameState(systemIndex).releaseDoors() = true;
+        }
+    }
+
+    void spawn(int x, int y, word tile)
+    {
+        System::Index systemIndex;
+        if (Codes::isSpawnAreaTrigger(tile, systemIndex))
+        {
+            SpawnTriggerObject::spawn(x, y, systemIndex,
+                SpecialObjects::spawnAreaTrigger);
+        }
+        else if (Codes::isSpawnSpotTrigger(tile, systemIndex))
+        {
+            SpawnTriggerObject::spawn(x, y, systemIndex,
+                SpecialObjects::spawnSpotTrigger);
+        }
+        else if (Codes::isLockDoors(tile, systemIndex))
+        {
+            SpawnTriggerObject::setLockDoors(systemIndex);
+        }
+        else if (Codes::isReleaseDoors(tile, systemIndex))
+        {
+            SpawnTriggerObject::setReleaseDoors(systemIndex);
+
+            const int area = MAPSPOT(x, y, 0) - AREATILE;
+            DoorRelease::setDoorsValid(area, true);
+        }
+    }
+
+    void gotEnemy(enemy_t which, int x, int y, int dir,
+        bool patrol, short difficulty, System::Index systemIndex)
+    {
+        SpawnTriggerObject::gotEnemy(which, x, y, dir, patrol,
+            difficulty, systemIndex);
+    }
+
+    void gotStandEnemy(enemy_t which, int x, int y, int dir, short difficulty,
+        System::Index systemIndex)
+    {
+        gotEnemy(which, x, y, dir, false, difficulty, systemIndex);
+    }
+
+    void gotPatrolEnemy(enemy_t which, int x, int y, int dir,
+        short difficulty, System::Index systemIndex)
+    {
+        gotEnemy(which, x, y, dir, true, difficulty, systemIndex);
+    }
+
+    void reset(void)
+    {
+        SpawnTriggerObject::reset();
+    }
+
+    namespace DoorLock
+    {
+        class DoorObjState
+        {
+            int door;
+
+            typedef struct
+            {
+                bool active;
+            } Data;
+
+            Data &data(void) const
+            {
+                assert(door >= 0 && door < doornum);
+                assert(sizeof(Data) <= 
+                    sizeof(doorobjlist[door].triggerdata));
+                return 
+                    *((Data *)(&doorobjlist[door].triggerdata));
+            }
+
+        public:
+            explicit DoorObjState(int door_) : door(door_)
+            {
+            }
+
+            bool &active(void) const
+            {
+                return data().active;
+            }
+
+            void reset(void) const
+            {
+                memset(&data(), 0, sizeof(data()));
+            }
+        };
+
+        bool active(int door)
+        {
+            return DoorObjState(door).active();
+        }
+
+        bool activeDoorAt(int x, int y)
+        {
+            if (tilemap[x][y] & 0x80)
+            {
+                const int door = tilemap[x][y] & 0x7f;
+                return active(door);
+            }
+
+            return false;
+        }
+
+        class State
+        {
+            objtype *ob;
+
+            typedef struct
+            {
+                System::Index systemIndex;
+                int area;
+            } Data;
+
+            Data &data(void) const
+            {
+                assert(sizeof(Data) <= sizeof(ob->triggerdoorlockdata));
+                return *((Data *)(&ob->triggerdoorlockdata[0]));
+            }
+
+        public:
+            explicit State(objtype *ob_) : ob(ob_)
+            {
+            }
+
+            System::Index &systemIndex(void) const
+            {
+                return data().systemIndex;
+            }
+
+            int &area(void) const
+            {
+                return data().area;
+            }
+        };
+
+        void getDoorAreas(int door, int &area1, int &area2)
+        {
+            word *map;
+
+            map = mapsegs[0] + (doorobjlist[door].tiley<<mapshift)
+                +doorobjlist[door].tilex;
+
+            if (doorobjlist[door].vertical)
+            {
+                area1 = *(map+1);
+                area2 = *(map-1);
+            }
+            else
+            {
+                area1 = *(map-mapwidth);
+                area2 = *(map+mapwidth);
+            }
+            area1 -= AREATILE;
+            area2 -= AREATILE;
+        }
+
+        void setDoorsActive(int area, bool active)
+        {
+            for (int i = 0; i < doornum; i++)
+            {
+                int area1, area2;
+                getDoorAreas(i, area1, area2);
+
+                if ((area == area1 || area == area2) && (area1 != area2))
+                {
+                    DoorObjState(i).active() = active;
+                }
+            }
+        }
+
+        void idle(objtype *ob);
+
+        statetype s_idle              = {false,SPR_DEMO,0,(statefunc)idle,NULL,&s_idle};
+
+        void idle(objtype *ob)
+        {
+            const int area = State(ob).area();
+            const int systemIndex = State(ob).systemIndex();
+
+            if (!SpawnTriggerObject::anyAlive(systemIndex))
+            {
+                ob->state = NULL;
+                setDoorsActive(area, false);
+            }
+        }
+
+        void spawn(System::Index systemIndex, int area)
+        {
+            SpawnNewObj(0, 0, &s_idle);
+            newobj->obclass = inertobj;
+            newobj->active = ac_yes;
+            newobj->flags = FL_NEVERMARK;
+            State(newobj).systemIndex() = systemIndex;
+            State(newobj).area() = area;
+        }
+
+        void tripped(int area, System::Index systemIndex)
+        {
+            spawn(systemIndex, area);
+            setDoorsActive(area, true);
+        }
+
+        bool immune(objtype *ob)
+        {
+            const int x = ob->tilex;
+            const int y = ob->tiley;
+
+            if (tilemap[x][y] & 0x80)
+            {
+                const int door = tilemap[x][y] & 0x7f;
+                if (active(door))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
+    namespace DoorRelease
+    {
+        class DoorObjState
+        {
+            int door;
+
+            typedef struct
+            {
+                bool valid;
+                bool active;
+            } Data;
+
+            Data &data(void) const
+            {
+                assert(door >= 0 && door < doornum);
+                assert(sizeof(Data) <= 
+                    sizeof(doorobjlist[door].releasedata));
+                return 
+                    *((Data *)(&doorobjlist[door].releasedata));
+            }
+
+        public:
+            explicit DoorObjState(int door_) : door(door_)
+            {
+            }
+
+            bool &valid(void) const
+            {
+                return data().valid;
+            }
+
+            bool &active(void) const
+            {
+                return data().active;
+            }
+
+            void reset(void) const
+            {
+                memset(&data(), 0, sizeof(data()));
+            }
+        };
+
+        bool active(int door)
+        {
+            return DoorObjState(door).active();
+        }
+
+        bool cannotOperate(int door)
+        {
+            return DoorObjState(door).valid();
+        }
+
+        void getDoorAreas(int door, int &area1, int &area2)
+        {
+            word *map;
+
+            map = mapsegs[0] + (doorobjlist[door].tiley<<mapshift)
+                +doorobjlist[door].tilex;
+
+            if (doorobjlist[door].vertical)
+            {
+                area1 = *(map+1);
+                area2 = *(map-1);
+            }
+            else
+            {
+                area1 = *(map-mapwidth);
+                area2 = *(map+mapwidth);
+            }
+            area1 -= AREATILE;
+            area2 -= AREATILE;
+        }
+
+        void setDoorsValid(int area, bool valid)
+        {
+            for (int i = 0; i < doornum; i++)
+            {
+                int area1, area2;
+                getDoorAreas(i, area1, area2);
+
+                if ((area == area1 || area == area2) && (area1 != area2))
+                {
+                    DoorObjState(i).valid() = valid;
+                }
+            }
+        }
+
+        void setDoorsActive(int area, bool active)
+        {
+            for (int i = 0; i < doornum; i++)
+            {
+                int area1, area2;
+                getDoorAreas(i, area1, area2);
+
+                if ((area == area1 || area == area2) && (area1 != area2))
+                {
+                    DoorObjState(i).active() = active;
+                }
+            }
+        }
+
+        void tripped(int area)
+        {
+            setDoorsActive(area, true);
+        }
+    }
+}
+
+
+/*
+============================================================================
+
+                               ENEMY BLOCK
+
+============================================================================
+*/
+
+namespace EnemyBlock
+{
+    namespace Codes
+    {
+        enum e
+        {
+            all = 290,
+            allowHard = 291,
+            allowMediumHard = 292,
+        };
+    }
+
+    bool find(int x, int y, int difficulty)
+    {
+        const word actor = MAPSPOT(x, y, 1);
+
+        switch (actor)
+        {
+        case Codes::all:
+            return true;
+        case Codes::allowHard:
+            return difficulty != gd_hard;
+        case Codes::allowMediumHard:
+            return difficulty != gd_hard && difficulty != gd_medium;
+        default:
+            break;
+        }
+
+        return false;
+    }
+}

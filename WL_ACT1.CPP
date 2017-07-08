@@ -508,6 +508,18 @@ void OperateDoor (int door)
 {
     int lock;
 
+    if (Trigger::DoorLock::active(door))
+    {
+        SD_PlaySound (NOWAYSND);                // locked
+        return;
+    }
+
+    if (Trigger::DoorRelease::cannotOperate(door))
+    {
+        SD_PlaySound (NOWAYSND);                // locked
+        return;
+    }
+
     lock = doorobjlist[door].lock;
     if (lock >= dr_lock1 && lock <= dr_lock4)
     {
@@ -546,8 +558,17 @@ void OperateDoor (int door)
 
 void DoorOpen (int door)
 {
-    if ( (doorobjlist[door].ticcount += (short) tics) >= OPENTICS)
+    if 
+        (
+            (
+                (doorobjlist[door].ticcount += (short) tics) >= OPENTICS ||
+                Trigger::DoorLock::active(door)
+            ) && 
+            !Trigger::DoorRelease::active(door)
+        )
+    {
         CloseDoor (door);
+    }
 }
 
 
@@ -689,6 +710,21 @@ void DoorClosing (int door)
 }
 
 
+/*
+===============
+=
+= DoorClosed
+=
+===============
+*/
+
+void DoorClosed (int door)
+{
+    if (Trigger::DoorRelease::active(door))
+    {
+        OpenDoor (door);
+    }
+}
 
 
 /*
@@ -722,6 +758,10 @@ void MoveDoors (void)
 
             case dr_closing:
                 DoorClosing(door);
+                break;
+
+            case dr_closed:
+                DoorClosed(door);
                 break;
         }
     }

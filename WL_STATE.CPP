@@ -163,6 +163,8 @@ void NewState (objtype *ob, statetype *state)
         if (((objtype *)temp)->flags&FL_SHOOTABLE)  \
             return false;                           \
     }                                               \
+    if (EnemyBlock::find(x, y, ob->difficulty))     \
+        return false;                               \
 }
 
 #ifdef PLAYDEMOLIKEORIGINAL
@@ -206,6 +208,8 @@ void NewState (objtype *ob, statetype *state)
         else if (((objtype *)temp)->flags&FL_SHOOTABLE) \
             return false;                               \
     }                                                   \
+    if (EnemyBlock::find(x, y, ob->difficulty))         \
+        return false;                                   \
 }
 
 
@@ -1013,6 +1017,11 @@ void KillActor (objtype *ob)
 void DamageActor (objtype *ob, unsigned damage)
 {
     madenoise = true;
+
+    if (Trigger::DoorLock::immune(ob))
+    {
+        return;
+    }
 
     //
     // do double damage if shooting a non attack mode actor

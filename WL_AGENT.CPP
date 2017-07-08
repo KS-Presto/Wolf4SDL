@@ -887,6 +887,10 @@ boolean TryMove (objtype *ob)
                 }
                 else return false;
             }
+            if (Trigger::DoorLock::activeDoorAt(x, y))
+            {
+                return false;
+            }
         }
     }
 

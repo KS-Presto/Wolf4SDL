@@ -75,6 +75,7 @@ SRCS += wl_parallax.cpp
 SRCS += wl_play.cpp
 SRCS += wl_state.cpp
 SRCS += wl_text.cpp
+SRCS += lw_vec.cpp
 
 DEPS = $(filter %.d, $(SRCS:.c=.d) $(SRCS:.cpp=.d))
 OBJS = $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o))

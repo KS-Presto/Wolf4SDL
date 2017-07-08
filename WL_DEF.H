@@ -87,6 +87,9 @@ void Quit(const char *errorStr, ...);
 #include "id_ca.h"
 
 #include "wl_menu.h"
+#pragma pack(0)
+#include "lw_vec.h"
+#pragma pack(1)
 
 #define MAPSPOT(x,y,plane) (mapsegs[plane][((y)<<mapshift)+(x)])
 
@@ -779,6 +782,8 @@ typedef struct doorstruct
     byte     lock;
     doortype action;
     short    ticcount;
+    byte     triggerdata[8];
+    byte     releasedata[8];
 } doorobj_t;
 
 
@@ -813,6 +818,9 @@ typedef struct objstruct
     int32_t     speed;
 
     short       temp1,temp2,hidden;
+    byte        spawntriggerdata[16];
+    byte        triggerdoorlockdata[8];
+    short       difficulty;
     struct objstruct *next,*prev;
 } objtype;
 
@@ -884,6 +892,7 @@ typedef struct
     int32_t     TimeCount;
     int32_t     killx,killy;
     boolean     victoryflag;            // set during victory animations
+    byte        spawntriggerdata[5][1024];
 } gametype;
 
 
@@ -1177,6 +1186,8 @@ void    DamageActor (objtype *ob, unsigned damage);
 boolean CheckLine (objtype *ob);
 boolean CheckSight (objtype *ob);
 
+void    FirstSighting (objtype *ob);
+
 /*
 =============================================================================
 
@@ -1324,8 +1335,10 @@ extern  statetype s_hitlerdeathcam2;
 extern  statetype s_giftdeathcam2;
 extern  statetype s_fatdeathcam2;
 
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir);
-void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir);
+void SpawnStand (enemy_t which, int tilex, int tiley, int dir,
+    short difficulty);
+void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir,
+    short difficulty);
 void KillActor (objtype *ob);
 
 void SpawnDeadGuard (int tilex, int tiley);
@@ -1495,5 +1508,68 @@ static inline longword READLONGWORD(byte *&ptr)
 #ifdef USE_DIR3DSPR
     void Scale3DShape(byte *vbuf, unsigned vbufPitch, statobj_t *ob);
 #endif
+/*
+============================================================================
+
+                           TRIGGER DEFINITIONS
+
+============================================================================
+*/
+
+namespace Trigger
+{
+    namespace System
+    {
+        typedef int Index;
+    }
+
+    bool foundEnemySpawnNextTo(int x, int y, System::Index &systemIndex);
+
+    void spawn(int x, int y, word tile);
+
+    void gotStandEnemy(enemy_t which, int x, int y, int dir, short difficulty,
+        System::Index systemIndex);
+
+    void gotPatrolEnemy(enemy_t which, int x, int y, int dir,
+        short difficulty, System::Index systemIndex);
+
+    void reset(void);
+
+    namespace DoorLock
+    {
+        bool active(int door);
+
+        bool activeDoorAt(int x, int y);
+
+        void tripped(int area, System::Index systemIndex);
+
+        bool immune(objtype *ob);
+    }
+
+    namespace DoorRelease
+    {
+        bool active(int door);
+
+        bool cannotOperate(int door);
+
+        void tripped(int area);
+
+        void setDoorsValid(int area, bool valid);
+    }
+}
+
+
+/*
+============================================================================
+
+                         ENEMY BLOCK DEFINITIONS
+
+============================================================================
+*/
+
+namespace EnemyBlock
+{
+    bool find(int x, int y, int difficulty);
+}
 
 #endif

@@ -226,6 +226,8 @@ static void ScanInfoPlane(void)
     int      tile;
     word     *start;
 
+    Trigger::reset();
+
     start = mapsegs[1];
     for (y=0;y<mapheight;y++)
     {
@@ -234,6 +236,12 @@ static void ScanInfoPlane(void)
             tile = *start++;
             if (!tile)
                 continue;
+
+            Trigger::System::Index triggerSystemIndex;
+            const bool triggerFound = Trigger::foundEnemySpawnNextTo(x, y,
+                triggerSystemIndex);
+
+            short difficulty = gd_easy;
 
             switch (tile)
             {
@@ -337,7 +345,15 @@ static void ScanInfoPlane(void)
                 case 109:
                 case 110:
                 case 111:
-                    SpawnStand(en_guard,x,y,tile-108);
+                    if (!triggerFound)
+                    {
+                        SpawnStand(en_guard,x,y,tile-108,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotStandEnemy(en_guard,x,y,tile-108,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 
@@ -348,6 +364,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 148:
                 case 149:
                 case 150:
@@ -355,11 +372,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 112:
                 case 113:
                 case 114:
                 case 115:
-                    SpawnPatrol(en_guard,x,y,tile-112);
+                    if (!triggerFound)
+                    {
+                        SpawnPatrol(en_guard,x,y,tile-112,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotPatrolEnemy(en_guard,x,y,tile-112,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
                 case 124:
@@ -375,6 +401,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 152:
                 case 153:
                 case 154:
@@ -382,11 +409,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 116:
                 case 117:
                 case 118:
                 case 119:
-                    SpawnStand(en_officer,x,y,tile-116);
+                    if (!triggerFound)
+                    {
+                        SpawnStand(en_officer,x,y,tile-116,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotStandEnemy(en_officer,x,y,tile-116,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 
@@ -397,6 +433,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 156:
                 case 157:
                 case 158:
@@ -404,11 +441,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 120:
                 case 121:
                 case 122:
                 case 123:
-                    SpawnPatrol(en_officer,x,y,tile-120);
+                    if (!triggerFound)
+                    {
+                        SpawnPatrol(en_officer,x,y,tile-120,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotPatrolEnemy(en_officer,x,y,tile-120,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 
@@ -422,6 +468,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 162:
                 case 163:
                 case 164:
@@ -429,11 +476,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 126:
                 case 127:
                 case 128:
                 case 129:
-                    SpawnStand(en_ss,x,y,tile-126);
+                    if (!triggerFound)
+                    {
+                        SpawnStand(en_ss,x,y,tile-126,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotStandEnemy(en_ss,x,y,tile-126,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 
@@ -444,6 +500,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 166:
                 case 167:
                 case 168:
@@ -451,11 +508,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 130:
                 case 131:
                 case 132:
                 case 133:
-                    SpawnPatrol(en_ss,x,y,tile-130);
+                    if (!triggerFound)
+                    {
+                        SpawnPatrol(en_ss,x,y,tile-130,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotPatrolEnemy(en_ss,x,y,tile-130,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 //
@@ -468,6 +534,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 170:
                 case 171:
                 case 172:
@@ -475,11 +542,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 134:
                 case 135:
                 case 136:
                 case 137:
-                    SpawnStand(en_dog,x,y,tile-134);
+                    if (!triggerFound)
+                    {
+                        SpawnStand(en_dog,x,y,tile-134,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotStandEnemy(en_dog,x,y,tile-134,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 
@@ -490,6 +566,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 174:
                 case 175:
                 case 176:
@@ -497,11 +574,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 36;
+                    difficulty++;
                 case 138:
                 case 139:
                 case 140:
                 case 141:
-                    SpawnPatrol(en_dog,x,y,tile-138);
+                    if (!triggerFound)
+                    {
+                        SpawnPatrol(en_dog,x,y,tile-138,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotPatrolEnemy(en_dog,x,y,tile-138,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 //
@@ -561,6 +647,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 18;
+                    difficulty++;
                 case 234:
                 case 235:
                 case 236:
@@ -568,11 +655,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 18;
+                    difficulty++;
                 case 216:
                 case 217:
                 case 218:
                 case 219:
-                    SpawnStand(en_mutant,x,y,tile-216);
+                    if (!triggerFound)
+                    {
+                        SpawnStand(en_mutant,x,y,tile-216,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotStandEnemy(en_mutant,x,y,tile-216,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
                 case 256:
@@ -582,6 +678,7 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_hard)
                         break;
                     tile -= 18;
+                    difficulty++;
                 case 238:
                 case 239:
                 case 240:
@@ -589,11 +686,20 @@ static void ScanInfoPlane(void)
                     if (gamestate.difficulty<gd_medium)
                         break;
                     tile -= 18;
+                    difficulty++;
                 case 220:
                 case 221:
                 case 222:
                 case 223:
-                    SpawnPatrol(en_mutant,x,y,tile-220);
+                    if (!triggerFound)
+                    {
+                        SpawnPatrol(en_mutant,x,y,tile-220,difficulty);
+                    }
+                    else
+                    {
+                        Trigger::gotPatrolEnemy(en_mutant,x,y,tile-220,
+                            difficulty,triggerSystemIndex);
+                    }
                     break;
 
 //
@@ -613,6 +719,10 @@ static void ScanInfoPlane(void)
                     SpawnGhosts (en_inky,x,y);
                     break;
 #endif
+
+                default:
+                    Trigger::spawn(x, y, tile);
+                    break;
             }
         }
     }
