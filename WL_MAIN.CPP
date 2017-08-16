@@ -615,7 +615,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
             {
                 tile = *map++; sprite = *obj++;
                 if (sprite == PUSHABLETILE && !tilemap[x][y]
-                    && (tile < AREATILE || tile >= (AREATILE+NUMMAPS)))
+                    && (tile < AREATILE || tile >= (AREATILE+NUMAREAS)))
                 {
                     if (*map >= AREATILE)
                         tile = *map;
