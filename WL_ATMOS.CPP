@@ -69,7 +69,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
         if(z <= 0) continue;
         int shade = z >> 18;
         if(shade > 15) continue;
-        int32_t xx = x / z + hvwidth;
+        int32_t xx = x / z * scaleFactor + hvwidth;
         int32_t yy = hvheight - y / z;
         if(xx >= 0 && xx < viewwidth && yy >= 0 && yy < hvheight)
             vbuf[yy * vbufPitch + xx] = shade + 15;
@@ -78,11 +78,11 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
     int32_t x = 16384 * viewcos + 16384 * viewsin;
     int32_t z = (16384 * viewcos - 16384 * viewsin) >> 8;
     if(z <= 0) return;
-    int32_t xx = x / z + hvwidth;
+    int32_t xx = x / z * scaleFactor + hvwidth;
     int32_t yy = hvheight - ((hvheight - (hvheight >> 3)) << 22) / z;
     if(xx > -10 && xx < viewwidth)
     {
-        int stopx = 10, starty = 0, stopy = 10;
+        int stopx = 10 * scaleFactor, starty = 0, stopy = 10 * scaleFactor;
         i = 0;
         if(xx < 0) i = -xx;
         if(xx > viewwidth - 11) stopx = viewwidth - xx;
@@ -90,7 +90,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
         if(yy > viewheight - 11) stopy = viewheight - yy;
         for(; i < stopx; i++)
             for(int j = starty; j < stopy; j++)
-                vbuf[(yy + j) * vbufPitch + xx + i] = moon[j * 10 + i];
+                vbuf[(yy + j) * vbufPitch + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor];
     }
 }
 
@@ -143,8 +143,8 @@ void DrawRain(byte *vbuf, uint32_t vbufPitch)
             dist = ((heightnumerator / ((height >> 3) + 1)) << 5);
             gu =  viewx + FixedMul(dist, viewcos);
             gv = -viewy + FixedMul(dist, viewsin);
-            floorx = (  gu >> TILESHIFT     ) & 63;
-            floory = (-(gv >> TILESHIFT) - 1) & 63;
+            floorx = (  gu >> TILESHIFT     ) & (MAPSIZE - 1);
+            floory = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
 
             // Is there a ceiling tile?
             if(MAPSPOT(floorx, floory, 2) >> 8) continue;
@@ -206,8 +206,8 @@ void DrawSnow(byte *vbuf, uint32_t vbufPitch)
             dist = ((heightnumerator / ((height >> 3) + 1)) << 5);
             gu =  viewx + FixedMul(dist, viewcos);
             gv = -viewy + FixedMul(dist, viewsin);
-            floorx = (  gu >> TILESHIFT     ) & 63;
-            floory = (-(gv >> TILESHIFT) - 1) & 63;
+            floorx = (  gu >> TILESHIFT     ) & (MAPSIZE - 1);
+            floory = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
 
             // Is there a ceiling tile?
             if(MAPSPOT(floorx, floory, 2) >> 8) continue;
