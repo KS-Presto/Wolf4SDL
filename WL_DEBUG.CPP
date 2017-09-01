@@ -701,14 +701,14 @@ again:
         return 1;
     }
 #ifdef USE_CLOUDSKY
-    else if(Keyboard[sc_Z])
+    else if(Keyboard[sc_Z] && curSky)
     {
         char defstr[15];
 
         CenterWindow(34,4);
         PrintY+=6;
-        US_Print("  Recalculate sky with seek: ");
-        int seekpx = px, seekpy = py;
+        US_Print("  Recalculate sky with seed: ");
+        int seedpx = px, seedpy = py;
         US_PrintUnsigned(curSky->seed);
         US_Print("\n  Use color map (0-");
         US_PrintUnsigned(numColorMaps - 1);
@@ -718,7 +718,7 @@ again:
         VW_UpdateScreen();
 
         sprintf(defstr, "%u", curSky->seed);
-        esc = !US_LineInput(seekpx, seekpy, str, defstr, true, 10, 0);
+        esc = !US_LineInput(seedpx, seedpy, str, defstr, true, 10, 0);
         if(esc) return 0;
         curSky->seed = (uint32_t) atoi(str);
 
