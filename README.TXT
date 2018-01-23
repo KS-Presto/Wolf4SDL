@@ -185,7 +185,6 @@ IMPORTANT: Do not forget to take care of version.h!
 TODOs:
 ------
 
- - Add PC speaker emulation
  - Center non-ingame screens for resolutions being a multiple of 320x240
  - Add support for any graphic resolution >= 320x200
 
