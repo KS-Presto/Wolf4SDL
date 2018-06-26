@@ -63,6 +63,9 @@ void    DrawScaleds (void);
 void    CalcTics (void);
 void    ThreeDRefresh (void);
 
+#ifdef USE_SKYWALLPARALLAX
+void    ScaleSkyPost();
+#endif
 
 
 //
@@ -274,11 +277,22 @@ int CalcHeight()
 byte *postsource;
 int postx;
 int postwidth;
+#ifdef USE_SKYWALLPARALLAX
+byte *postsourcesky;
+#endif
 
 void ScalePost()
 {
     int ywcount, yoffs, yw, yd, yendoffs;
     byte col;
+
+#ifdef USE_SKYWALLPARALLAX
+    if (tilehit == 16)
+    {
+        ScaleSkyPost();
+        return;
+    }
+#endif
 
 #ifdef USE_SHADING
     byte *curshades = shadetable[GetShade(wallheight[postx])];
@@ -341,6 +355,46 @@ void GlobalScalePost(byte *vidbuf, unsigned pitch)
     vbufPitch = pitch;
     ScalePost();
 }
+
+#ifdef USE_SKYWALLPARALLAX
+void ScaleSkyPost()
+{
+    int ywcount, yoffs, yendoffs, texoffs;
+    byte col;
+    int midy, y, skyheight;
+
+    skyheight = viewheight;
+    ywcount = wallheight[postx] >> 3;
+
+    midy = (viewheight / 2) - WallMidY(ywcount, -1);
+
+    yoffs = midy * vbufPitch;
+    if(yoffs < 0) yoffs = 0;
+    yoffs += postx;
+
+    yendoffs = midy + (ywcount * 2) - 1;
+
+    if (yendoffs >= viewheight)
+        yendoffs = viewheight - 1;
+
+    int curang = pixelangle[postx] + midangle;
+    if(curang < 0)
+        curang += FINEANGLES;
+    else if(curang >= FINEANGLES)
+        curang -= FINEANGLES;
+    int xtex = curang * USE_SKYWALLPARALLAX * TEXTURESIZE / FINEANGLES;
+    texoffs = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
+
+    y = yendoffs;
+    yendoffs = yendoffs * vbufPitch + postx;
+    while(yoffs <= yendoffs)
+    {
+        vbuf[yendoffs] = postsourcesky[texoffs + (y * TEXTURESIZE) / skyheight];
+        yendoffs -= vbufPitch;
+        y--;
+    }
+}
+#endif
 
 /*
 ====================
@@ -405,6 +459,9 @@ void HitVertWall (void)
         wallpic = vertwall[tilehit];
 
     postsource = PM_GetTexture(wallpic) + texture;
+#ifdef USE_SKYWALLPARALLAX
+    postsourcesky = postsource - texture;
+#endif
 }
 
 
@@ -470,6 +527,9 @@ void HitHorizWall (void)
         wallpic = horizwall[tilehit];
 
     postsource = PM_GetTexture(wallpic) + texture;
+#ifdef USE_SKYWALLPARALLAX
+    postsourcesky = postsource - texture;
+#endif
 }
 
 //==========================================================================
