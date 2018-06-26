@@ -366,7 +366,7 @@ void ScaleSkyPost()
     skyheight = viewheight;
     ywcount = wallheight[postx] >> 3;
 
-    midy = (viewheight / 2) - WallMidY(ywcount, -1);
+    midy = (viewheight / 2) - 1;
 
     yoffs = midy * vbufPitch;
     if(yoffs < 0) yoffs = 0;
