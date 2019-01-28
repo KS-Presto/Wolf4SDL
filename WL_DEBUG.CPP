@@ -50,11 +50,13 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height);
 =============================================================================
 */
 
+#if 0
 int     maporgx;
 int     maporgy;
 enum {mapview,tilemapview,actoratview,visview}  viewtype;
 
 void ViewMap (void);
+#endif
 
 //===========================================================================
 
