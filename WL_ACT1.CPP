@@ -16,12 +16,14 @@ statobj_t       statobjlist[MAXSTATS];
 statobj_t       *laststatobj;
 
 
-struct
+typedef struct
 {
     short      picnum;
     wl_stat_t  type;
     uint32_t   specialFlags;    // they are ORed to the statobj_t flags
-} statinfo[] =
+} statinfo_t;
+
+statinfo_t statinfo[] =
 {
     {SPR_STAT_0},                           // puddle          spr1v
     {SPR_STAT_1,block},                     // Green Barrel    "
