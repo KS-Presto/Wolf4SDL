@@ -1270,6 +1270,7 @@ CP_Sound (int)
                     SD_WaitSoundDone ();
                     SD_SetSoundMode (sdm_PC);
                     CA_LoadAllSounds ();
+                    SD_SetDigiDevice (sds_Off);
                     DrawSoundMenu ();
                     ShootSnd ();
                 }
@@ -1378,8 +1379,10 @@ DrawSoundMenu (void)
         SndMenu[2].active = SndMenu[10].active = SndMenu[11].active = 0;
     }
 
-    if (!SoundBlasterPresent)
+    if (!SoundBlasterPresent || SoundMode == sdm_PC)
         SndMenu[7].active = 0;
+    else
+    	SndMenu[7].active = 1;
 
     if (!SoundBlasterPresent)
         SndMenu[5].active = 0;
