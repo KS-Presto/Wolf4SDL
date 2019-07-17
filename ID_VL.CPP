@@ -47,7 +47,7 @@ unsigned bufferPitch;
 SDL_Surface *curSurface = NULL;
 unsigned curPitch;
 
-unsigned scaleFactor;
+int      scaleFactor;
 
 boolean	 screenfaded;
 unsigned bordercolor;

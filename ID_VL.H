@@ -15,7 +15,7 @@ extern SDL_Surface *screen, *screenBuffer, *curSurface;
 
 extern  boolean  fullscreen, usedoublebuffering;
 extern  unsigned screenWidth, screenHeight, screenBits, screenPitch, bufferPitch, curPitch;
-extern  unsigned scaleFactor;
+extern  int      scaleFactor;
 
 extern	boolean  screenfaded;
 extern	unsigned bordercolor;

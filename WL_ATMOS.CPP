@@ -80,18 +80,18 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
     if(z <= 0) return;
     int32_t xx = x / z * scaleFactor + hvwidth;
     int32_t yy = hvheight - ((hvheight - (hvheight >> 3)) << 22) / z;
-    if(xx > -10 && xx < viewwidth)
-    {
-        int stopx = 10 * scaleFactor, starty = 0, stopy = 10 * scaleFactor;
-        i = 0;
-        if(xx < 0) i = -xx;
-        if(xx > viewwidth - 11) stopx = viewwidth - xx;
-        if(yy < 0) starty = -yy;                     // ADDEDFIX 1 - fixed typo (was startj)
-        if(yy > viewheight - 11) stopy = viewheight - yy;
-        for(; i < stopx; i++)
-            for(int j = starty; j < stopy; j++)
-                vbuf[(yy + j) * vbufPitch + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor];
-    }
+    if(xx > (scaleFactor * -10) && xx < viewwidth) 
+    { 
+        int stopx = 10 * scaleFactor, starty = 0, stopy = 10 * scaleFactor; 
+        i = 0; 
+        if(xx < 0) i = -xx; 
+        if(xx >= viewwidth - 10 * scaleFactor) stopx = viewwidth - xx; 
+        if(yy < 0) starty = -yy;                // ADDEDFIX 1 - fixed typo (was startj)
+        if(yy >= viewheight - 10 * scaleFactor) stopy = viewheight - yy; 
+        for(; i < stopx; i++) 
+            for(int j = starty; j < stopy; j++) 
+                vbuf[(yy + j) * vbufPitch + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor]; 
+    } 
 }
 
 #endif
