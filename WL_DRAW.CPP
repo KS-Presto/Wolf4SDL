@@ -258,8 +258,14 @@ int CalcHeight()
 {
     fixed z = FixedMul(xintercept - viewx, viewcos)
         - FixedMul(yintercept - viewy, viewsin);
+#ifdef BANDEDHOLOWALLS
+    if(z < MINDIST) z = MINDIST - (z/36 & 3);
+    int height = heightnumerator / (z >> 8);
+    if(z < MINDIST) height = 0;
+#else
     if(z < MINDIST) z = MINDIST;
     int height = heightnumerator / (z >> 8);
+#endif
     if(height < min_wallheight) min_wallheight = height;
     return height;
 }
