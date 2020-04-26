@@ -2710,8 +2710,8 @@ statetype s_fakeshoot7          = {false,SPR_FAKE_SHOOT,8,NULL,(statefunc)T_Fake
 statetype s_fakeshoot8          = {false,SPR_FAKE_SHOOT,8,NULL,(statefunc)T_FakeFire,&s_fakeshoot9};
 statetype s_fakeshoot9          = {false,SPR_FAKE_SHOOT,8,NULL,NULL,&s_fakechase1};
 
-statetype s_fire1               = {false,SPR_FIRE1,6,NULL,(statefunc)T_Projectile,&s_fire2};
-statetype s_fire2               = {false,SPR_FIRE2,6,NULL,(statefunc)T_Projectile,&s_fire1};
+statetype s_fire1               = {false,SPR_FIRE1,6,(statefunc)T_Projectile,NULL,&s_fire2};
+statetype s_fire2               = {false,SPR_FIRE2,6,(statefunc)T_Projectile,NULL,&s_fire1};
 
 //
 // hitler
@@ -2824,11 +2824,6 @@ statetype s_hitlershoot6        = {false,SPR_HITLER_SHOOT2,10,NULL,(statefunc)T_
 
 void SpawnFakeHitler (int tilex, int tiley)
 {
-    if (DigiMode != sds_Off)
-        s_hitlerdie2.tictime = 140;
-    else
-        s_hitlerdie2.tictime = 5;
-
     SpawnNewObj (tilex,tiley,&s_fakestand);
     newobj->speed = SPDPATROL;
 
