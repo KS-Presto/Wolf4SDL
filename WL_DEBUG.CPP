@@ -459,9 +459,7 @@ int DebugKeys (void)
                 if (bordercol == VIEWCOLOR)
                     DrawStatusBorder(bordercol);
 
-                DrawPlayBorder();
-
-                return 0;
+                return 1;
             }
         }
         return 1;
@@ -721,12 +719,12 @@ again:
 
         sprintf(defstr, "%u", curSky->seed);
         esc = !US_LineInput(seedpx, seedpy, str, defstr, true, 10, 0);
-        if(esc) return 0;
+        if(esc) return 1;
         curSky->seed = (uint32_t) atoi(str);
 
         sprintf(defstr, "%u", curSky->colorMapIndex);
         esc = !US_LineInput(mappx, mappy, str, defstr, true, 10, 0);
-        if(esc) return 0;
+        if(esc) return 1;
         uint32_t newInd = (uint32_t) atoi(str);
         if(newInd < (uint32_t) numColorMaps)
         {
