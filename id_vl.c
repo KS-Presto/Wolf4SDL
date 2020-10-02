@@ -650,7 +650,7 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, 
 =================
 */
 
-void VL_MemToScreenScaledCoord (byte *source, int origwidth, int origheight, int srcx, int srcy,
+void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int origheight, int srcx, int srcy,
                                 int destx, int desty, int width, int height)
 {
     byte *ptr;

@@ -206,12 +206,16 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 
 void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
 {
-	VL_LatchToScreen (latchpics[2+picnum-LATCHPICS_LUMP_START], x*8, y);
+	SDL_Surface *source = latchpics[2+picnum-LATCHPICS_LUMP_START];
+
+    VL_LatchToScreenScaledCoord(source,0,0,source->w,source->h,scaleFactor*(x*8),scaleFactor*y);
 }
 
 void LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum)
 {
-    VL_LatchToScreenScaledCoord (latchpics[2+picnum-LATCHPICS_LUMP_START], scx*8, scy);
+    SDL_Surface *source = latchpics[2+picnum-LATCHPICS_LUMP_START];
+
+    VL_LatchToScreenScaledCoord(source,0,0,source->w,source->h,scx*8,scy);
 }
 
 
