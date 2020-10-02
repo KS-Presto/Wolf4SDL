@@ -29,8 +29,9 @@ byte moon[100]={
 
 void Init3DPoints()
 {
+    int i;
     int hvheight = viewheight >> 1;
-    for(int i = 0; i < MAXPOINTS; i++)
+    for(i = 0; i < MAXPOINTS; i++)
     {
         point3d_t *pt = &points[i];
         pt->x = 16384 - (rand() & 32767);
@@ -56,7 +57,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
     int hvwidth = viewwidth >> 1;
 
     byte *ptr = vbuf;
-    int i;
+    int i,j;
     for(i = 0; i < hvheight; i++, ptr += vbufPitch)
         memset(ptr, 0, viewwidth);
 
@@ -89,7 +90,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
         if(yy < 0) starty = -yy;                // ADDEDFIX 1 - fixed typo (was startj)
         if(yy >= viewheight - 10 * scaleFactor) stopy = viewheight - yy; 
         for(; i < stopx; i++) 
-            for(int j = starty; j < stopy; j++) 
+            for(j = starty; j < stopy; j++) 
                 vbuf[(yy + j) * vbufPitch + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor]; 
     } 
 }
@@ -109,12 +110,12 @@ void DrawRain(byte *vbuf, uint32_t vbufPitch)
     fixed px = (player->y + FixedMul(0x7900, viewsin)) >> 6;
     fixed pz = (player->x - FixedMul(0x7900, viewcos)) >> 6;
     int32_t ax, az, x, y, z, xx, yy, height, actheight;
-    int shade;
+    int i,shade;
     int hvheight = viewheight >> 1;
     int hvwidth = viewwidth >> 1;
 
     rainpos -= tics * 900;
-    for(int i = 0; i < MAXPOINTS; i++)
+    for(i = 0; i < MAXPOINTS; i++)
     {
         point3d_t *pt = &points[i];
         ax = pt->x + px;
@@ -173,12 +174,12 @@ void DrawSnow(byte *vbuf, uint32_t vbufPitch)
     fixed px = (player->y + FixedMul(0x7900, viewsin)) >> 6;
     fixed pz = (player->x - FixedMul(0x7900, viewcos)) >> 6;
     int32_t ax, az, x, y, z, xx, yy, height, actheight;
-    int shade;
+    int i,shade;
     int hvheight = viewheight >> 1;
     int hvwidth = viewwidth >> 1;
 
     rainpos -= tics * 256;
-    for(int i = 0; i < MAXPOINTS; i++)
+    for(i = 0; i < MAXPOINTS; i++)
     {
         point3d_t *pt = &points[i];
         ax = pt->x + px;

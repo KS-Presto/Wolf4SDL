@@ -359,9 +359,9 @@ void VH_Startup()
 boolean FizzleFade (SDL_Surface *source, int x1, int y1,
     unsigned width, unsigned height, unsigned frames, boolean abortable)
 {
-    unsigned x, y, frame, pixperframe;
+    unsigned x, y, p, frame, pixperframe;
     int32_t  rndval, lastrndval;
-    int      first = 1;
+    int      i,first = 1;
 
     lastrndval = 0;
     pixperframe = width * height / frames;
@@ -392,9 +392,9 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 
             // When using double buffering, we have to copy the pixels of the last AND the current frame.
             // Only for the first frame, there is no "last frame"
-            for(int i = first; i < 2; i++)
+            for(i = first; i < 2; i++)
             {
-                for(unsigned p = 0; p < pixperframe; p++)
+                for(p = 0; p < pixperframe; p++)
                 {
                     //
                     // seperate random value into x/y pair
@@ -450,9 +450,9 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
         else
         {
             // No surface, so only enhance rndval
-            for(int i = first; i < 2; i++)
+            for(i = first; i < 2; i++)
             {
-                for(unsigned p = 0; p < pixperframe; p++)
+                for(p = 0; p < pixperframe; p++)
                 {
                     rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
                     if(rndval == 0)

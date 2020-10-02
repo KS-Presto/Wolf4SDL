@@ -295,9 +295,9 @@ void PollMouseButtons (void)
 
 void PollJoystickButtons (void)
 {
-    int buttons = IN_JoyButtons();
+    int i,buttons = IN_JoyButtons();
 
-    for(int i = 0, val = 1; i < JoyNumButtons; i++, val <<= 1)
+    for(i = 0, val = 1; i < JoyNumButtons; i++, val <<= 1)
     {
         if(buttons & val)
             buttonstate[buttonjoy[i]] = true;

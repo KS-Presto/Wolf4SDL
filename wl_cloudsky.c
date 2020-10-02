@@ -136,6 +136,7 @@ void SplitS(unsigned size,unsigned x1,unsigned y1,unsigned x2,unsigned y2)
 
 void InitSky()
 {
+    int i,j,k,m,n,calcedCols;
     unsigned cloudskyid = GetCloudSkyDefID();
     if(cloudskyid >= lengthof(cloudSkys))
         Quit("Illegal cloud sky id: %u", cloudskyid);
@@ -143,7 +144,7 @@ void InitSky()
 
     memset(skyc, 0, sizeof(skyc));
     // funny water texture if used instead of memset ;D
-    // for(int i = 0; i < 65536; i++)
+    // for(i = 0; i < 65536; i++)
     //     skyc[i] = rand() % 32 * 8;
 
     srand(curSky->seed);
@@ -151,16 +152,16 @@ void InitSky()
     SplitS(256, 0, 0, 256, 256);
 
     // Smooth the clouds a bit
-    for(int k = 0; k < 2; k++)
+    for(k = 0; k < 2; k++)
     {
-        for(int i = 0; i < 256; i++)
+        for(i = 0; i < 256; i++)
         {
-            for(int j = 0; j < 256; j++)
+            for(j = 0; j < 256; j++)
             {
                 int32_t val = -skyc[j * 256 + i];
-                for(int m = 0; m < 3; m++)
+                for(m = 0; m < 3; m++)
                 {
-                    for(int n = 0; n < 3; n++)
+                    for(n = 0; n < 3; n++)
                     {
                         val += skyc[((j + n - 1) & 0xff) * 256 + ((i + m - 1) & 0xff)];
                     }
@@ -174,7 +175,7 @@ void InitSky()
     // create a new color map. This will display your current color map
     // in one (of course repeating) stripe of the sky
 
-    // for(int i = 0; i < 256; i++)
+    // for(i = 0; i < 256; i++)
     //     skyc[i] = skyc[i + 256] = skyc[i + 512] = i;
 
     if(curSky->colorMapIndex >= lengthof(colorMaps))
@@ -184,23 +185,23 @@ void InitSky()
     int numColors = curMap->numColors;
     byte colormap[256];
     colormapentry_t *curEntry = curMap->entries;
-    for(int calcedCols = 0; calcedCols < numColors; curEntry++)
+    for(calcedCols = 0; calcedCols < numColors; curEntry++)
     {
         if(curEntry->startAndDir < 0)
         {
-            for(int i = 0, ind = -curEntry->startAndDir; i < curEntry->length; i++, ind--)
+            for(i = 0, ind = -curEntry->startAndDir; i < curEntry->length; i++, ind--)
                 colormap[calcedCols++] = ind;
         }
         else
         {
-            for(int i = 0, ind = curEntry->startAndDir; i < curEntry->length; i++, ind++)
+            for(i = 0, ind = curEntry->startAndDir; i < curEntry->length; i++, ind++)
                 colormap[calcedCols++] = ind;
         }
     }
 
-    for(int i = 0; i < 256; i++)
+    for(i = 0; i < 256; i++)
     {
-        for(int j = 0; j < 256; j++)
+        for(j = 0; j < 256; j++)
         {
             skyc[i * 256 + j] = colormap[skyc[i * 256 + j] * numColors / 256];
         }
@@ -216,7 +217,7 @@ void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight)
     cloudy -= FixedMul(moveDist,costable[curSky->angle]);
 
     // Draw them
-    int y0, halfheight;
+    int x, y, y0, halfheight;
     unsigned top_offset0;
     fixed dist;                                // distance to row projection
     fixed tex_step;                            // global step per one screen pixel
@@ -232,7 +233,7 @@ void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight)
     top_offset0 = vbufPitch * (halfheight - y0 - 1);
 
     // draw horizontal lines
-    for(int y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= vbufPitch)
+    for(y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= vbufPitch)
     {
         dist = (heightnumerator / y) << 8;
         gu =  viewx + FixedMul(dist, viewcos) + cloudx;
@@ -242,7 +243,7 @@ void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight)
         dv = -FixedMul(tex_step, viewcos);
         gu -= (viewwidth >> 1)*du;
         gv -= (viewwidth >> 1)*dv;          // starting point (leftmost)
-        for(int x = 0, top_add = top_offset; x < viewwidth; x++, top_add++)
+        for(x = 0, top_add = top_offset; x < viewwidth; x++, top_add++)
         {
             if(wallheight[x] >> 3 <= y)
             {

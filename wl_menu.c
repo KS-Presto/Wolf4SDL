@@ -683,6 +683,7 @@ void
 BossKey (void)
 {
 #ifdef NOTYET
+    int i;
     byte palette1[256][3];
     SD_MusicOff ();
 /*       _AX = 3;
@@ -698,7 +699,7 @@ BossKey (void)
 
     SD_MusicOn ();
     VL_SetVGAPlaneMode ();
-    for (int i = 0; i < 768; i++)
+    for (i = 0; i < 768; i++)
         palette1[0][i] = 0;
 
     VL_SetPalette (&palette1[0][0]);
@@ -711,6 +712,7 @@ void
 BossKey (void)
 {
 #ifdef NOTYET
+    int i;
     byte palette1[256][3];
     SD_MusicOff ();
 /*       _AX = 3;
@@ -726,7 +728,7 @@ BossKey (void)
 
     SD_MusicOn ();
     VL_SetVGAPlaneMode ();
-    for (int i = 0; i < 768; i++)
+    for (i = 0; i < 768; i++)
         palette1[0][i] = 0;
 
     VL_SetPalette (&palette1[0][0]);
@@ -2192,7 +2194,7 @@ void
 EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*PrintRtn) (int),
                int type)
 {
-    int j, exit, tick, redraw, which, x, picked, lastFlashTime;
+    int j,z, exit, tick, redraw, which, x, picked, lastFlashTime;
     ControlInfo ci;
 
 
@@ -2300,7 +2302,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
 
                         if (result)
                         {
-                            for (int z = 0; z < 4; z++)
+                            for (z = 0; z < 4; z++)
                                 if (order[which] == buttonmouse[z])
                                 {
                                     buttonmouse[z] = bt_nobutton;
@@ -2325,7 +2327,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
 
                         if (result)
                         {
-                            for (int z = 0; z < 4; z++)
+                            for (z = 0; z < 4; z++)
                             {
                                 if (order[which] == buttonjoy[z])
                                 {
@@ -2736,7 +2738,9 @@ DrawCustMouse (int hilight)
 void
 PrintCustJoy (int i)
 {
-    for (int j = 0; j < 4; j++)
+    int j;
+
+    for (j = 0; j < 4; j++)
     {
         if (order[i] == buttonjoy[j])
         {
@@ -3168,11 +3172,12 @@ SetupControlPanel (void)
 ////////////////////////////////////////////////////////////////////
 void SetupSaveGames()
 {
+    int i;
     char name[13];
     char savepath[300];
 
     strcpy(name, SaveName);
-    for(int i = 0; i < 10; i++)
+    for(i = 0; i < 10; i++)
     {
         name[7] = '0' + i;
 #ifdef _arch_dreamcast

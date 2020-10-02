@@ -57,12 +57,13 @@ static int GetShadeDefID()
 // given RGB color in given palette
 byte GetColor(byte red, byte green, byte blue, SDL_Color *palette)
 {
+    int i;
     byte mincol = 0;
     double mindist = 200000.F, curdist, DRed, DGreen, DBlue;
 
     SDL_Color *palPtr = palette;
 
-    for(int col = 0; col < 256; col++, palPtr++)
+    for(col = 0; col < 256; col++, palPtr++)
     {
         DRed   = (double) (red   - palPtr->r);
         DGreen = (double) (green - palPtr->g);
@@ -82,6 +83,7 @@ byte GetColor(byte red, byte green, byte blue, SDL_Color *palette)
 void GenerateShadeTable(byte destRed, byte destGreen, byte destBlue,
                         SDL_Color *palette, int fog)
 {
+    int i,shade;
     double curRed, curGreen, curBlue, redStep, greenStep, blueStep;
     SDL_Color *palPtr = palette;
 
@@ -89,7 +91,7 @@ void GenerateShadeTable(byte destRed, byte destGreen, byte destBlue,
     LSHADE_flag=fog;
 
     // Color loop
-    for(int i = 0; i < 256; i++, palPtr++)
+    for(i = 0; i < 256; i++, palPtr++)
     {
         // Get original palette color
         curRed   = palPtr->r;
@@ -102,7 +104,7 @@ void GenerateShadeTable(byte destRed, byte destGreen, byte destBlue,
         blueStep  = ((double) destBlue  - curBlue)  / (SHADE_COUNT + 8);
 
         // Calc color for each shade of the current color
-        for (int shade = 0; shade < SHADE_COUNT; shade++)
+        for (shade = 0; shade < SHADE_COUNT; shade++)
         {
             shadetable[shade][i] = GetColor((byte) curRed, (byte) curGreen, (byte) curBlue, palette);
 
@@ -116,8 +118,9 @@ void GenerateShadeTable(byte destRed, byte destGreen, byte destBlue,
 
 void NoShading()
 {
-    for(int shade = 0; shade < SHADE_COUNT; shade++)
-        for(int i = 0; i < 256; i++)
+    int i,shade;
+    for(shade = 0; shade < SHADE_COUNT; shade++)
+        for(i = 0; i < 256; i++)
             shadetable[shade][i] = i;
 }
 

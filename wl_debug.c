@@ -127,9 +127,10 @@ void CountObjects (void)
 */
 void PictureGrabber (void)
 {
+    int i;
     static char fname[] = "WSHOT000.BMP";
 
-    for(int i = 0; i < 1000; i++)
+    for(i = 0; i < 1000; i++)
     {
         fname[7] = i % 10 + '0';
         fname[6] = (i / 10) % 10 + '0';

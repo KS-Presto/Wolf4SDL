@@ -416,10 +416,10 @@ boolean SaveTheGame(FILE *file,int x,int y)
     checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
     DiskFlopAnim(x,y);
 
-    int i;
+    int i,j;
     for(i=0;i<MAPSIZE;i++)
     {
-        for(int j=0;j<MAPSIZE;j++)
+        for(j=0;j<MAPSIZE;j++)
         {
             word actnum;
             objtype *objptr=actorat[i][j];
@@ -536,10 +536,10 @@ boolean LoadTheGame(FILE *file,int x,int y)
 
     DiskFlopAnim(x,y);
 
-    int actnum=0, i;
+    int actnum=0, i,j;
     for(i=0;i<MAPSIZE;i++)
     {
-        for(int j=0;j<MAPSIZE;j++)
+        for(j=0;j<MAPSIZE;j++)
         {
             fread (&actnum,sizeof(word),1,file);
             checksum = DoChecksum((byte *) &actnum,sizeof(word),checksum);
@@ -1680,9 +1680,9 @@ void CheckParameters(int argc, char *argv[])
 {
     bool hasError = false, showHelp = false;
     bool sampleRateGiven = false, audioBufferGiven = false;
-    int defaultSampleRate = param_samplerate;
+    int i,defaultSampleRate = param_samplerate;
 
-    for(int i = 1; i < argc; i++)
+    for(i = 1; i < argc; i++)
     {
         char *arg = argv[i];
 #ifndef SPEAR

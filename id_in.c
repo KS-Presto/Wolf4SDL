@@ -222,12 +222,14 @@ void IN_GetJoyFineDelta(int *dx, int *dy)
 
 int IN_JoyButtons()
 {
+    int i;
+
     if(!Joystick) return 0;
 
     SDL_JoystickUpdate();
 
     int res = 0;
-    for(int i = 0; i < JoyNumButtons && i < 32; i++)
+    for(i = 0; i < JoyNumButtons && i < 32; i++)
         res |= SDL_JoystickGetButton(Joystick, i) << i;
     return res;
 }
@@ -559,6 +561,8 @@ boolean	btnstate[NUMBUTTONS];
 
 void IN_StartAck(void)
 {
+    int i;
+
     IN_ProcessEvents();
 //
 // get initial state of everything
@@ -571,7 +575,7 @@ void IN_StartAck(void)
 	if(MousePresent)
 		buttons |= IN_MouseButtons();
 
-	for(int i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
+	for(i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
 		if(buttons & 1)
 			btnstate[i] = true;
 }
@@ -579,6 +583,8 @@ void IN_StartAck(void)
 
 boolean IN_CheckAck (void)
 {
+    int i;
+
     IN_ProcessEvents();
 //
 // see if something has been pressed
@@ -591,7 +597,7 @@ boolean IN_CheckAck (void)
 	if(MousePresent)
 		buttons |= IN_MouseButtons();
 
-	for(int i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
+	for(i = 0; i < NUMBUTTONS; i++, buttons >>= 1)
 	{
 		if(buttons & 1)
 		{

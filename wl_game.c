@@ -189,13 +189,15 @@ void PlaySoundLocGlobal(word s,fixed gx,fixed gy)
 
 void UpdateSoundLoc(void)
 {
+    int i;
+
 /*    if (SoundPositioned)
     {
         SetSoundLoc(globalsoundx,globalsoundy);
         SD_SetPosition(leftchannel,rightchannel);
     }*/
 
-    for(int i = 0; i < MIX_CHANNELS; i++)
+    for(i = 0; i < MIX_CHANNELS; i++)
     {
         if(channelSoundPos[i].valid)
         {

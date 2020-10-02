@@ -169,7 +169,9 @@ void	VL_SetVGAPlaneMode (void)
 
 void VL_ConvertPalette(byte *srcpal, SDL_Color *destpal, int numColors)
 {
-    for(int i=0; i<numColors; i++)
+    int i;
+
+    for(i=0; i<numColors; i++)
     {
         destpal[i].r = *srcpal++ * 255 / 63;
         destpal[i].g = *srcpal++ * 255 / 63;

@@ -499,7 +499,8 @@ void CAL_SetupGrFile (void)
     close(handle);
 
     const byte* d = data;
-    for (int32_t* i = grstarts; i != endof(grstarts); ++i)
+    int32_t* i;
+    for (i = grstarts; i != endof(grstarts); ++i)
     {
         const int32_t val = d[0] | d[1] << 8 | d[2] << 16;
         *i = (val == 0x00FFFFFF ? -1 : val);

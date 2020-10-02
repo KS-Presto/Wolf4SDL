@@ -401,6 +401,8 @@ Sint16 GetSample(float csample, byte *samples, int size)
 
 void SD_PrepareSound(int which)
 {
+    int i;
+
     if(DigiList == NULL)
         Quit("SD_PrepareSound(%i): DigiList not initialized!\n", which);
 
@@ -432,7 +434,7 @@ void SD_PrepareSound(int which)
         + sizeof(wavechunk));
     float cursample = 0.F;
     float samplestep = (float) ORIGSAMPLERATE / (float) param_samplerate;
-    for(int i=0; i<destsamples; i++, cursample+=samplestep)
+    for(i=0; i<destsamples; i++, cursample+=samplestep)
     {
         newsamples[i] = GetSample((float)size * (float)i / (float)destsamples,
             origsamples, size);
@@ -672,7 +674,9 @@ SDL_StartAL(void)
 static boolean
 SDL_DetectAdLib(void)
 {
-    for (int i = 1; i <= 0xf5; i++)       // Zero all the registers
+    int i;
+
+    for (i = 1; i <= 0xf5; i++)       // Zero all the registers
         alOut(i, 0);
 
     alOut(1, 0x20);             // Set WSE=1
@@ -958,13 +962,15 @@ SD_Startup(void)
 void
 SD_Shutdown(void)
 {
+    int i;
+
     if (!SD_Started)
         return;
 
     SD_MusicOff();
     SD_StopSound();
 
-    for(int i = 0; i < STARTMUSIC - STARTDIGISOUNDS; i++)
+    for(i = 0; i < STARTMUSIC - STARTDIGISOUNDS; i++)
     {
         if(SoundChunks[i]) Mix_FreeChunk(SoundChunks[i]);
     }
@@ -1201,6 +1207,8 @@ SD_StartMusic(int chunk)
 void
 SD_ContinueMusic(int chunk, int startoffs)
 {
+    int i;
+
     SD_MusicOff();
 
     if (MusicMode == smm_AdLib)
@@ -1223,7 +1231,7 @@ SD_ContinueMusic(int chunk, int startoffs)
         // fast forward to correct position
         // (needed to reconstruct the instruments)
 
-        for(int i = 0; i < startoffs; i += 2)
+        for(i = 0; i < startoffs; i += 2)
         {
             byte reg = *(byte *)sqHackPtr;
             byte val = *(((byte *)sqHackPtr) + 1);

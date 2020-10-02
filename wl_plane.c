@@ -13,6 +13,7 @@ void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
     fixed dist;                                // distance to row projection
     fixed tex_step;                            // global step per one screen pixel
     fixed gu, gv, du, dv;                      // global texture coordinates
+    int x, y;
     int u, v;                                  // local texture coordinates
     byte *toptex, *bottex;
     unsigned lasttoptex = 0xffffffff, lastbottex = 0xffffffff;
@@ -26,7 +27,7 @@ void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
     unsigned top_offset0 = vbufPitch * (halfheight - y0 - 1);
 
     // draw horizontal lines
-    for(int y = y0, bot_offset = bot_offset0, top_offset = top_offset0;
+    for(y = y0, bot_offset = bot_offset0, top_offset = top_offset0;
         y < halfheight; y++, bot_offset += vbufPitch, top_offset -= vbufPitch)
     {
         dist = (heightnumerator / (y + 1)) << 5;
@@ -40,7 +41,7 @@ void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
 #ifdef USE_SHADING
         byte *curshades = shadetable[GetShade(y << 3)];
 #endif
-        for(int x = 0, bot_add = bot_offset, top_add = top_offset;
+        for(x = 0, bot_add = bot_offset, top_add = top_offset;
             x < viewwidth; x++, bot_add++, top_add++)
         {
             if(wallheight[x] >> 3 <= y)
