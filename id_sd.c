@@ -513,7 +513,7 @@ SDL_SetupDigi(void)
     NumDigi = (word) PM_GetPageSize(ChunksInFile - 1) / 4;
 
     DigiList = (digiinfo *) malloc(NumDigi * sizeof(digiinfo));
-    int i;
+    int i,page;
     for(i = 0; i < NumDigi; i++)
     {
         // Calculate the size of the digi from the sizes of the pages between
@@ -536,7 +536,7 @@ SDL_SetupDigi(void)
         else lastPage = ChunksInFile - 1;
 
         int size = 0;
-        for(int page = PMSoundStart + DigiList[i].startpage; page < lastPage; page++)
+        for(page = PMSoundStart + DigiList[i].startpage; page < lastPage; page++)
             size += PM_GetPageSize(page);
 
         // Don't include padding of sound info page, if padding was added
