@@ -60,6 +60,16 @@
     #include "f_spear.h"
 #endif
 
+#ifndef __cplusplus
+enum
+{
+    false,
+    true,
+};
+
+typedef int8_t bool;
+#endif
+
 typedef uint8_t byte;
 typedef uint16_t word;
 typedef int32_t fixed;
