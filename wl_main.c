@@ -88,7 +88,7 @@ int     param_joystickindex = 0;
 #if defined(_arch_dreamcast)
 int     param_joystickhat = 0;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
-int     param_audiobuffer = 4096 / (44100 / param_samplerate);
+int     param_audiobuffer = 1024;
 #elif defined(GP2X_940)
 int     param_joystickhat = -1;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
@@ -96,7 +96,7 @@ int     param_audiobuffer = 128;
 #else
 int     param_joystickhat = -1;
 int     param_samplerate = 44100;
-int     param_audiobuffer = 2048 / (44100 / param_samplerate);
+int     param_audiobuffer = 2048;
 #endif
 
 int     param_mission = 0;
