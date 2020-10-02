@@ -97,6 +97,8 @@ void Quit(const char *errorStr, ...);
 #include "id_ca.h"
 
 #include "wl_menu.h"
+#include "wl_utils.h"
+
 
 #define MAPSPOT(x,y,plane) (mapsegs[plane][((y)<<mapshift)+(x)])
 
@@ -1399,8 +1401,6 @@ void GP2X_ButtonUp(int button);
 =============================================================================
 */
 
-fixed   FixedMul(fixed a, fixed b);
-
 #ifdef PLAYDEMOLIKEORIGINAL
     #define DEMOCHOOSE_ORIG_SDL(orig, sdl) ((demorecord || demoplayback) ? (orig) : (sdl))
     #define DEMOCOND_ORIG                  (demorecord || demoplayback)
@@ -1438,10 +1438,6 @@ fixed   FixedMul(fixed a, fixed b);
 
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #define endof(x)    ((x) + lengthof(x))
-
-word READWORD(byte *ptr);
-
-longword READLONGWORD(byte *ptr);
 
 
 /*
