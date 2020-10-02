@@ -5,6 +5,9 @@
 //
 /////////////////////////////////////////////////
 
+#ifndef __AUDIOWL6_H_
+#define __AUDIOWL6_H_
+
 //
 // Sound names & indexes
 //
@@ -151,3 +154,5 @@ typedef enum {
 // Thanks for playing with MUSE!
 //
 /////////////////////////////////////////////////
+
+#endif

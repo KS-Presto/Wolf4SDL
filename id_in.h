@@ -5,8 +5,8 @@
 //	By Jason Blochowiak
 //
 
-#ifndef	__ID_IN__
-#define	__ID_IN__
+#ifndef	__ID_IN_H_
+#define	__ID_IN_H_
 
 #ifdef	__DEBUG__
 #define	__DEBUG_InputMgr__

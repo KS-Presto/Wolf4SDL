@@ -5,6 +5,9 @@
 //
 //////////////////////////////////////
 
+#ifndef __GFXV_APO_H_
+#define __GFXV_APO_H_
+
 typedef enum {
     // Lump Start
     H_BJPIC=3,
@@ -242,3 +245,5 @@ typedef enum {
 //
 // Thank you for using IGRAB!
 //
+
+#endif

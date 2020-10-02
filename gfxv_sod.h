@@ -5,6 +5,9 @@
 //
 //////////////////////////////////////
 
+#ifndef __GFXV_SOD_H_
+#define __GFXV_SOD_H_
+
 typedef enum {
     // Lump Start
     C_BACKDROPPIC=3,
@@ -288,3 +291,5 @@ typedef enum {
 //
 // Thank you for using IGRAB!
 //
+
+#endif

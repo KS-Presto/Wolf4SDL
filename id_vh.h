@@ -1,5 +1,7 @@
 // ID_VH.H
 
+#ifndef __ID_VH_H_
+#define __ID_VH_H_
 
 #define WHITE			15			// graphics mode independant colors
 #define BLACK			0
@@ -98,3 +100,5 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 
 #define NUMLATCHPICS	100
 extern	SDL_Surface *latchpics[NUMLATCHPICS];
+
+#endif

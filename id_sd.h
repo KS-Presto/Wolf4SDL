@@ -5,8 +5,8 @@
 //      By Jason Blochowiak
 //
 
-#ifndef __ID_SD__
-#define __ID_SD__
+#ifndef __ID_SD_H_
+#define __ID_SD_H_
 
 #define alOut(n,b) YM3812Write(oplChip, n, b)
 

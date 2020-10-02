@@ -1,5 +1,5 @@
-#ifndef WL_DEF_H
-#define WL_DEF_H
+#ifndef __WL_DEF_H_
+#define __WL_DEF_H_
 
 // Defines which version shall be built and configures supported extra features
 #include "version.h"

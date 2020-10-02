@@ -1,5 +1,5 @@
-#ifndef _VERSION_H_
-#define _VERSION_H_
+#ifndef __VERSION_H_
+#define __VERSION_H_
 
 #ifndef VERSIONALREADYCHOSEN              // used for batch compiling
 

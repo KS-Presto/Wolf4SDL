@@ -1,5 +1,5 @@
-#ifndef __ID_PM__
-#define __ID_PM__
+#ifndef __ID_PM_H_
+#define __ID_PM_H_
 
 #ifdef USE_HIRES
 #define PMPageSize 16384
