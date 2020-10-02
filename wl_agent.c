@@ -102,7 +102,7 @@ void ClipMove (objtype *ob, int32_t xmove, int32_t ymove);
 
 void CheckWeaponChange (void)
 {
-    int newWeapon = -1;
+    int i,newWeapon = -1;
 
     if (!gamestate.ammo)            // must use knife with no ammo
         return;
@@ -128,7 +128,7 @@ void CheckWeaponChange (void)
     }
     else
     {
-        for(int i = wp_knife; i <= gamestate.bestweapon; i++)
+        for(i = wp_knife; i <= gamestate.bestweapon; i++)
         {
             if (buttonstate[bt_readyknife + i - wp_knife])
             {
