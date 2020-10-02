@@ -31,7 +31,8 @@ extern SDL_Color gamepal[256];
 // VGA hardware routines
 //
 
-#define VL_WaitVBL(a) SDL_Delay((a)*8)
+#define VL_WaitVBL(a)        SDL_Delay((a)*8)
+#define VL_ClearScreen(c)    SDL_FillRect(curSurface,NULL,(c))
 
 void VL_SetVGAPlaneMode (void);
 void VL_SetTextMode (void);
@@ -54,15 +55,7 @@ void VL_Plot            (int x, int y, int color);
 void VL_Hlin            (unsigned x, unsigned y, unsigned width, int color);
 void VL_Vlin            (int x, int y, int height, int color);
 void VL_BarScaledCoord  (int scx, int scy, int scwidth, int scheight, int color);
-void inline VL_Bar      (int x, int y, int width, int height, int color)
-{
-    VL_BarScaledCoord(scaleFactor*x, scaleFactor*y,
-        scaleFactor*width, scaleFactor*height, color);
-}
-void inline VL_ClearScreen(int color)
-{
-    SDL_FillRect(curSurface, NULL, color);
-}
+void VL_Bar             (int x, int y, int width, int height, int color);
 
 void VL_MungePic                (byte *source, unsigned width, unsigned height);
 void VL_DrawPicBare             (int x, int y, byte *pic, int width, int height);
@@ -73,19 +66,12 @@ void VL_MemToScreenScaledCoord  (byte *source, int width, int height, int scx, i
 void VL_MemToScreenScaledCoord2  (byte *source, int origwidth, int origheight, int srcx, int srcy,
                                     int destx, int desty, int width, int height);
 
-void inline VL_MemToScreen (byte *source, int width, int height, int x, int y)
-{
-    VL_MemToScreenScaledCoord(source, width, height,
-        scaleFactor*x, scaleFactor*y);
-}
+void VL_MemToScreen (byte *source, int width, int height, int x, int y);
 
 void VL_MaskedToScreen (byte *source, int width, int height, int x, int y);
 
 void VL_LatchToScreenScaledCoord (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int scxdest, int scydest);
 
-void inline VL_LatchToScreen (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int xdest, int ydest)
-{
-    VL_LatchToScreenScaledCoord(source,xsrc,ysrc,width,height,scaleFactor*xdest,scaleFactor*ydest);
-}
+void VL_LatchToScreen (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int xdest, int ydest);
 
 #endif

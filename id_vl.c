@@ -533,6 +533,11 @@ void VL_Vlin (int x, int y, int height, int color)
 =================
 */
 
+void VL_Bar (int x, int y, int width, int height, int color)
+{
+    VL_BarScaledCoord(scaleFactor*x, scaleFactor*y,scaleFactor*width, scaleFactor*height, color);
+}
+
 void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 {
 	byte *ptr;
@@ -608,6 +613,11 @@ void VL_MemToLatch(byte *source, int width, int height,
 =
 =================
 */
+
+void VL_MemToScreen (byte *source, int width, int height, int x, int y)
+{
+    VL_MemToScreenScaledCoord(source, width, height, scaleFactor*x, scaleFactor*y);
+}
 
 void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, int desty)
 {
@@ -694,6 +704,11 @@ void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int origheight, in
 =
 =================
 */
+
+void VL_LatchToScreen (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int xdest, int ydest)
+{
+    VL_LatchToScreenScaledCoord(source,xsrc,ysrc,width,height,scaleFactor*xdest,scaleFactor*ydest);
+}
 
 void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
     int width, int height, int scxdest, int scydest)

@@ -1389,10 +1389,7 @@ void GP2X_ButtonUp(int button);
 =============================================================================
 */
 
-static inline fixed FixedMul(fixed a, fixed b)
-{
-	return (fixed)(((int64_t)a * b + 0x8000) >> 16);
-}
+fixed   FixedMul(fixed a, fixed b);
 
 #ifdef PLAYDEMOLIKEORIGINAL
     #define DEMOCHOOSE_ORIG_SDL(orig, sdl) ((demorecord || demoplayback) ? (orig) : (sdl))
@@ -1432,19 +1429,9 @@ static inline fixed FixedMul(fixed a, fixed b)
 #define lengthof(x) (sizeof(x) / sizeof(*(x)))
 #define endof(x)    ((x) + lengthof(x))
 
-static inline word READWORD(byte *ptr)
-{
-    word val = ptr[0] | ptr[1] << 8;
+word READWORD(byte *ptr);
 
-    return val;
-}
-
-static inline longword READLONGWORD(byte *ptr)
-{
-    longword val = ptr[0] | ptr[1] << 8 | ptr[2] << 16 | ptr[3] << 24;
-
-    return val;
-}
+longword READLONGWORD(byte *ptr);
 
 
 /*

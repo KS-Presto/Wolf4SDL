@@ -123,3 +123,38 @@ void PM_Shutdown()
     free(PMPages);
     free(PMPageData);
 }
+
+uint32_t PM_GetPageSize(int page)
+{
+    if(page < 0 || page >= ChunksInFile)
+        Quit("PM_GetPageSize: Tried to access illegal page: %i", page);
+    return (uint32_t) (PMPages[page + 1] - PMPages[page]);
+}
+
+uint8_t *PM_GetPage(int page)
+{
+    if(page < 0 || page >= ChunksInFile)
+        Quit("PM_GetPage: Tried to access illegal page: %i", page);
+    return PMPages[page];
+}
+
+uint8_t *PM_GetEnd()
+{
+    return PMPages[ChunksInFile];
+}
+
+byte *PM_GetTexture(int wallpic)
+{
+    return PM_GetPage(wallpic);
+}
+
+uint16_t *PM_GetSprite(int shapenum)
+{
+    // correct alignment is enforced by PM_Startup()
+    return (uint16_t *) (void *) PM_GetPage(PMSpriteStart + shapenum);
+}
+
+byte *PM_GetSound(int soundpagenum)
+{
+    return PM_GetPage(PMSoundStart + soundpagenum);
+}
