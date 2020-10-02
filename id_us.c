@@ -1,6 +1,6 @@
 //
 //	ID Engine
-//	ID_US_1.c - User Manager - General routines
+//	ID_US.c - User Manager - General routines
 //	v1.1d1
 //	By Jason Blochowiak
 //	Hacked up for Catacomb 3D
