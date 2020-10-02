@@ -7,9 +7,9 @@ WINDRES = windres.exe
 RES  = 
 OBJ  = OBJ/wl_text.o OBJ/id_ca.o OBJ/id_in.o OBJ/id_pm.o OBJ/id_sd.o OBJ/id_us_1.o OBJ/id_vh.o OBJ/id_vl.o OBJ/signon.o OBJ/wl_act1.o OBJ/wl_act2.o OBJ/wl_agent.o OBJ/wl_debug.o OBJ/wl_draw.o OBJ/wl_game.o OBJ/wl_inter.o OBJ/wl_main.o OBJ/wl_menu.o OBJ/wl_play.o OBJ/wl_state.o OBJ/sdl_winmain.o OBJ/fmopl.o $(RES)
 LINKOBJ  = OBJ/wl_text.o OBJ/id_ca.o OBJ/id_in.o OBJ/id_pm.o OBJ/id_sd.o OBJ/id_us_1.o OBJ/id_vh.o OBJ/id_vl.o OBJ/signon.o OBJ/wl_act1.o OBJ/wl_act2.o OBJ/wl_agent.o OBJ/wl_debug.o OBJ/wl_draw.o OBJ/wl_game.o OBJ/wl_inter.o OBJ/wl_main.o OBJ/wl_menu.o OBJ/wl_play.o OBJ/wl_state.o OBJ/sdl_winmain.o OBJ/fmopl.o $(RES)
-LIBS =  -L"C:/DEV-CPP/lib" -mwindows -lmingw32 -lSDL -lSDL_mixer  
-INCS =  -I"C:/DEV-CPP/include"  -I"C:/Dev-Cpp/include/SDL" 
-CXXINCS =  -I"C:/DEV-CPP/lib/gcc/mingw32/3.4.2/include"  -I"C:/DEV-CPP/include/c++/3.4.2/backward"  -I"C:/DEV-CPP/include/c++/3.4.2/mingw32"  -I"C:/DEV-CPP/include/c++/3.4.2"  -I"C:/DEV-CPP/include"  -I"C:/Dev-Cpp/include/SDL" 
+LIBS =  -L"C:/Dev-Cpp/lib" -mwindows -lmingw32 -lSDL -lSDL_mixer  
+INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/include/SDL" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/include/SDL" 
 BIN  = OBJ/Wolf4SDL.exe
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Dmain=SDL_main  
