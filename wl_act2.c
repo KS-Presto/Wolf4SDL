@@ -2908,7 +2908,7 @@ void A_MechaSound (objtype *ob)
         PlaySoundLocActor (MECHSTEPSND,ob);
 }
 
-void A_Slurpie (objtype *)
+void A_Slurpie (objtype *ob)
 {
     SD_PlaySound(SLURPIESND);
 }
@@ -3728,7 +3728,7 @@ void T_BJYell (objtype *ob)
 ===============
 */
 
-void T_BJDone (objtype *)
+void T_BJDone (objtype *ob)
 {
     playstate = ex_victorious;                              // exit castle tile
 }
