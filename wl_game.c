@@ -1180,10 +1180,10 @@ void PlayDemo (int demonumber)
     NewGame (1,0);
     gamestate.mapon = *demoptr++;
     gamestate.difficulty = gd_hard;
-    length = READWORD(*(uint8_t **)&demoptr);
+    length = READWORD((uint8_t *)demoptr);
     // TODO: Seems like the original demo format supports 16 MB demos
     //       But T_DEM00 and T_DEM01 of Wolf have a 0xd8 as third length size...
-    demoptr++;
+    demoptr += 3;
     lastdemoptr = demoptr-4+length;
 
     VW_FadeOut ();

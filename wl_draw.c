@@ -812,8 +812,8 @@ void ScaleShape (int xcenter, int shapenum, unsigned height, uint32_t flags)
                     while((endy = READWORD(line)) != 0)
                     {
                         endy >>= 1;
-                        newstart = READWORD(line);
-                        starty = READWORD(line) >> 1;
+                        newstart = READWORD(line + 2);
+                        starty = READWORD(line + 4) >> 1;
                         j=starty;
                         ycnt=j*pixheight;
                         screndy=(ycnt>>6)+upperedge;
@@ -842,6 +842,8 @@ void ScaleShape (int xcenter, int shapenum, unsigned height, uint32_t flags)
                                 }
                             }
                         }
+
+                        line += 6;
                     }
                 }
                 lpix++;
@@ -891,8 +893,8 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
                 while((endy = READWORD(line)) != 0)
                 {
                     endy >>= 1;
-                    newstart = READWORD(line);
-                    starty = READWORD(line) >> 1;
+                    newstart = READWORD(line + 2);
+                    starty = READWORD(line + 4) >> 1;
                     j=starty;
                     ycnt=j*pixheight;
                     screndy=(ycnt>>6)+upperedge;
@@ -917,6 +919,8 @@ void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
                             }
                         }
                     }
+
+                    line += 6;
                 }
                 lpix++;
             }
