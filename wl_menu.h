@@ -151,7 +151,7 @@ void BossKey(void);
 void DrawGun(CP_iteminfo *item_i,CP_itemtype *items,int x,int *y,int which,int basey,void (*routine)(int w));
 void DrawHalfStep(int x,int y);
 void EraseGun(CP_iteminfo *item_i,CP_itemtype *items,int x,int y,int which);
-void SetTextColor(CP_itemtype *items,int hlight);
+void TextColor(CP_itemtype *items,int hlight);
 void DrawMenuGun(CP_iteminfo *iteminfo);
 void DrawStripes(int y);
 

@@ -952,7 +952,7 @@ CP_CheckQuick (ScanCode scancode)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_EndGame (int)
+CP_EndGame (int blank)
 {
     int res;
 #ifdef JAPAN
@@ -983,7 +983,7 @@ CP_EndGame (int)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_ViewScores (int)
+CP_ViewScores (int blank)
 {
     fontnumber = 0;
 
@@ -1018,7 +1018,7 @@ CP_ViewScores (int)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_NewGame (int)
+CP_NewGame (int blank)
 {
     int which, episode;
 
@@ -1233,7 +1233,7 @@ DrawNewGameDiff (int w)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_Sound (int)
+CP_Sound (int blank)
 {
     int which;
 
@@ -1841,7 +1841,7 @@ CP_SaveGame (int quick)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_Control (int)
+CP_Control (int blank)
 {
     int which;
 
@@ -1950,7 +1950,7 @@ DrawMouseSens (void)
 // ADJUST MOUSE SENSITIVITY
 //
 int
-MouseSensitivity (int)
+MouseSensitivity (int blank)
 {
     ControlInfo ci;
     int exit = 0, oldMA;
@@ -2099,7 +2099,7 @@ int8_t order[4] = { RUN, OPEN, FIRE, STRAFE };
 
 
 int
-CustomControls (int)
+CustomControls (int blank)
 {
     int which;
 
@@ -2828,7 +2828,7 @@ DrawCustKeys (int hilight)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_ChangeView (int)
+CP_ChangeView (int blank)
 {
     int exit = 0, oldview, newview;
     ControlInfo ci;
@@ -2939,7 +2939,7 @@ DrawChangeView (int view)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_Quit (int)
+CP_Quit (int blank)
 {
 #ifdef JAPAN
     if (GetYorN (7, 11, C_QUITMSGPIC))
@@ -3247,7 +3247,7 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
     y = basey + which * 13;
 
     VWB_DrawPic (x, y, C_CURSOR1PIC);
-    SetTextColor (items + which, 1);
+    TextColor (items + which, 1);
     if (redrawitem)
     {
         PrintX = item_i->x + item_i->indent;
@@ -3473,7 +3473,7 @@ void
 EraseGun (CP_iteminfo * item_i, CP_itemtype * items, int x, int y, int which)
 {
     VWB_Bar (x - 1, y, 25, 16, BKGDCOLOR);
-    SetTextColor (items + which, 0);
+    TextColor (items + which, 0);
 
     PrintX = item_i->x + item_i->indent;
     PrintY = item_i->y + which * 13;
@@ -3505,7 +3505,7 @@ DrawGun (CP_iteminfo * item_i, CP_itemtype * items, int x, int *y, int which, in
     VWB_Bar (x - 1, *y, 25, 16, BKGDCOLOR);
     *y = basey + which * 13;
     VWB_DrawPic (x, *y, C_CURSOR1PIC);
-    SetTextColor (items + which, 1);
+    TextColor (items + which, 1);
 
     PrintX = item_i->x + item_i->indent;
     PrintY = item_i->y + which * 13;
@@ -3558,7 +3558,7 @@ DrawMenu (CP_iteminfo * item_i, CP_itemtype * items)
 
     for (i = 0; i < item_i->amount; i++)
     {
-        SetTextColor (items + i, which == i);
+        TextColor (items + i, which == i);
 
         PrintY = item_i->y + i * 13;
         if ((items + i)->active)
@@ -3581,7 +3581,7 @@ DrawMenu (CP_iteminfo * item_i, CP_itemtype * items)
 //
 ////////////////////////////////////////////////////////////////////
 void
-SetTextColor (CP_itemtype * items, int hlight)
+TextColor (CP_itemtype * items, int hlight)
 {
     if (hlight)
     {
