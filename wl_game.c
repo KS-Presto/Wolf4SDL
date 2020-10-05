@@ -1081,7 +1081,6 @@ void RecordDemo (void)
 
     CenterWindow(26,3);
     PrintY+=6;
-    CA_CacheGrChunk(STARTFONT);
     fontnumber=0;
     SETFONTCOLOR(0,15);
 #ifndef SPEAR
@@ -1169,7 +1168,6 @@ void PlayDemo (int demonumber)
     int dems[1]={T_DEMO0};
 #endif
 
-    CA_CacheGrChunk(dems[demonumber]);
     demoptr = (int8_t *) grsegs[dems[demonumber]];
 #else
     demoname[4] = '0'+demonumber;
@@ -1199,10 +1197,8 @@ void PlayDemo (int demonumber)
 
     PlayLoop ();
 
-#ifdef DEMOSEXTERN
-    UNCACHEGRCHUNK(dems[demonumber]);
-//#else                         // ADDEDFIX 30 - Chris
-//    MM_FreePtr (&demobuffer);
+#ifndef DEMOSEXTERN
+    free (demobuffer);
 #endif
 
     demoplayback = false;

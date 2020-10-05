@@ -449,15 +449,8 @@ US_ControlPanel (ScanCode scancode)
 
         finishup:
             CleanupControlPanel ();
-#ifdef SPEAR
-            UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
             return;
     }
-
-#ifdef SPEAR
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
 
     DrawMainMenu ();
     MenuFadeIn ();
@@ -481,26 +474,17 @@ US_ControlPanel (ScanCode scancode)
         {
             VW_FadeOut ();
             StartCPMusic (XJAZNAZI_MUS);
-            UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-            UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
             ClearMemory ();
 
 
-            CA_CacheGrChunk (IDGUYS1PIC);
             VWB_DrawPic (0, 0, IDGUYS1PIC);
-            UNCACHEGRCHUNK (IDGUYS1PIC);
-
-            CA_CacheGrChunk (IDGUYS2PIC);
             VWB_DrawPic (0, 80, IDGUYS2PIC);
-            UNCACHEGRCHUNK (IDGUYS2PIC);
 
             VW_UpdateScreen ();
 
             SDL_Color pal[256];
-            CA_CacheGrChunk (IDGUYSPALETTE);
             VL_ConvertPalette(grsegs[IDGUYSPALETTE], pal, 256);
             VL_FadeIn (0, 255, pal, 30);
-            UNCACHEGRCHUNK (IDGUYSPALETTE);
 
             while (Keyboard[sc_I] || Keyboard[sc_D])
                 IN_WaitAndProcessEvents();
@@ -509,8 +493,6 @@ US_ControlPanel (ScanCode scancode)
 
             VW_FadeOut ();
 
-            CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-            CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
             DrawMainMenu ();
             StartCPMusic (MENUSONG);
             MenuFadeIn ();
@@ -569,12 +551,6 @@ US_ControlPanel (ScanCode scancode)
     //
     if (startgame || loadedgame)
         EnableEndGameMenuItem();
-
-    // RETURN/START GAME EXECUTION
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
 }
 
 void EnableEndGameMenuItem()
@@ -593,7 +569,7 @@ void
 DrawMainMenu (void)
 {
 #ifdef JAPAN
-    CA_CacheScreen (S_OPTIONSPIC);
+    VWB_DrawPic (0,0,S_OPTIONSPIC);
 #else
     ClearMScreen ();
 
@@ -622,12 +598,8 @@ DrawMainMenu (void)
 #endif
 
 #else
-        CA_CacheGrChunk (C_MRETGAMEPIC);
         VWB_DrawPic (12 * 8, 20 * 8, C_MRETGAMEPIC);
-        UNCACHEGRCHUNK (C_MRETGAMEPIC);
-        CA_CacheGrChunk (C_MENDGAMEPIC);
         VWB_DrawPic (12 * 8, 18 * 8, C_MENDGAMEPIC);
-        UNCACHEGRCHUNK (C_MENDGAMEPIC);
 #endif
         MainMenu[backtodemo].active = 2;
     }
@@ -640,12 +612,8 @@ DrawMainMenu (void)
         strcpy (&MainMenu[backtodemo].string[8], STR_DEMO);
 #endif
 #else
-        CA_CacheGrChunk (C_MRETDEMOPIC);
         VWB_DrawPic (12 * 8, 20 * 8, C_MRETDEMOPIC);
-        UNCACHEGRCHUNK (C_MRETDEMOPIC);
-        CA_CacheGrChunk (C_MSCORESPIC);
         VWB_DrawPic (12 * 8, 18 * 8, C_MSCORESPIC);
-        UNCACHEGRCHUNK (C_MSCORESPIC);
 #endif
         MainMenu[backtodemo].active = 1;
     }
@@ -753,8 +721,6 @@ CP_CheckQuick (ScanCode scancode)
         // END GAME
         //
         case sc_F7:
-            CA_CacheGrChunk (STARTFONT + 1);
-
             WindowH = 160;
 #ifdef JAPAN
             if (GetYorN (7, 8, C_JAPQUITPIC))
@@ -778,7 +744,6 @@ CP_CheckQuick (ScanCode scancode)
         case sc_F8:
             if (SaveGamesAvail[LSItems.curpos] && pickquick)
             {
-                CA_CacheGrChunk (STARTFONT + 1);
                 fontnumber = 1;
                 Message (STR_SAVING "...");
                 CP_SaveGame (1);
@@ -786,20 +751,6 @@ CP_CheckQuick (ScanCode scancode)
             }
             else
             {
-#ifndef SPEAR
-                CA_CacheGrChunk (STARTFONT + 1);
-                CA_CacheGrChunk (C_CURSOR1PIC);
-                CA_CacheGrChunk (C_CURSOR2PIC);
-                CA_CacheGrChunk (C_DISKLOADING1PIC);
-                CA_CacheGrChunk (C_DISKLOADING2PIC);
-                CA_CacheGrChunk (C_SAVEGAMEPIC);
-                CA_CacheGrChunk (C_MOUSELBACKPIC);
-#else
-                CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-                CA_CacheGrChunk (STARTFONT + 1);                     // ADDEDFIX 8 - Andy
-                CA_CacheGrChunk (C_CURSOR1PIC);
-#endif
-
                 VW_FadeOut ();
                 if(screenHeight % 200 != 0)
                     VL_ClearScreen(0);
@@ -822,17 +773,6 @@ CP_CheckQuick (ScanCode scancode)
 
                 if (MousePresent && IN_IsInputGrabbed())
                     IN_CenterMouse();     // Clear accumulated mouse movement
-
-#ifndef SPEAR
-                UNCACHEGRCHUNK (C_CURSOR1PIC);
-                UNCACHEGRCHUNK (C_CURSOR2PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING1PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING2PIC);
-                UNCACHEGRCHUNK (C_SAVEGAMEPIC);
-                UNCACHEGRCHUNK (C_MOUSELBACKPIC);
-#else
-                UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
             }
             return 1;
 
@@ -844,8 +784,6 @@ CP_CheckQuick (ScanCode scancode)
             {
                 char string[100] = STR_LGC;
 
-
-                CA_CacheGrChunk (STARTFONT + 1);
                 fontnumber = 1;
 
                 strcat (string, SaveGameNames[LSItems.curpos]);
@@ -858,20 +796,6 @@ CP_CheckQuick (ScanCode scancode)
             }
             else
             {
-#ifndef SPEAR
-                CA_CacheGrChunk (STARTFONT + 1);
-                CA_CacheGrChunk (C_CURSOR1PIC);
-                CA_CacheGrChunk (C_CURSOR2PIC);
-                CA_CacheGrChunk (C_DISKLOADING1PIC);
-                CA_CacheGrChunk (C_DISKLOADING2PIC);
-                CA_CacheGrChunk (C_LOADGAMEPIC);
-                CA_CacheGrChunk (C_MOUSELBACKPIC);
-#else
-                CA_CacheGrChunk (C_CURSOR1PIC);
-                CA_CacheGrChunk (STARTFONT + 1);                     // ADDEDFIX 8 - Andy
-                CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
-
                 VW_FadeOut ();
                 if(screenHeight % 200 != 0)
                     VL_ClearScreen(0);
@@ -895,17 +819,6 @@ CP_CheckQuick (ScanCode scancode)
 
                 if (MousePresent && IN_IsInputGrabbed())
                     IN_CenterMouse();     // Clear accumulated mouse movement
-
-#ifndef SPEAR
-                UNCACHEGRCHUNK (C_CURSOR1PIC);
-                UNCACHEGRCHUNK (C_CURSOR2PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING1PIC);
-                UNCACHEGRCHUNK (C_DISKLOADING2PIC);
-                UNCACHEGRCHUNK (C_LOADGAMEPIC);
-                UNCACHEGRCHUNK (C_MOUSELBACKPIC);
-#else
-                UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
             }
             return 1;
 
@@ -913,8 +826,6 @@ CP_CheckQuick (ScanCode scancode)
         // QUIT
         //
         case sc_F10:
-            CA_CacheGrChunk (STARTFONT + 1);
-
             WindowX = WindowY = 0;
             WindowW = 320;
             WindowH = 160;
@@ -988,7 +899,6 @@ CP_ViewScores (int blank)
     fontnumber = 0;
 
 #ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
     StartCPMusic (XAWARD_MUS);
 #else
     StartCPMusic (ROSTER_MUS);
@@ -1004,10 +914,6 @@ CP_ViewScores (int blank)
     StartCPMusic (MENUSONG);
     MenuFadeOut ();
 
-#ifdef SPEAR
-    CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
     return 0;
 }
 
@@ -1021,11 +927,6 @@ int
 CP_NewGame (int blank)
 {
     int which, episode;
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
-
 
 #ifndef SPEAR
   firstpart:
@@ -1087,14 +988,12 @@ CP_NewGame (int blank)
     //
     // ALREADY IN A GAME?
     //
-    CacheLump (NEWGAME_LUMP_START, NEWGAME_LUMP_END);
     DrawNewGame ();
     if (ingame)
         if (!Confirm (CURGAME))
         {
             MenuFadeOut ();
-            UnCacheLump (NEWGAME_LUMP_START, NEWGAME_LUMP_END);
-            CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
+
             return 0;
         }
 
@@ -1108,8 +1007,6 @@ CP_NewGame (int blank)
 #ifndef SPEAR
         goto firstpart;
 #else
-        UnCacheLump (NEWGAME_LUMP_START, NEWGAME_LUMP_END);
-        CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
         return 0;
 #endif
     }
@@ -1130,11 +1027,6 @@ CP_NewGame (int blank)
 
     pickquick = 0;
 
-#ifdef SPEAR
-    UnCacheLump (NEWGAME_LUMP_START, NEWGAME_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
-
     return 0;
 }
 
@@ -1150,7 +1042,7 @@ DrawNewEpisode (void)
     int i;
 
 #ifdef JAPAN
-    CA_CacheScreen (S_EPISODEPIC);
+    VWB_DrawPic (0,0,S_EPISODEPIC);
 #else
     ClearMScreen ();
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
@@ -1186,7 +1078,7 @@ void
 DrawNewGame (void)
 {
 #ifdef JAPAN
-    CA_CacheScreen (S_SKILLPIC);
+    VWB_DrawPic (0,0,S_SKILLPIC);
 #else
     ClearMScreen ();
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
@@ -1236,12 +1128,6 @@ int
 CP_Sound (int blank)
 {
     int which;
-
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-    CacheLump (SOUND_LUMP_START, SOUND_LUMP_END);
-#endif
 
     DrawSoundMenu ();
     MenuFadeIn ();
@@ -1340,10 +1226,6 @@ CP_Sound (int blank)
 
     MenuFadeOut ();
 
-#ifdef SPEAR
-    UnCacheLump (SOUND_LUMP_START, SOUND_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
     return 0;
 }
 
@@ -1359,7 +1241,7 @@ DrawSoundMenu (void)
 
 
 #ifdef JAPAN
-    CA_CacheScreen (S_SOUNDPIC);
+    VWB_DrawPic (0,0,S_SOUNDPIC);
 #else
     //
     // DRAW SOUND MENU
@@ -1546,12 +1428,6 @@ CP_LoadGame (int quick)
         }
     }
 
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-    CacheLump (LOADSAVE_LUMP_START, LOADSAVE_LUMP_END);
-#endif
-
     DrawLoadSaveScreen (0);
 
     do
@@ -1600,11 +1476,6 @@ CP_LoadGame (int quick)
     while (which >= 0);
 
     MenuFadeOut ();
-
-#ifdef SPEAR
-    UnCacheLump (LOADSAVE_LUMP_START, LOADSAVE_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
 
     return exit;
 }
@@ -1733,12 +1604,6 @@ CP_SaveGame (int quick)
         }
     }
 
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-    CacheLump (LOADSAVE_LUMP_START, LOADSAVE_LUMP_END);
-#endif
-
     DrawLoadSaveScreen (1);
 
     do
@@ -1827,11 +1692,6 @@ CP_SaveGame (int quick)
 
     MenuFadeOut ();
 
-#ifdef SPEAR
-    UnCacheLump (LOADSAVE_LUMP_START, LOADSAVE_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
-
     return exit;
 }
 
@@ -1844,11 +1704,6 @@ int
 CP_Control (int blank)
 {
     int which;
-
-#ifdef SPEAR
-    UnCacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-    CacheLump (CONTROL_LUMP_START, CONTROL_LUMP_END);
-#endif
 
     DrawCtlScreen ();
     MenuFadeIn ();
@@ -1887,10 +1742,6 @@ CP_Control (int blank)
 
     MenuFadeOut ();
 
-#ifdef SPEAR
-    UnCacheLump (CONTROL_LUMP_START, CONTROL_LUMP_END);
-    CacheLump (OPTIONS_LUMP_START, OPTIONS_LUMP_END);
-#endif
     return 0;
 }
 
@@ -1903,7 +1754,7 @@ void
 DrawMouseSens (void)
 {
 #ifdef JAPAN
-    CA_CacheScreen (S_MOUSESENSPIC);
+    VWB_DrawPic (0,0,S_MOUSESENSPIC);
 #else
     ClearMScreen ();
     VWB_DrawPic (112, 184, C_MOUSELBACKPIC);
@@ -2028,7 +1879,7 @@ DrawCtlScreen (void)
     int i, x, y;
 
 #ifdef JAPAN
-    CA_CacheScreen (S_CONTROLPIC);
+    VWB_DrawPic (0,0,S_CONTROLPIC);
 #else
     ClearMScreen ();
     DrawStripes (10);
@@ -2513,7 +2364,7 @@ DrawCustomScreen (void)
 
 
 #ifdef JAPAN
-    CA_CacheScreen (S_CUSTOMPIC);
+    VWB_DrawPic (0,0,S_CUSTOMPIC);
     fontnumber = 1;
 
     PrintX = CST_START;
@@ -2914,7 +2765,7 @@ DrawChangeView (int view)
     if(view != 21) VWB_Bar (0, rescaledHeight - 40, 320, 40, bordercol);
 
 #ifdef JAPAN
-    CA_CacheScreen (S_CHANGEPIC);
+    VWB_DrawPic (0,0,S_CHANGEPIC);
 
     ShowViewSize (view);
 #else
@@ -3082,32 +2933,6 @@ ClearMScreen (void)
 
 ////////////////////////////////////////////////////////////////////
 //
-// Un/Cache a LUMP of graphics
-//
-////////////////////////////////////////////////////////////////////
-void
-CacheLump (int lumpstart, int lumpend)
-{
-    int i;
-
-    for (i = lumpstart; i <= lumpend; i++)
-        CA_CacheGrChunk (i);
-}
-
-
-void
-UnCacheLump (int lumpstart, int lumpend)
-{
-    int i;
-
-    for (i = lumpstart; i <= lumpend; i++)
-        if (grsegs[i])
-            UNCACHEGRCHUNK (i);
-}
-
-
-////////////////////////////////////////////////////////////////////
-//
 // Draw a window for a menu
 //
 ////////////////////////////////////////////////////////////////////
@@ -3138,15 +2963,8 @@ void
 SetupControlPanel (void)
 {
     //
-    // CACHE GRAPHICS & SOUNDS
+    // CACHE SOUNDS
     //
-    CA_CacheGrChunk (STARTFONT + 1);
-#ifndef SPEAR
-    CacheLump (CONTROLS_LUMP_START, CONTROLS_LUMP_END);
-#else
-    CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
-
     SETFONTCOLOR (TEXTCOLOR, BKGDCOLOR);
     fontnumber = 1;
     WindowH = 200;
@@ -3216,12 +3034,6 @@ void SetupSaveGames()
 void
 CleanupControlPanel (void)
 {
-#ifndef SPEAR
-    UnCacheLump (CONTROLS_LUMP_START, CONTROLS_LUMP_END);
-#else
-    UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
-#endif
-
     fontnumber = 0;
 }
 
@@ -3783,10 +3595,7 @@ GetYorN (int x, int y, int pic)
     int xit = 0;
     soundnames whichsnd[2] = { ESCPRESSEDSND, SHOOTSND };
 
-
-    CA_CacheGrChunk (pic);
     VWB_DrawPic (x * 8, y * 8, pic);
-    UNCACHEGRCHUNK (pic);
     VW_UpdateScreen ();
     IN_ClearKeysDown ();
 
@@ -3840,8 +3649,6 @@ Message (const char *string)
     int h = 0, w = 0, mw = 0, i, len = (int) strlen(string);
     fontstruct *font;
 
-
-    CA_CacheGrChunk (STARTFONT + 1);
     fontnumber = 1;
     font = (fontstruct *) grsegs[STARTFONT + fontnumber];
     h = font->height;

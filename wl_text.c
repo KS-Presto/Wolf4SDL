@@ -527,14 +527,14 @@ void BackPage (void)
 /*
 =====================
 =
-= CacheLayoutGraphics
+= CacheLayout
 =
-= Scans an entire layout file (until a ^E) marking all graphics used, and
-= counting pages, then caches the graphics in
+= Scans an entire layout file (until a ^E), counting pages
 =
 =====================
 */
-void CacheLayoutGraphics (void)
+
+void CacheLayout (void)
 {
     char    *bombpoint, *textstart;
     char    ch;
@@ -550,35 +550,24 @@ void CacheLayoutGraphics (void)
             ch = toupper(*++text);
             if (ch == 'P')          // start of a page
                 numpages++;
-            if (ch == 'E')          // end of file, so load graphics and return
+            if (ch == 'E')          // end of file, so return
             {
-#ifndef SPEAR
-                CA_CacheGrChunk(H_TOPWINDOWPIC);
-                CA_CacheGrChunk(H_LEFTWINDOWPIC);
-                CA_CacheGrChunk(H_RIGHTWINDOWPIC);
-                CA_CacheGrChunk(H_BOTTOMINFOPIC);
-#endif
-                //                              CA_CacheMarks ();
                 text = textstart;
                 return;
             }
-            if (ch == 'G')          // draw graphic command, so mark graphics
-            {
+
+            if (ch == 'G')          // draw graphic command
                 ParsePicCommand ();
-                CA_CacheGrChunk (picnum);
-            }
-            if (ch == 'T')          // timed draw graphic command, so mark graphics
-            {
+
+            if (ch == 'T')          // timed draw graphic command
                 ParseTimedCommand ();
-                CA_CacheGrChunk (picnum);
-            }
         }
         else
             text++;
 
     } while (text<bombpoint);
 
-    Quit ("CacheLayoutGraphics: No ^E to terminate file!");
+    Quit ("CacheLayout: No ^E to terminate file!");
 }
 #endif
 
@@ -641,9 +630,8 @@ void ShowArticle (char *article)
     text = article;
     oldfontnumber = fontnumber;
     fontnumber = 0;
-    CA_CacheGrChunk(STARTFONT);
     VWB_Bar (0,0,320,200,BACKCOLOR);
-    CacheLayoutGraphics ();
+    CacheLayout ();
 #endif
 
     newpage = true;
@@ -656,9 +644,9 @@ void ShowArticle (char *article)
             newpage = false;
 #ifdef JAPAN
             if (!which)
-                CA_CacheScreen(snames[pagenum - 1]);
+                VWB_DrawPic (0,0,snames[pagenum - 1]);
             else
-                CA_CacheScreen(enames[which*2 + pagenum - 1]);
+                VWB_DrawPic (0,0,enames[which*2 + pagenum - 1]);
 #else
             PageLayout (true);
 #endif
@@ -774,7 +762,6 @@ void HelpScreens (void)
 
 #ifdef ARTSEXTERN
     artnum = helpextern;
-    CA_CacheGrChunk (artnum);
     text = (char *)grsegs[artnum];
 #else
     CA_LoadFile (helpfilename,&layout);
@@ -783,9 +770,7 @@ void HelpScreens (void)
 
     ShowArticle (text);
 
-#ifdef ARTSEXTERN
-    UNCACHEGRCHUNK(artnum);
-#else
+#ifndef ARTSEXTERN
     free(layout);
 #endif
 
@@ -826,7 +811,6 @@ void EndText (void)
 
 #ifdef ARTSEXTERN
     artnum = endextern+gamestate.episode;
-    CA_CacheGrChunk (artnum);
     text = (char *)grsegs[artnum];
 #else
     endfilename[6] = '1'+gamestate.episode;
@@ -836,9 +820,7 @@ void EndText (void)
 
     ShowArticle (text);
 
-#ifdef ARTSEXTERN
-    UNCACHEGRCHUNK(artnum);
-#else
+#ifndef ARTSEXTERN
     free(layout);
 #endif
 

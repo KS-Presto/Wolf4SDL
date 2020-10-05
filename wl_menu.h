@@ -141,8 +141,6 @@ void DrawOutline(int x,int y,int w,int h,int color1,int color2);
 void WaitKeyUp(void);
 void ReadAnyControl(ControlInfo *ci);
 void TicDelay(int count);
-void CacheLump(int lumpstart,int lumpend);
-void UnCacheLump(int lumpstart,int lumpend);
 int StartCPMusic(int song);
 int  Confirm(const char *string);
 void Message(const char *string);

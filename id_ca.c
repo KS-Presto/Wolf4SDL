@@ -451,13 +451,6 @@ void CAL_SetupGrFile (void)
     int handle;
     byte *compseg;
 
-#ifdef GRHEADERLINKED
-
-    grhuffman = (huffnode *)&EGAdict;
-    grstarts = (int32_t _seg *)FP_SEG(&EGAhead);
-
-#else
-
 //
 // load ???dict.ext (huffman dictionary for graphics files)
 //
@@ -508,10 +501,9 @@ void CAL_SetupGrFile (void)
         *i = (val == 0x00FFFFFF ? -1 : val);
         d += 3;
     }
-#endif
 
 //
-// Open the graphics file, leaving it open until the game is finished
+// Open the graphics file
 //
     strcpy(fname,gfilename);
     strcat(fname,graphext);
@@ -532,6 +524,10 @@ void CAL_SetupGrFile (void)
     read (grhandle,compseg,chunkcomplen);
     CAL_HuffExpand(compseg, (byte*)pictable, NUMPICS * sizeof(pictabletype), grhuffman);
     free(compseg);
+
+    CA_CacheGrChunks ();
+
+    close (grhandle);
 }
 
 //==========================================================================
@@ -700,13 +696,15 @@ void CA_Shutdown (void)
 
     if(maphandle != -1)
         close(maphandle);
-    if(grhandle != -1)
-        close(grhandle);
     if(audiohandle != -1)
         close(audiohandle);
 
-    for(i=0; i<NUMCHUNKS; i++)
-        UNCACHEGRCHUNK(i);
+    for (i=0; i<NUMCHUNKS; i++)
+    {
+        free (grsegs[i]);
+        grsegs[i] = NULL;
+    }
+
     free(pictable);
 
     switch(oldsoundmode)
@@ -916,126 +914,65 @@ void CAL_ExpandGrChunk (int chunk, int32_t *source)
 /*
 ======================
 =
-= CA_CacheGrChunk
+= CA_CacheGrChunks
 =
-= Makes sure a given chunk is in memory, loadiing it if needed
+= Load all graphics chunks into memory
 =
 ======================
 */
 
-void CA_CacheGrChunk (int chunk)
+void CA_CacheGrChunks (void)
 {
     int32_t pos,compressed;
     int32_t *source;
-    int  next;
+    int     chunk,next;
 
-    if (grsegs[chunk])
-        return;                             // already in memory
-
-//
-// load the chunk into a buffer, either the miscbuffer if it fits, or allocate
-// a larger buffer
-//
-    pos = GRFILEPOS(chunk);
-    if (pos<0)                              // $FFFFFFFF start is a sparse tile
-        return;
-
-    next = chunk +1;
-    while (GRFILEPOS(next) == -1)           // skip past any sparse tiles
-        next++;
-
-    compressed = GRFILEPOS(next)-pos;
-
-    lseek(grhandle,pos,SEEK_SET);
-
-    if (compressed<=BUFFERSIZE)
+    for (chunk = STRUCTPIC + 1; chunk < NUMCHUNKS; chunk++)
     {
-        read(grhandle,bufferseg,compressed);
-        source = bufferseg;
-    }
-    else
-    {
-        source = (int32_t *) malloc(compressed);
-        CHECKMALLOCRESULT(source);
-        read(grhandle,source,compressed);
-    }
+        if (grsegs[chunk])
+            return;                             // already in memory
 
-    CAL_ExpandGrChunk (chunk,source);
+        //
+        // load the chunk into a buffer, either the miscbuffer if it fits, or allocate
+        // a larger buffer
+        //
+        pos = GRFILEPOS(chunk);
 
-    if (compressed>BUFFERSIZE)
-        free(source);
-}
+        if (pos<0)                              // $FFFFFFFF start is a sparse tile
+            return;
 
+        next = chunk +1;
 
+        while (GRFILEPOS(next) == -1)           // skip past any sparse tiles
+            next++;
 
-//==========================================================================
+        compressed = GRFILEPOS(next)-pos;
 
-/*
-======================
-=
-= CA_CacheScreen
-=
-= Decompresses a chunk from disk straight onto the screen
-=
-======================
-*/
+        lseek(grhandle,pos,SEEK_SET);
 
-void CA_CacheScreen (int chunk)
-{
-    int32_t    pos,compressed,expanded;
-    memptr  bigbufferseg;
-    int32_t    *source;
-    int             next;
-    byte *pic, *vbuf;
-    int x, y, scx, scy;
-    unsigned i, j;
-
-//
-// load the chunk into a buffer
-//
-    pos = GRFILEPOS(chunk);
-    next = chunk +1;
-    while (GRFILEPOS(next) == -1)           // skip past any sparse tiles
-        next++;
-    compressed = GRFILEPOS(next)-pos;
-
-    lseek(grhandle,pos,SEEK_SET);
-
-    bigbufferseg=malloc(compressed);
-    CHECKMALLOCRESULT(bigbufferseg);
-    read(grhandle,bigbufferseg,compressed);
-    source = (int32_t *) bigbufferseg;
-
-    expanded = *source++;
-
-//
-// allocate final space, decompress it, and free bigbuffer
-// Sprites need to have shifts made and various other junk
-//
-    pic = (byte *) malloc(64000);
-    CHECKMALLOCRESULT(pic);
-    CAL_HuffExpand((byte *) source, pic, expanded, grhuffman);
-
-    vbuf = VL_LockSurface(curSurface);
-    if(vbuf != NULL)
-    {
-        for(y = 0, scy = 0; y < 200; y++, scy += scaleFactor)
+        if (compressed<=BUFFERSIZE)
         {
-            for(x = 0, scx = 0; x < 320; x++, scx += scaleFactor)
-            {
-                byte col = pic[(y * 80 + (x >> 2)) + (x & 3) * 80 * 200];
-                for(i = 0; i < scaleFactor; i++)
-                    for(j = 0; j < scaleFactor; j++)
-                        vbuf[(scy + i) * curPitch + scx + j] = col;
-            }
+            read(grhandle,bufferseg,compressed);
+            source = bufferseg;
         }
-        VL_UnlockSurface(curSurface);
+        else
+        {
+            source = (int32_t *) malloc(compressed);
+            CHECKMALLOCRESULT(source);
+            read(grhandle,source,compressed);
+        }
+
+        CAL_ExpandGrChunk (chunk,source);
+
+        if (compressed>BUFFERSIZE)
+            free(source);
     }
-    free(pic);
-    free(bigbufferseg);
 }
 
+
+
 //==========================================================================
+
 
 /*
 ======================

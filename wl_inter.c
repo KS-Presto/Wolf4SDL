@@ -42,12 +42,10 @@ void
 EndScreen (int palette, int screen)
 {
     SDL_Color pal[256];
-    CA_CacheScreen (screen);
+    VWB_DrawPic (0,0,screen);
     VW_UpdateScreen ();
-    CA_CacheGrChunk (palette);
     VL_ConvertPalette(grsegs[palette], pal, 256);
     VL_FadeIn (0, 255, pal, 30);
-    UNCACHEGRCHUNK (palette);
     IN_ClearKeysDown ();
     IN_Ack ();
     VW_FadeOut ();
@@ -61,12 +59,10 @@ EndSpear (void)
 
     EndScreen (END1PALETTE, ENDSCREEN11PIC);
 
-    CA_CacheScreen (ENDSCREEN3PIC);
+    VWB_DrawPic (0,0,ENDSCREEN3PIC);
     VW_UpdateScreen ();
-    CA_CacheGrChunk (END3PALETTE);
     VL_ConvertPalette(grsegs[END3PALETTE], pal, 256);
     VL_FadeIn (0, 255, pal, 30);
-    UNCACHEGRCHUNK (END3PALETTE);
     fontnumber = 0;
     fontcolor = 0xd0;
     WindowX = 0;
@@ -129,11 +125,6 @@ Victory (void)
 #ifdef SPEAR
     StartCPMusic (XTHEEND_MUS);
 
-    CA_CacheGrChunk (BJCOLLAPSE1PIC);
-    CA_CacheGrChunk (BJCOLLAPSE2PIC);
-    CA_CacheGrChunk (BJCOLLAPSE3PIC);
-    CA_CacheGrChunk (BJCOLLAPSE4PIC);
-
     VWB_Bar (0, 0, 320, 200, VIEWCOLOR);
     VWB_DrawPic (124, 44, BJCOLLAPSE1PIC);
     VW_UpdateScreen ();
@@ -149,21 +140,11 @@ Victory (void)
     VW_UpdateScreen ();
     VW_WaitVBL (3 * 70);
 
-    UNCACHEGRCHUNK (BJCOLLAPSE1PIC);
-    UNCACHEGRCHUNK (BJCOLLAPSE2PIC);
-    UNCACHEGRCHUNK (BJCOLLAPSE3PIC);
-    UNCACHEGRCHUNK (BJCOLLAPSE4PIC);
     VL_FadeOut (0, 255, 0, 17, 17, 5);
 #endif
 
     StartCPMusic (URAHERO_MUS);
     ClearSplitVWB ();
-    CacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
-    CA_CacheGrChunk (STARTFONT);
-
-#ifndef SPEAR
-    CA_CacheGrChunk (C_TIMECODEPIC);
-#endif
 
     VWB_Bar (0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
     if (bordercol != VIEWCOLOR)
@@ -171,9 +152,7 @@ Victory (void)
 
 #ifdef JAPAN
 #ifndef JAPDEMO
-    CA_CacheGrChunk (C_ENDRATIOSPIC);
     VWB_DrawPic (0, 0, C_ENDRATIOSPIC);
-    UNCACHEGRCHUNK (C_ENDRATIOSPIC);
 #endif
 #else
     Write (18, 2, STR_YOUWIN);
@@ -285,11 +264,6 @@ Victory (void)
     MainMenu[savegame].active = 0;  // ADDEDFIX 3 - Tricob
 
 #ifndef SPEAR
-    UNCACHEGRCHUNK (C_TIMECODEPIC);
-#endif
-    UnCacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
-
-#ifndef SPEAR
     EndText ();
 #else
     EndSpear ();
@@ -316,11 +290,8 @@ PG13 (void)
     VW_FadeOut ();
     VWB_Bar (0, 0, 320, 200, 0x82);     // background
 
-    CA_CacheGrChunk (PG13PIC);
     VWB_DrawPic (216, 110, PG13PIC);
     VW_UpdateScreen ();
-
-    UNCACHEGRCHUNK (PG13PIC);
 
     VW_FadeIn ();
     IN_UserInput (TickBase * 7);
@@ -559,7 +530,6 @@ LevelCompleted (void)
 #endif
     };
 
-    CacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
     ClearSplitVWB ();           // set up for double buffering in split screen
     VWB_Bar (0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
 
@@ -575,9 +545,7 @@ LevelCompleted (void)
     IN_StartAck ();
 
 #ifdef JAPAN
-    CA_CacheGrChunk (C_INTERMISSIONPIC);
     VWB_DrawPic (0, 0, C_INTERMISSIONPIC);
-    UNCACHEGRCHUNK (C_INTERMISSIONPIC);
 #endif
     VWB_DrawPic (0, 16, L_GUYPIC);
 
@@ -906,10 +874,8 @@ done:   itoa (kr, tempstr, 10);
     {
         SD_PlaySound (BONUS1UPSND);
 
-        CA_CacheGrChunk (STARTFONT + 1);
         Message ("This concludes your demo\n"
                  "of Spear of Destiny! Now,\n" "go to your local software\n" "store and buy it!");
-        UNCACHEGRCHUNK (STARTFONT + 1);
 
         IN_ClearKeysDown ();
         IN_Ack ();
@@ -921,10 +887,8 @@ done:   itoa (kr, tempstr, 10);
     {
         SD_PlaySound (BONUS1UPSND);
 
-        CA_CacheGrChunk (STARTFONT + 1);
         Message ("This concludes your demo\n"
                  "of Wolfenstein 3-D! Now,\n" "go to your local software\n" "store and buy it!");
-        UNCACHEGRCHUNK (STARTFONT + 1);
 
         IN_ClearKeysDown ();
         IN_Ack ();
@@ -933,8 +897,6 @@ done:   itoa (kr, tempstr, 10);
 
     VW_FadeOut ();
     DrawPlayBorder();
-
-    UnCacheLump (LEVELEND_LUMP_START, LEVELEND_LUMP_END);
 }
 
 
@@ -1030,21 +992,10 @@ DrawHighScores (void)
     HighScore *s;
 
 #ifndef SPEAR
-    CA_CacheGrChunk (HIGHSCORESPIC);
-    CA_CacheGrChunk (STARTFONT);
-#ifndef APOGEE_1_0
-    CA_CacheGrChunk (C_LEVELPIC);
-    CA_CacheGrChunk (C_SCOREPIC);
-    CA_CacheGrChunk (C_NAMEPIC);
-#else
-    CA_CacheGrChunk (C_CODEPIC);
-#endif
-
     ClearMScreen ();
     DrawStripes (10);
 
     VWB_DrawPic (48, 0, HIGHSCORESPIC);
-    UNCACHEGRCHUNK (HIGHSCORESPIC);
 
 #ifndef APOGEE_1_0
     VWB_DrawPic (4 * 8, 68, C_NAMEPIC);
@@ -1056,13 +1007,9 @@ DrawHighScores (void)
     fontnumber = 0;
 
 #else
-    CacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
     ClearMScreen ();
     DrawStripes (10);
-    UnCacheLump (BACKDROP_LUMP_START, BACKDROP_LUMP_END);
 
-    CacheLump (HIGHSCORES_LUMP_START, HIGHSCORES_LUMP_END);
-    CA_CacheGrChunk (STARTFONT + 1);
     VWB_DrawPic (0, 0, HIGHSCORESPIC);
 
     fontnumber = 1;
@@ -1166,7 +1113,6 @@ DrawHighScores (void)
     VW_UpdateScreen ();
 
 #ifdef SPEAR
-    UnCacheLump (HIGHSCORES_LUMP_START, HIGHSCORES_LUMP_END);
     fontnumber = 0;
 #endif
 }
@@ -1262,7 +1208,6 @@ NonShareware (void)
     ClearMScreen ();
     DrawStripes (10);
 
-    CA_CacheGrChunk (STARTFONT + 1);
     fontnumber = 1;
 
     SETFONTCOLOR (READHCOLOR, BKGDCOLOR);
@@ -1444,7 +1389,9 @@ char MiscCorrect[4][5] = { "ss", "8", STR_STAR, "45" };
 int
 BackDoor (char *s)
 {
-    for (int i = 0; i < 5; i++)
+    int i;
+
+    for (i = 0; i < 5; i++)
     {
         if (!strcasecmp (s, BackDoorStrs[i]))
         {
@@ -1496,9 +1443,6 @@ CopyProtection (void)
 
     attempt = 0;
     VW_FadeOut ();
-    CA_CacheGrChunk (C_BACKDROPPIC);
-    CacheLump (COPYPROT_LUMP_START, COPYPROT_LUMP_END);
-    CA_CacheGrChunk (STARTFONT + 1);
     CA_LoadAllSounds ();
     StartCPMusic (COPYPRO_MUS);
     US_InitRndT (true);
@@ -1691,9 +1635,6 @@ CopyProtection (void)
 
             SD_PlaySound (BONUS1UPSND);
             SD_WaitSoundDone ();
-            UNCACHEGRCHUNK (STARTFONT + 1);
-            UNCACHEGRCHUNK (C_BACKDROPPIC);
-            UnCacheLump (COPYPROT_LUMP_START, COPYPROT_LUMP_END);
 
             switch (SoundMode)
             {

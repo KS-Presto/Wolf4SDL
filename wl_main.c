@@ -1133,12 +1133,6 @@ void DoJukebox(void)
     start = 0;
 #endif
 
-    CA_CacheGrChunk (STARTFONT+1);
-#ifdef SPEAR
-    CacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
-#else
-    CacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-#endif
     CA_LoadAllSounds ();
 
     fontnumber=1;
@@ -1183,11 +1177,6 @@ void DoJukebox(void)
 
     MenuFadeOut();
     IN_ClearKeysDown();
-#ifdef SPEAR
-    UnCacheLump (BACKDROP_LUMP_START,BACKDROP_LUMP_END);
-#else
-    UnCacheLump (CONTROLS_LUMP_START,CONTROLS_LUMP_END);
-#endif
 }
 #endif
 
@@ -1268,7 +1257,6 @@ static void InitGame()
     {
         byte *screen;
 
-        CA_CacheGrChunk (ERRORSCREEN);
         screen = grsegs[ERRORSCREEN];
         ShutdownId();
 /*        memcpy((byte *)0xb8000,screen+7+7*160,17*160);
@@ -1313,10 +1301,6 @@ static void InitGame()
 //
 // load in and lock down some basic chunks
 //
-
-    CA_CacheGrChunk(STARTFONT);
-    CA_CacheGrChunk(STATUSBARPIC);
-
     LoadLatchMem ();
     BuildTables ();          // trig tables
     SetupWalls ();
@@ -1462,7 +1446,6 @@ void Quit (const char *errorStr, ...)
     {
 #ifdef NOTYET
         #ifndef JAPAN
-        CA_CacheGrChunk (ORDERSCREEN);
         screen = grsegs[ORDERSCREEN];
         #endif
 #endif
@@ -1470,10 +1453,7 @@ void Quit (const char *errorStr, ...)
     }
 #ifdef NOTYET
     else
-    {
-        CA_CacheGrChunk (ERRORSCREEN);
         screen = grsegs[ERRORSCREEN];
-    }
 #endif
 
     ShutdownId ();
@@ -1589,22 +1569,15 @@ static void DemoLoop()
 
 #ifdef SPEAR
             SDL_Color pal[256];
-            CA_CacheGrChunk (TITLEPALETTE);
             VL_ConvertPalette(grsegs[TITLEPALETTE], pal, 256);
 
-            CA_CacheGrChunk (TITLE1PIC);
             VWB_DrawPic (0,0,TITLE1PIC);
-            UNCACHEGRCHUNK (TITLE1PIC);
-
-            CA_CacheGrChunk (TITLE2PIC);
             VWB_DrawPic (0,80,TITLE2PIC);
-            UNCACHEGRCHUNK (TITLE2PIC);
+
             VW_UpdateScreen ();
             VL_FadeIn(0,255,pal,30);
-
-            UNCACHEGRCHUNK (TITLEPALETTE);
 #else
-            CA_CacheScreen (TITLEPIC);
+            VWB_DrawPic (0,0,TITLEPIC);
             VW_UpdateScreen ();
             VW_FadeIn();
 #endif
@@ -1614,7 +1587,7 @@ static void DemoLoop()
 //
 // credits page
 //
-            CA_CacheScreen (CREDITSPIC);
+            VWB_DrawPic (0,0,CREDITSPIC);
             VW_UpdateScreen();
             VW_FadeIn ();
             if (IN_UserInput(TickBase*10))

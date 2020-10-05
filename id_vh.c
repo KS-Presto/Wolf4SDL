@@ -257,7 +257,6 @@ void LoadLatchMem (void)
     SDL_SetColors(surf, gamepal, 0, 256);
 
 	latchpics[0] = surf;
-	CA_CacheGrChunk (STARTTILE8);
 	src = grsegs[STARTTILE8];
 
 	for (i=0;i<NUMTILE8;i++)
@@ -265,7 +264,6 @@ void LoadLatchMem (void)
 		VL_MemToLatch (src, 8, 8, surf, (i & 7) * 8, (i >> 3) * 8);
 		src += 64;
 	}
-	UNCACHEGRCHUNK (STARTTILE8);
 
 	latchpics[1] = NULL;  // not used
 
@@ -287,9 +285,7 @@ void LoadLatchMem (void)
         SDL_SetColors(surf, gamepal, 0, 256);
 
 		latchpics[2+i-start] = surf;
-		CA_CacheGrChunk (i);
 		VL_MemToLatch (grsegs[i], width, height, surf, 0, 0);
-		UNCACHEGRCHUNK(i);
 	}
 }
 

@@ -10,7 +10,6 @@
     #define MAPPLANES       2
 #endif
 
-#define UNCACHEGRCHUNK(chunk) {if(grsegs[chunk]) {free(grsegs[chunk]); grsegs[chunk]=NULL;}}
 #define UNCACHEAUDIOCHUNK(chunk) {if(audiosegs[chunk]) {free(audiosegs[chunk]); audiosegs[chunk]=NULL;}}
 
 //===========================================================================
@@ -50,10 +49,8 @@ void CA_Shutdown (void);
 int32_t CA_CacheAudioChunk (int chunk);
 void CA_LoadAllSounds (void);
 
-void CA_CacheGrChunk (int chunk);
+void CA_CacheGrChunks (void);
 void CA_CacheMap (int mapnum);
-
-void CA_CacheScreen (int chunk);
 
 void CA_CannotOpen(const char *name);
 
