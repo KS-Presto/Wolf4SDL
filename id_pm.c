@@ -30,13 +30,11 @@ void PM_Startup()
     PMSoundStart = 0;
     fread(&PMSoundStart, sizeof(word), 1, file);
 
-    uint32_t* pageOffsets = (uint32_t *) malloc((ChunksInFile + 1) * sizeof(int32_t));
-    CHECKMALLOCRESULT(pageOffsets);
-    fread(pageOffsets, sizeof(uint32_t), ChunksInFile, file);
+    uint32_t* pageOffsets = SafeMalloc((ChunksInFile + 1) * sizeof(*pageOffsets));
+    fread(pageOffsets, sizeof(*pageOffsets), ChunksInFile, file);
 
-    word *pageLengths = (word *) malloc(ChunksInFile * sizeof(word));
-    CHECKMALLOCRESULT(pageLengths);
-    fread(pageLengths, sizeof(word), ChunksInFile, file);
+    word *pageLengths = SafeMalloc(ChunksInFile * sizeof(*pageLengths));
+    fread(pageLengths, sizeof(*pageLengths), ChunksInFile, file);
 
     fseek(file, 0, SEEK_END);
     long fileSize = ftell(file);
@@ -72,11 +70,9 @@ void PM_Startup()
         alignPadding++;
 
     PMPageDataSize = (size_t) pageDataSize + alignPadding;
-    PMPageData = (uint32_t *) malloc(PMPageDataSize);
-    CHECKMALLOCRESULT(PMPageData);
+    PMPageData = SafeMalloc(PMPageDataSize);
 
-    PMPages = (uint8_t **) malloc((ChunksInFile + 1) * sizeof(uint8_t *));
-    CHECKMALLOCRESULT(PMPages);
+    PMPages = SafeMalloc((ChunksInFile + 1) * sizeof(*PMPages));
 
     // Load pages and initialize PMPages pointers
     uint8_t *ptr = (uint8_t *) PMPageData;
@@ -106,7 +102,7 @@ void PM_Startup()
         else size = pageOffsets[i + 1] - pageOffsets[i];
 
         fseek(file, pageOffsets[i], SEEK_SET);
-        fread(ptr, 1, size, file);
+        fread(ptr, sizeof(*ptr), size, file);
         ptr += size;
     }
 
