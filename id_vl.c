@@ -80,9 +80,16 @@ CASSERT(lengthof(gamepal) == 256)
 =======================
 */
 
-void	VL_Shutdown (void)
+void VL_Shutdown (void)
 {
-	//VL_SetTextMode ();
+    SDL_FreeSurface (screenBuffer);
+
+    free (pixelangle);
+    free (wallheight);
+
+    screenBuffer = curSurface = NULL;
+    pixelangle = NULL;
+    wallheight = NULL;
 }
 
 

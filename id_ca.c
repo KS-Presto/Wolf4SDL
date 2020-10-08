@@ -681,9 +681,9 @@ void CA_Shutdown (void)
 {
     int i,start;
 
-    if(maphandle != -1)
+    if (maphandle != -1)
         close(maphandle);
-    if(audiohandle != -1)
+    if (audiohandle != -1)
         close(audiohandle);
 
     for (i=0; i<NUMCHUNKS; i++)
@@ -692,7 +692,23 @@ void CA_Shutdown (void)
         grsegs[i] = NULL;
     }
 
-    free(pictable);
+    free (pictable);
+    pictable = NULL;
+
+    for (i = 0; i < NUMMAPS; i++)
+    {
+        free (mapheaderseg[i]);
+        mapheaderseg[i] = NULL;
+    }
+
+    for (i = 0; i < MAPPLANES; i++)
+    {
+        free (mapsegs[i]);
+        mapsegs[i] = NULL;
+    }
+
+    free (tinf);
+    tinf = NULL;
 
     switch(oldsoundmode)
     {
@@ -777,6 +793,8 @@ void CA_CacheAdlibSoundChunk (int chunk)
     read(audiohandle, sound->data, size - ORIG_ADLIBSOUND_SIZE + 1);  // + 1 because of byte data[1]
 
     audiosegs[chunk]=(byte *) sound;
+
+    free (ptr);
 }
 
 //===========================================================================
@@ -924,7 +942,7 @@ void CA_CacheGrChunks (void)
         if (pos<0)                              // $FFFFFFFF start is a sparse tile
             return;
 
-        next = chunk +1;
+        next = chunk + 1;
 
         while (GRFILEPOS(next) == -1)           // skip past any sparse tiles
             next++;

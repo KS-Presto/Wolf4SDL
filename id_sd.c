@@ -973,7 +973,8 @@ SD_Shutdown(void)
         if(SoundChunks[i]) Mix_FreeChunk(SoundChunks[i]);
     }
 
-    free(DigiList);
+    free (DigiList);
+    DigiList = NULL;
 
     SD_Started = false;
 }
