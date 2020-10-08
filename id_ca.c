@@ -916,6 +916,36 @@ void CAL_ExpandGrChunk (int chunk, int32_t *source)
 /*
 ======================
 =
+= CAL_DeplaneGrChunk
+=
+======================
+*/
+
+void CAL_DeplaneGrChunk (int chunk)
+{
+    int     i;
+    int16_t width,height;
+
+    if (chunk == STARTTILE8)
+    {
+        width = height = 8;
+
+        for (i = 0; i < NUMTILE8; i++)
+            VL_DePlaneVGA (grsegs[chunk] + (i * (width * height)),width,height);
+    }
+    else
+    {
+        width = pictable[chunk - STARTPICS].width;
+        height = pictable[chunk - STARTPICS].height;
+
+        VL_DePlaneVGA (grsegs[chunk],width,height);
+    }
+}
+
+
+/*
+======================
+=
 = CA_CacheGrChunks
 =
 = Load all graphics chunks into memory
@@ -955,6 +985,9 @@ void CA_CacheGrChunks (void)
         read(grhandle,source,compressed);
 
         CAL_ExpandGrChunk (chunk,source);
+
+        if (chunk >= STARTPICS && chunk < STARTEXTERNS)
+            CAL_DeplaneGrChunk (chunk);
 
         free(source);
     }

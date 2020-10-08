@@ -34,6 +34,7 @@ extern SDL_Color gamepal[256];
 #define VL_WaitVBL(a)        SDL_Delay((a)*8)
 #define VL_ClearScreen(c)    SDL_FillRect(curSurface,NULL,(c))
 
+void VL_DePlaneVGA (byte *source, int width, int height);
 void VL_SetVGAPlaneMode (void);
 void VL_SetTextMode (void);
 void VL_Shutdown (void);
@@ -57,7 +58,6 @@ void VL_Vlin            (int x, int y, int height, int color);
 void VL_BarScaledCoord  (int scx, int scy, int scwidth, int scheight, int color);
 void VL_Bar             (int x, int y, int width, int height, int color);
 
-void VL_MungePic                (byte *source, unsigned width, unsigned height);
 void VL_DrawPicBare             (int x, int y, byte *pic, int width, int height);
 void VL_ScreenToScreen          (SDL_Surface *source, SDL_Surface *dest);
 void VL_MemToScreenScaledCoord  (byte *source, int width, int height, int scx, int scy);

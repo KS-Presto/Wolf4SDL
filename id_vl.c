@@ -574,6 +574,57 @@ void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 
 
 /*
+===================
+=
+= VL_DePlaneVGA
+=
+= Unweave a VGA graphic to simplify drawing
+=
+===================
+*/
+
+void VL_DePlaneVGA (byte *source, int width, int height)
+{
+    int  x,y,plane;
+    word size,pwidth;
+    byte *temp,*dest,*srcline;
+
+    size = width * height;
+
+    if (width & 3)
+        Quit ("DePlaneVGA: width not divisible by 4!");
+
+    temp = SafeMalloc(size);
+
+//
+// munge pic into the temp buffer
+//
+    srcline = source;
+    pwidth = width >> 2;
+
+    for (plane = 0; plane < 4; plane++)
+    {
+        dest = temp;
+
+        for (y = 0; y < height; y++)
+        {
+            for (x = 0; x < pwidth; x++)
+                *(dest + (x << 2) + plane) = *srcline++;
+
+            dest += width;
+        }
+    }
+
+//
+// copy the temp buffer back into the original source
+//
+    memcpy (source,temp,size);
+
+    free (temp);
+}
+
+
+/*
 =================
 =
 = VL_MemToScreenScaledCoord
@@ -605,7 +656,7 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, 
     {
         for(i = 0, sci = 0; i < width; i++, sci += scaleFactor)
         {
-            byte col = source[(j * (width >> 2) + (i >> 2)) + (i & 3) * (width >> 2) * height];
+            byte col = source[(j * width) + i];
             for(m = 0; m < scaleFactor; m++)
             {
                 for(n = 0; n < scaleFactor; n++)
@@ -649,8 +700,7 @@ void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int origheight, in
     {
         for(i = 0, sci = 0; i < width; i++, sci += scaleFactor)
         {
-            byte col = source[((j + srcy) * (origwidth >> 2) + ((i + srcx) >>2 ))
-                + ((i + srcx) & 3) * (origwidth >> 2) * origheight];
+            byte col = source[((j + srcy) * origwidth) + (i + srcx)];
 
             for(m = 0; m < scaleFactor; m++)
             {
