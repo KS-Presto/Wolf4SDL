@@ -947,7 +947,7 @@ PreloadGraphics (void)
     ClearSplitVWB ();           // set up for double buffering in split screen
 
     VWB_BarScaledCoord (0, 0, screenWidth, screenHeight - scaleFactor * (STATUSLINES - 1), bordercol);
-    LatchDrawPicScaledCoord ((screenWidth-scaleFactor*224)/16,
+    VWB_DrawPicScaledCoord (((screenWidth-scaleFactor*224)/16) * 8,
         (screenHeight-scaleFactor*(STATUSLINES+48))/2, GETPSYCHEDPIC);
 
     WindowX = (screenWidth - scaleFactor*224)/2;

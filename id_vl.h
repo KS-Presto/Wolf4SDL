@@ -59,19 +59,11 @@ void VL_Bar             (int x, int y, int width, int height, int color);
 
 void VL_MungePic                (byte *source, unsigned width, unsigned height);
 void VL_DrawPicBare             (int x, int y, byte *pic, int width, int height);
-void VL_MemToLatch              (byte *source, int width, int height,
-                                    SDL_Surface *destSurface, int x, int y);
 void VL_ScreenToScreen          (SDL_Surface *source, SDL_Surface *dest);
 void VL_MemToScreenScaledCoord  (byte *source, int width, int height, int scx, int scy);
 void VL_MemToScreenScaledCoord2  (byte *source, int origwidth, int origheight, int srcx, int srcy,
                                     int destx, int desty, int width, int height);
 
 void VL_MemToScreen (byte *source, int width, int height, int x, int y);
-
-void VL_MaskedToScreen (byte *source, int width, int height, int x, int y);
-
-void VL_LatchToScreenScaledCoord (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int scxdest, int scydest);
-
-void VL_LatchToScreen (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int xdest, int ydest);
 
 #endif

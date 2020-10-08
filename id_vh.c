@@ -2,7 +2,6 @@
 
 
 pictabletype	*pictable;
-SDL_Surface     *latchpics[NUMLATCHPICS];
 
 int	    px,py;
 byte	fontcolor,backcolor;
@@ -121,15 +120,9 @@ void VH_UpdateScreen()
 	SDL_Flip(screen);
 }
 
-
 void VWB_DrawTile8 (int x, int y, int tile)
 {
-	LatchDrawChar(x,y,tile);
-}
-
-void VWB_DrawTile8M (int x, int y, int tile)
-{
-	VL_MemToScreen (((byte *)grsegs[STARTTILE8M])+tile*64,8,8,x,y);
+	VL_MemToScreen (grsegs[STARTTILE8]+tile*64,8,8,x,y);
 }
 
 void VWB_DrawPic (int x, int y, int chunknum)
@@ -195,100 +188,6 @@ void VWB_Vlin (int y1, int y2, int x, int color)
 =============================================================================
 */
 
-/*
-=====================
-=
-= LatchDrawPic
-=
-=====================
-*/
-
-void LatchDrawPic (unsigned x, unsigned y, unsigned picnum)
-{
-	SDL_Surface *source = latchpics[2+picnum-LATCHPICS_LUMP_START];
-
-    VL_LatchToScreenScaledCoord(source,0,0,source->w,source->h,scaleFactor*(x*8),scaleFactor*y);
-}
-
-void LatchDrawPicScaledCoord (unsigned scx, unsigned scy, unsigned picnum)
-{
-    SDL_Surface *source = latchpics[2+picnum-LATCHPICS_LUMP_START];
-
-    VL_LatchToScreenScaledCoord(source,0,0,source->w,source->h,scx*8,scy);
-}
-
-
-//==========================================================================
-
-void FreeLatchMem()
-{
-    int i;
-    for(i = 0; i < 2 + LATCHPICS_LUMP_END - LATCHPICS_LUMP_START; i++)
-    {
-        SDL_FreeSurface(latchpics[i]);
-        latchpics[i] = NULL;
-    }
-}
-
-/*
-===================
-=
-= LoadLatchMem
-=
-===================
-*/
-
-void LoadLatchMem (void)
-{
-	int	i,width,height,start,end;
-	byte *src;
-	SDL_Surface *surf;
-
-//
-// tile 8s
-//
-    surf = SDL_CreateRGBSurface(SDL_HWSURFACE, 8*8,
-        ((NUMTILE8 + 7) / 8) * 8, 8, 0, 0, 0, 0);
-    if(surf == NULL)
-    {
-        Quit("Unable to create surface for tiles!");
-    }
-    SDL_SetColors(surf, gamepal, 0, 256);
-
-	latchpics[0] = surf;
-	src = grsegs[STARTTILE8];
-
-	for (i=0;i<NUMTILE8;i++)
-	{
-		VL_MemToLatch (src, 8, 8, surf, (i & 7) * 8, (i >> 3) * 8);
-		src += 64;
-	}
-
-	latchpics[1] = NULL;  // not used
-
-//
-// pics
-//
-	start = LATCHPICS_LUMP_START;
-	end = LATCHPICS_LUMP_END;
-
-	for (i=start;i<=end;i++)
-	{
-		width = pictable[i-STARTPICS].width;
-		height = pictable[i-STARTPICS].height;
-		surf = SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 8, 0, 0, 0, 0);
-        if(surf == NULL)
-        {
-            Quit("Unable to create surface for picture!");
-        }
-        SDL_SetColors(surf, gamepal, 0, 256);
-
-		latchpics[2+i-start] = surf;
-		VL_MemToLatch (grsegs[i], width, height, surf, 0, 0);
-	}
-}
-
-//==========================================================================
 
 /*
 ===================

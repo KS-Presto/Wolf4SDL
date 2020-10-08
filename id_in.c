@@ -61,7 +61,6 @@ int JoyNumButtons;
 static int JoyNumHats;
 
 static bool GrabInput = false;
-static bool NeedRestore = false;
 
 /*
 =============================================================================
@@ -328,24 +327,6 @@ static void processEvent(SDL_Event *event)
             if(key<SDLK_LAST)
                 Keyboard[key] = 0;
             break;
-        }
-
-        case SDL_ACTIVEEVENT:
-        {
-            if(fullscreen && (event->active.state & SDL_APPACTIVE) != 0)
-            {
-                if(event->active.gain)
-                {
-                    if(NeedRestore)
-                    {
-                        FreeLatchMem();
-                        LoadLatchMem();
-                    }
-
-                    NeedRestore = false;
-                }
-                else NeedRestore = true;
-            }
         }
 
 #if defined(GP2X)

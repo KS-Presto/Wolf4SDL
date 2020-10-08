@@ -671,7 +671,6 @@ BossKey (void)
         palette1[0][i] = 0;
 
     VL_SetPalette (&palette1[0][0]);
-    LoadLatchMem ();
 #endif
 }
 #else
@@ -700,7 +699,6 @@ BossKey (void)
         palette1[0][i] = 0;
 
     VL_SetPalette (&palette1[0][0]);
-    LoadLatchMem ();
 #endif
 }
 #endif

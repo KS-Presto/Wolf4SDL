@@ -101,7 +101,7 @@ void VL_Shutdown (void)
 =======================
 */
 
-void	VL_SetVGAPlaneMode (void)
+void VL_SetVGAPlaneMode (void)
 {
 #ifdef SPEAR
     SDL_WM_SetCaption("Spear of Destiny", NULL);
@@ -572,42 +572,6 @@ void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 ============================================================================
 */
 
-/*
-=================
-=
-= VL_MemToLatch
-=
-=================
-*/
-
-void VL_MemToLatch(byte *source, int width, int height,
-    SDL_Surface *destSurface, int x, int y)
-{
-    byte *ptr;
-    int xsrc, ysrc, pitch;
-
-    assert(x >= 0 && (unsigned) x + width <= screenWidth
-            && y >= 0 && (unsigned) y + height <= screenHeight
-            && "VL_MemToLatch: Destination rectangle out of bounds!");
-
-    ptr = VL_LockSurface(destSurface);
-    if(ptr == NULL) return;
-
-    pitch = destSurface->pitch;
-    ptr += y * pitch + x;
-    for(ysrc = 0; ysrc < height; ysrc++)
-    {
-        for(xsrc = 0; xsrc < width; xsrc++)
-        {
-            ptr[ysrc * pitch + xsrc] = source[(ysrc * (width >> 2) + (xsrc >> 2))
-                + (xsrc & 3) * (width >> 2) * height];
-        }
-    }
-    VL_UnlockSurface(destSurface);
-}
-
-//===========================================================================
-
 
 /*
 =================
@@ -701,104 +665,6 @@ void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int origheight, in
 }
 
 //==========================================================================
-
-/*
-=================
-=
-= VL_LatchToScreen
-=
-=================
-*/
-
-void VL_LatchToScreen (SDL_Surface *source, int xsrc, int ysrc, int width, int height, int xdest, int ydest)
-{
-    VL_LatchToScreenScaledCoord(source,xsrc,ysrc,width,height,scaleFactor*xdest,scaleFactor*ydest);
-}
-
-void VL_LatchToScreenScaledCoord(SDL_Surface *source, int xsrc, int ysrc,
-    int width, int height, int scxdest, int scydest)
-{
-	assert(scxdest >= 0 && scxdest + width * scaleFactor <= screenWidth
-			&& scydest >= 0 && scydest + height * scaleFactor <= screenHeight
-			&& "VL_LatchToScreenScaledCoord: Destination rectangle out of bounds!");
-
-	if(scaleFactor == 1)
-    {
-        // HACK: If screenBits is not 8 and the screen is faded out, the
-        //       result will be black when using SDL_BlitSurface. The reason
-        //       is that the logical palette needed for the transformation
-        //       to the screen color depth is not equal to the logical
-        //       palette of the latch (the latch is not faded). Therefore,
-        //       SDL tries to map the colors...
-        //       The result: All colors are mapped to black.
-        //       So, we do the blit on our own...
-        if(screenBits != 8)
-        {
-            byte *src, *dest;
-            unsigned srcPitch;
-            int i, j;
-
-            src = VL_LockSurface(source);
-            if(src == NULL) return;
-
-            srcPitch = source->pitch;
-
-            dest = VL_LockSurface(curSurface);
-            if(dest == NULL) return;
-
-            for(j = 0; j < height; j++)
-            {
-                for(i = 0; i < width; i++)
-                {
-                    byte col = src[(ysrc + j)*srcPitch + xsrc + i];
-                    dest[(scydest + j) * curPitch + scxdest + i] = col;
-                }
-            }
-            VL_UnlockSurface(curSurface);
-            VL_UnlockSurface(source);
-        }
-        else
-        {
-            SDL_Rect srcrect = { (Sint16) xsrc, (Sint16) ysrc, (Uint16) width, (Uint16) height };
-            SDL_Rect destrect = { (Sint16) scxdest, (Sint16) scydest, 0, 0 }; // width and height are ignored
-            SDL_BlitSurface(source, &srcrect, curSurface, &destrect);
-        }
-    }
-    else
-    {
-        byte *src, *dest;
-        unsigned srcPitch;
-        int i, j, sci, scj;
-        unsigned m, n;
-
-        src = VL_LockSurface(source);
-        if(src == NULL) return;
-
-        srcPitch = source->pitch;
-
-        dest = VL_LockSurface(curSurface);
-        if(dest == NULL) return;
-
-        for(j = 0, scj = 0; j < height; j++, scj += scaleFactor)
-        {
-            for(i = 0, sci = 0; i < width; i++, sci += scaleFactor)
-            {
-                byte col = src[(ysrc + j)*srcPitch + xsrc + i];
-                for(m = 0; m < scaleFactor; m++)
-                {
-                    for(n = 0; n < scaleFactor; n++)
-                    {
-                        dest[(scydest + scj + m) * curPitch + scxdest + sci + n] = col;
-                    }
-                }
-            }
-        }
-        VL_UnlockSurface(curSurface);
-        VL_UnlockSurface(source);
-    }
-}
-
-//===========================================================================
 
 /*
 =================

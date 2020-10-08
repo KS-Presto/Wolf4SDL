@@ -48,7 +48,6 @@ int ElevatorBackTo[]={1,1,7,3,5,3};
 
 void SetupGameLevel (void);
 void DrawPlayScreen (void);
-void LoadLatchMem (void);
 void GameLoop (void);
 
 /*
@@ -940,33 +939,6 @@ void DrawPlayScreen (void)
     DrawKeys ();
     DrawWeapon ();
     DrawScore ();
-}
-
-// Uses LatchDrawPic instead of StatusDrawPic
-void LatchNumberHERE (int x, int y, unsigned width, int32_t number)
-{
-    unsigned length,c;
-    char str[20];
-
-    ltoa (number,str,10);
-
-    length = (unsigned) strlen (str);
-
-    while (length<width)
-    {
-        LatchDrawPic (x,y,N_BLANKPIC);
-        x++;
-        width--;
-    }
-
-    c = length <= width ? 0 : length-width;
-
-    while (c<length)
-    {
-        LatchDrawPic (x,y,str[c]-'0'+ N_0PIC);
-        x++;
-        c++;
-    }
 }
 
 void ShowActStatus()
