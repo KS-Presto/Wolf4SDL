@@ -761,7 +761,7 @@ void CA_CacheAdlibSoundChunk (int chunk)
         return;                        // already in memory
 
     lseek(audiohandle, pos, SEEK_SET);
-    byte *ptr = SafeMalloc(sizeof(*ptr));
+    byte *ptr = SafeMalloc(ORIG_ADLIBSOUND_SIZE - 1);
     read(audiohandle, ptr, ORIG_ADLIBSOUND_SIZE - 1);   // without data[1]
 
     AdLibSound *sound = SafeMalloc(size + sizeof(*sound) - ORIG_ADLIBSOUND_SIZE);
