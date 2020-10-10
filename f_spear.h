@@ -78,4 +78,4 @@
 
 #define STR_ID1		    "Which member of Id Software:"
 
-#define
+#endif
