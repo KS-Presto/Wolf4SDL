@@ -670,7 +670,7 @@ static INT32 output_deltat[4];		/* for Y8950 DELTA-T, chip is mono, that 4 here 
 static UINT32	LFO_AM;
 static INT32	LFO_PM;
 
-#define INLINE inline
+#define INLINE static inline
 
 INLINE int limit( int val, int max, int min ) {
 	if ( val > max )
