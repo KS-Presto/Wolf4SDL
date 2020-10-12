@@ -76,12 +76,12 @@ void ScaleLine (int16_t x, int16_t toppix, fixed fracstep, byte *linesrc, byte *
 #endif
                 col = *src;
 
-            dest = vbuf + (startpix * vbufPitch) + x;
+            dest = vbuf + ylookup[startpix] + x;
 
             while (startpix < endpix)
             {
                 *dest = col;
-                dest += vbufPitch;
+                dest += bufferPitch;
                 startpix++;
             }
         }

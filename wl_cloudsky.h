@@ -37,7 +37,7 @@ extern colormap_t colorMaps[];
 extern const int numColorMaps;
 
 void InitSky();
-void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight);
+void DrawClouds (int min_wallheight);
 
 #ifndef USE_FEATUREFLAGS
 int GetCloudSkyDefID();

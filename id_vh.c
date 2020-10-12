@@ -23,7 +23,7 @@ void VWB_DrawPropString(const char* string)
 
 	font = (fontstruct *) grsegs[STARTFONT+fontnumber];
 	height = font->height;
-	dest += scaleFactor * (py * bufferPitch + px);
+	dest += scaleFactor * (ylookup[py] + px);
 
 	while ((ch = (byte)*string++)!=0)
 	{
@@ -37,7 +37,7 @@ void VWB_DrawPropString(const char* string)
 				{
 					for(sy=0; sy<scaleFactor; sy++)
 						for(sx=0; sx<scaleFactor; sx++)
-							dest[(scaleFactor*i+sy)*bufferPitch+sx]=fontcolor;
+							dest[ylookup[scaleFactor*i+sy]+sx]=fontcolor;
 				}
 			}
 

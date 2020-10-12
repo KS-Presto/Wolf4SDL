@@ -51,14 +51,14 @@ void Init3DPoints()
 
 #ifdef USE_STARSKY
 
-void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
+void DrawStarSky (void)
 {
     int hvheight = viewheight >> 1;
     int hvwidth = viewwidth >> 1;
 
     byte *ptr = vbuf;
     int i,j;
-    for(i = 0; i < hvheight; i++, ptr += vbufPitch)
+    for(i = 0; i < hvheight; i++, ptr += bufferPitch)
         memset(ptr, 0, viewwidth);
 
     for(i = 0; i < MAXPOINTS; i++)
@@ -73,7 +73,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
         int32_t xx = x / z * scaleFactor + hvwidth;
         int32_t yy = hvheight - y / z;
         if(xx >= 0 && xx < viewwidth && yy >= 0 && yy < hvheight)
-            vbuf[yy * vbufPitch + xx] = shade + 15;
+            vbuf[ylookup[yy] + xx] = shade + 15;
     }
 
     int32_t x = 16384 * viewcos + 16384 * viewsin;
@@ -91,7 +91,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
         if(yy >= viewheight - 10 * scaleFactor) stopy = viewheight - yy; 
         for(; i < stopx; i++) 
             for(j = starty; j < stopy; j++) 
-                vbuf[(yy + j) * vbufPitch + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor]; 
+                vbuf[ylookup[yy + j] + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor]; 
     } 
 }
 
@@ -99,7 +99,7 @@ void DrawStarSky(byte *vbuf, uint32_t vbufPitch)
 
 #ifdef USE_RAIN
 
-void DrawRain(byte *vbuf, uint32_t vbufPitch)
+void DrawRain (void)
 {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
     fixed dist;                                // distance to row projection
@@ -151,10 +151,10 @@ void DrawRain(byte *vbuf, uint32_t vbufPitch)
             if(MAPSPOT(floorx, floory, 2) >> 8) continue;
 #endif
 
-            vbuf[yy * vbufPitch + xx] = shade+15;
-            vbuf[(yy - 1) * vbufPitch + xx] = shade+16;
+            vbuf[ylookup[yy] + xx] = shade+15;
+            vbuf[ylookup[yy - 1] + xx] = shade+16;
             if(yy > 2)
-                vbuf[(yy - 2) * vbufPitch + xx] = shade+17;
+                vbuf[ylookup[yy - 2] + xx] = shade+17;
         }
     }
 }
@@ -163,7 +163,7 @@ void DrawRain(byte *vbuf, uint32_t vbufPitch)
 
 #ifdef USE_SNOW
 
-void DrawSnow(byte *vbuf, uint32_t vbufPitch)
+void DrawSnow (void)
 {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
     fixed dist;                                // distance to row projection
@@ -216,13 +216,13 @@ void DrawSnow(byte *vbuf, uint32_t vbufPitch)
 
             if(shade < 10)
             {
-                vbuf[yy * vbufPitch + xx] = shade+17;
-                vbuf[yy * vbufPitch + xx - 1] = shade+16;
-                vbuf[(yy - 1) * vbufPitch + xx] = shade+16;
-                vbuf[(yy - 1) * vbufPitch + xx - 1] = shade+15;
+                vbuf[ylookup[yy] + xx] = shade+17;
+                vbuf[ylookup[yy] + xx - 1] = shade+16;
+                vbuf[ylookup[yy - 1] + xx] = shade+16;
+                vbuf[ylookup[yy - 1] + xx - 1] = shade+15;
             }
             else
-                vbuf[yy * vbufPitch + xx] = shade+15;
+                vbuf[ylookup[yy] + xx] = shade+15;
         }
     }
 }

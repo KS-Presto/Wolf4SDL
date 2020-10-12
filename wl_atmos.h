@@ -6,15 +6,15 @@
 #endif
 
 #ifdef USE_STARSKY
-    void DrawStarSky(byte *vbuf, uint32_t vbufPitch);
+    void DrawStarSky (void);
 #endif
 
 #ifdef USE_RAIN
-    void DrawRain(byte *vbuf, uint32_t vbufPitch);
+    void DrawRain (void);
 #endif
 
 #ifdef USE_SNOW
-    void DrawSnow(byte *vbuf, uint32_t vbufPitch);
+    void DrawSnow (void);
 #endif
 
 #endif

@@ -49,6 +49,8 @@ int      scaleFactor;
 boolean	 screenfaded;
 unsigned bordercolor;
 
+uint32_t *ylookup;
+
 SDL_Color palette1[256], palette2[256];
 SDL_Color curpal[256];
 
@@ -81,10 +83,12 @@ void VL_Shutdown (void)
 {
     SDL_FreeSurface (screenBuffer);
 
+    free (ylookup);
     free (pixelangle);
     free (wallheight);
 
     screenBuffer = NULL;
+    ylookup = NULL;
     pixelangle = NULL;
     wallheight = NULL;
 }
@@ -100,6 +104,8 @@ void VL_Shutdown (void)
 
 void VL_SetVGAPlaneMode (void)
 {
+    int i;
+
 #ifdef SPEAR
     SDL_WM_SetCaption("Spear of Destiny", NULL);
 #else
@@ -144,8 +150,12 @@ void VL_SetVGAPlaneMode (void)
     scaleFactor = screenWidth/320;
     if(screenHeight/200 < scaleFactor) scaleFactor = screenHeight/200;
 
+    ylookup = SafeMalloc(screenHeight * sizeof(*ylookup));
     pixelangle = SafeMalloc(screenWidth * sizeof(*pixelangle));
     wallheight = SafeMalloc(screenWidth * sizeof(*wallheight));
+
+    for (i = 0; i < screenHeight; i++)
+        ylookup[i] = i * bufferPitch;
 }
 
 /*
@@ -435,7 +445,7 @@ void VL_Plot (int x, int y, int color)
     dest = VL_LockSurface(screenBuffer);
     if(dest == NULL) return;
 
-    dest[y * bufferPitch + x] = color;
+    dest[ylookup[y] + x] = color;
 
     VL_UnlockSurface(screenBuffer);
 }
@@ -459,7 +469,7 @@ byte VL_GetPixel (int x, int y)
     if (!VL_LockSurface(screenBuffer))
         return 0;
 
-    col = ((byte *) screenBuffer->pixels)[y * bufferPitch + x];
+    col = ((byte *) screenBuffer->pixels)[ylookup[y] + x];
 
     VL_UnlockSurface(screenBuffer);
 
@@ -486,7 +496,7 @@ void VL_Hlin (unsigned x, unsigned y, unsigned width, int color)
     dest = VL_LockSurface(screenBuffer);
     if(dest == NULL) return;
 
-    memset(dest + y * bufferPitch + x, color, width);
+    memset(dest + ylookup[y] + x, color, width);
 
     VL_UnlockSurface(screenBuffer);
 }
@@ -511,7 +521,7 @@ void VL_Vlin (int x, int y, int height, int color)
 	dest = VL_LockSurface(screenBuffer);
 	if(dest == NULL) return;
 
-	dest += y * bufferPitch + x;
+	dest += ylookup[y] + x;
 
 	while (height--)
 	{
@@ -547,7 +557,7 @@ void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 	dest = VL_LockSurface(screenBuffer);
 	if(dest == NULL) return;
 
-	dest += scy * bufferPitch + scx;
+	dest += ylookup[scy] + scx;
 
 	while (scheight--)
 	{
@@ -654,7 +664,7 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, 
             {
                 for(n = 0; n < scaleFactor; n++)
                 {
-                    dest[(scj + m + desty) * bufferPitch + sci + n + destx] = col;
+                    dest[ylookup[scj + m + desty] + sci + n + destx] = col;
                 }
             }
         }
@@ -699,7 +709,7 @@ void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int origheight, in
             {
                 for(n = 0; n < scaleFactor; n++)
                 {
-                    dest[(scj + m + desty) * bufferPitch + sci + n + destx] = col;
+                    dest[ylookup[scj + m + desty] + sci + n + destx] = col;
                 }
             }
         }

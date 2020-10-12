@@ -1129,7 +1129,7 @@ int DebugKeys (void);
 */
 
 extern  byte  *vbuf;
-extern  unsigned vbufPitch;
+
 //
 // math tables
 //
@@ -1149,6 +1149,7 @@ extern  boolean fizzlein, fpscounter;
 extern  fixed   viewx,viewy;                    // the focal point
 extern  fixed   viewsin,viewcos;
 
+void    ScalePost (void);
 void    ThreeDRefresh (void);
 void    CalcTics (void);
 
@@ -1491,11 +1492,11 @@ void GP2X_ButtonUp(int button);
 #endif
 
 #ifdef USE_FLOORCEILINGTEX
-    void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight);
+    void DrawFloorAndCeiling (int min_wallheight);
 #endif
 
 #ifdef USE_PARALLAX
-    void DrawParallax(byte *vbuf, unsigned vbufPitch);
+    void DrawParallax (void);
 #endif
 
 #endif

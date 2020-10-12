@@ -136,7 +136,7 @@ void SplitS(unsigned size,unsigned x1,unsigned y1,unsigned x2,unsigned y2)
 
 void InitSky()
 {
-    int i,j,k,m,n,calcedCols;
+    int i,j,k,m,n,ind,calcedCols;
     unsigned cloudskyid = GetCloudSkyDefID();
     if(cloudskyid >= lengthof(cloudSkys))
         Quit("Illegal cloud sky id: %u", cloudskyid);
@@ -209,7 +209,7 @@ void InitSky()
 }
 
 // Based on Textured Floor and Ceiling by DarkOne
-void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight)
+void DrawClouds (int min_wallheight)
 {
     // Move clouds
     fixed moveDist = tics * curSky->speed;
@@ -218,7 +218,7 @@ void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight)
 
     // Draw them
     int x, y, y0, halfheight;
-    unsigned top_offset0;
+    unsigned top_offset,top_add,top_offset0;
     fixed dist;                                // distance to row projection
     fixed tex_step;                            // global step per one screen pixel
     fixed gu, gv, du, dv;                      // global texture coordinates
@@ -230,10 +230,10 @@ void DrawClouds(byte *vbuf, unsigned vbufPitch, int min_wallheight)
     if(y0 > halfheight)
         return;                                // view obscured by walls
     if(!y0) y0 = 1;                            // don't let division by zero
-    top_offset0 = vbufPitch * (halfheight - y0 - 1);
+    top_offset0 = ylookup[halfheight - y0 - 1];
 
     // draw horizontal lines
-    for(y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= vbufPitch)
+    for(y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= bufferPitch)
     {
         dist = (heightnumerator / y) << 8;
         gu =  viewx + FixedMul(dist, viewcos) + cloudx;

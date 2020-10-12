@@ -8,13 +8,14 @@
 // Textured Floor and Ceiling by DarkOne
 // With multi-textured floors and ceilings stored in lower and upper bytes of
 // according tile in third mapplane, respectively.
-void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
+void DrawFloorAndCeiling (int min_wallheight)
 {
     fixed dist;                                // distance to row projection
     fixed tex_step;                            // global step per one screen pixel
     fixed gu, gv, du, dv;                      // global texture coordinates
     int x, y;
     int u, v;                                  // local texture coordinates
+    unsigned top_offset,bot_offset,top_add,bot_add;
     byte *toptex, *bottex;
     unsigned lasttoptex = 0xffffffff, lastbottex = 0xffffffff;
 
@@ -23,12 +24,12 @@ void DrawFloorAndCeiling(byte *vbuf, unsigned vbufPitch, int min_wallheight)
     if(y0 > halfheight)
         return;                                // view obscured by walls
     if(!y0) y0 = 1;                            // don't let division by zero
-    unsigned bot_offset0 = vbufPitch * (halfheight + y0);
-    unsigned top_offset0 = vbufPitch * (halfheight - y0 - 1);
+    unsigned bot_offset0 = ylookup[halfheight + y0];
+    unsigned top_offset0 = ylookup[halfheight - y0 - 1];
 
     // draw horizontal lines
     for(y = y0, bot_offset = bot_offset0, top_offset = top_offset0;
-        y < halfheight; y++, bot_offset += vbufPitch, top_offset -= vbufPitch)
+        y < halfheight; y++, bot_offset += bufferPitch, top_offset -= bufferPitch)
     {
         dist = (heightnumerator / (y + 1)) << 5;
         gu =  viewx + FixedMul(dist, viewcos);

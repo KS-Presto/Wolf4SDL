@@ -29,7 +29,6 @@
 */
 
 byte     *vbuf;
-unsigned vbufPitch;
 
 int32_t    lasttimecount;
 int32_t    frameon;
@@ -287,7 +286,7 @@ int postwidth;
 byte *postsourcesky;
 #endif
 
-void ScalePost()
+void ScalePost (void)
 {
     int ywcount, yoffs, yw, yd, yendoffs;
     byte col;
@@ -307,7 +306,7 @@ void ScalePost()
     ywcount = yd = wallheight[postx] >> 3;
     if(yd <= 0) yd = 100;
 
-    yoffs = (viewheight / 2 - ywcount) * vbufPitch;
+    yoffs = (viewheight / 2 - ywcount) * bufferPitch;
     if(yoffs < 0) yoffs = 0;
     yoffs += postx;
 
@@ -331,7 +330,7 @@ void ScalePost()
 #else
     col = postsource[yw];
 #endif
-    yendoffs = yendoffs * vbufPitch + postx;
+    yendoffs = yendoffs * bufferPitch + postx;
     while(yoffs <= yendoffs)
     {
         vbuf[yendoffs] = col;
@@ -351,19 +350,12 @@ void ScalePost()
             col = postsource[yw];
 #endif
         }
-        yendoffs -= vbufPitch;
+        yendoffs -= bufferPitch;
     }
 }
 
-void GlobalScalePost(byte *vidbuf, unsigned pitch)
-{
-    vbuf = vidbuf;
-    vbufPitch = pitch;
-    ScalePost();
-}
-
 #ifdef USE_SKYWALLPARALLAX
-void ScaleSkyPost()
+void ScaleSkyPost (void)
 {
     int ywcount, yoffs, yendoffs, texoffs;
     byte col;
@@ -374,7 +366,7 @@ void ScaleSkyPost()
 
     midy = (viewheight / 2) - 1;
 
-    yoffs = midy * vbufPitch;
+    yoffs = midy * bufferPitch;
     if(yoffs < 0) yoffs = 0;
     yoffs += postx;
 
@@ -392,11 +384,11 @@ void ScaleSkyPost()
     texoffs = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
 
     y = yendoffs;
-    yendoffs = yendoffs * vbufPitch + postx;
+    yendoffs = yendoffs * bufferPitch + postx;
     while(yoffs <= yendoffs)
     {
         vbuf[yendoffs] = postsourcesky[texoffs + (y * TEXTURESIZE) / skyheight];
-        yendoffs -= vbufPitch;
+        yendoffs -= bufferPitch;
         y--;
     }
 }
@@ -704,17 +696,17 @@ void VGAClearScreen (void)
     byte ceiling=vgaCeiling[gamestate.episode*10+mapon];
 
     int y;
-    byte *ptr = vbuf;
+    byte *dest = vbuf;
 #ifdef USE_SHADING
-    for(y = 0; y < viewheight / 2; y++, ptr += vbufPitch)
-        memset(ptr, shadetable[GetShade((viewheight / 2 - y) << 3)][ceiling], viewwidth);
-    for(; y < viewheight; y++, ptr += vbufPitch)
-        memset(ptr, shadetable[GetShade((y - viewheight / 2) << 3)][0x19], viewwidth);
+    for(y = 0; y < viewheight / 2; y++, dest += bufferPitch)
+        memset(dest, shadetable[GetShade((viewheight / 2 - y) << 3)][ceiling], viewwidth);
+    for(; y < viewheight; y++, dest += bufferPitch)
+        memset(dest, shadetable[GetShade((y - viewheight / 2) << 3)][0x19], viewwidth);
 #else
-    for(y = 0; y < viewheight / 2; y++, ptr += vbufPitch)
-        memset(ptr, ceiling, viewwidth);
-    for(; y < viewheight; y++, ptr += vbufPitch)
-        memset(ptr, 0x19, viewwidth);
+    for(y = 0; y < viewheight / 2; y++, dest += bufferPitch)
+        memset(dest, ceiling, viewwidth);
+    for(; y < viewheight; y++, dest += bufferPitch)
+        memset(dest, 0x19, viewwidth);
 #endif
 }
 
@@ -1481,7 +1473,6 @@ void    ThreeDRefresh (void)
     if(vbuf == NULL) return;
 
     vbuf += screenofs;
-    vbufPitch = bufferPitch;
 
     CalcViewVariables();
 
@@ -1491,21 +1482,21 @@ void    ThreeDRefresh (void)
     VGAClearScreen ();
 #if defined(USE_FEATUREFLAGS) && defined(USE_STARSKY)
     if(GetFeatureFlags() & FF_STARSKY)
-        DrawStarSky(vbuf, vbufPitch);
+        DrawStarSky();
 #endif
 
     WallRefresh ();
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_PARALLAX)
     if(GetFeatureFlags() & FF_PARALLAXSKY)
-        DrawParallax(vbuf, vbufPitch);
+        DrawParallax();
 #endif
 #if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
     if(GetFeatureFlags() & FF_CLOUDSKY)
-        DrawClouds(vbuf, vbufPitch, min_wallheight);
+        DrawClouds(min_wallheight);
 #endif
 #ifdef USE_FLOORCEILINGTEX
-    DrawFloorAndCeiling(vbuf, vbufPitch, min_wallheight);
+    DrawFloorAndCeiling(min_wallheight);
 #endif
 
 //
@@ -1515,11 +1506,11 @@ void    ThreeDRefresh (void)
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_RAIN)
     if(GetFeatureFlags() & FF_RAIN)
-        DrawRain(vbuf, vbufPitch);
+        DrawRain();
 #endif
 #if defined(USE_FEATUREFLAGS) && defined(USE_SNOW)
     if(GetFeatureFlags() & FF_SNOW)
-        DrawSnow(vbuf, vbufPitch);
+        DrawSnow();
 #endif
 
     DrawPlayerWeapon ();    // draw player's hands

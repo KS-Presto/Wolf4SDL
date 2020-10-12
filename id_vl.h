@@ -24,6 +24,8 @@ extern  int      scaleFactor;
 extern	boolean  screenfaded;
 extern	unsigned bordercolor;
 
+extern  uint32_t *ylookup;
+
 extern SDL_Color gamepal[256];
 
 //===========================================================================

@@ -30,9 +30,9 @@ static int GetParallaxStartTexture()
 
 #endif
 
-void DrawParallax(byte *vbuf, unsigned vbufPitch)
+void DrawParallax (void)
 {
-    int x,y;
+    int x,y,offs;
     int startpage = GetParallaxStartTexture();
     int midangle = player->angle * (FINEANGLES / ANGLES);
     int skyheight = viewheight >> 1;
@@ -57,7 +57,7 @@ void DrawParallax(byte *vbuf, unsigned vbufPitch)
         int yend = skyheight - (wallheight[x] >> 3);
         if(yend <= 0) continue;
 
-        for(y = 0, offs = x; y < yend; y++, offs += vbufPitch)
+        for(y = 0, offs = x; y < yend; y++, offs += bufferPitch)
             vbuf[offs] = skytex[texoffs + (y * TEXTURESIZE) / skyheight];
     }
 }
