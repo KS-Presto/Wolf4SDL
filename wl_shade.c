@@ -57,7 +57,7 @@ static int GetShadeDefID()
 // given RGB color in given palette
 byte GetColor(byte red, byte green, byte blue, SDL_Color *palette)
 {
-    int i;
+    int col;
     byte mincol = 0;
     double mindist = 200000.F, curdist, DRed, DGreen, DBlue;
 
