@@ -216,7 +216,7 @@ typedef uint8_t tiletype;
 
 #define TEXTURESHIFT    7
 #define TEXTURESIZE     (1<<TEXTURESHIFT)
-#define TEXTUREFROMFIXEDSHIFT 2
+#define FIXED2TEXSHIFT  2
 #define TEXTUREMASK     (TEXTURESIZE*(TEXTURESIZE-1))
 
 #define SPRITESCALEFACTOR 1
@@ -225,7 +225,7 @@ typedef uint8_t tiletype;
 
 #define TEXTURESHIFT    6
 #define TEXTURESIZE     (1<<TEXTURESHIFT)
-#define TEXTUREFROMFIXEDSHIFT 4
+#define FIXED2TEXSHIFT  4
 #define TEXTUREMASK     (TEXTURESIZE*(TEXTURESIZE-1))
 
 #define SPRITESCALEFACTOR 2
@@ -1026,7 +1026,7 @@ void UpdateSoundLoc(void);
 #define JOYSCALE                2
 
 extern  tiletype        tilemap[MAPSIZE][MAPSIZE];      // wall values only
-extern  byte            spotvis[MAPSIZE][MAPSIZE];
+extern  bool            spotvis[MAPSIZE][MAPSIZE];
 extern  objtype         *actorat[MAPSIZE][MAPSIZE];
 
 extern  objtype         *player;
@@ -1137,7 +1137,7 @@ extern  short *pixelangle;
 extern  int32_t finetangent[FINEANGLES/4];
 extern  fixed sintable[];
 extern  fixed *costable;
-extern  int *wallheight;
+extern  int16_t *wallheight;
 extern  word horizwall[],vertwall[];
 extern  int32_t    lasttimecount;
 extern  int32_t    frameon;

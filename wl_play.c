@@ -39,7 +39,7 @@ boolean noclip, ammocheat;
 int godmode, singlestep, extravbls = 0;
 
 tiletype tilemap[MAPSIZE][MAPSIZE]; // wall values only
-byte spotvis[MAPSIZE][MAPSIZE];
+bool     spotvis[MAPSIZE][MAPSIZE];
 objtype *actorat[MAPSIZE][MAPSIZE];
 
 //
