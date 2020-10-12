@@ -928,7 +928,7 @@ extern  fixed    focallength;
 extern  int      viewscreenx, viewscreeny;
 extern  int      viewwidth;
 extern  int      viewheight;
-extern  short    centerx;
+extern  short    centerx,centery;
 extern  int32_t  heightnumerator;
 extern  fixed    scale;
 
@@ -1128,6 +1128,8 @@ int DebugKeys (void);
 =============================================================================
 */
 
+extern  byte  *vbuf;
+extern  unsigned vbufPitch;
 //
 // math tables
 //
@@ -1150,12 +1152,28 @@ extern  fixed   viewsin,viewcos;
 void    ThreeDRefresh (void);
 void    CalcTics (void);
 
+
+/*
+=============================================================================
+
+                             WL_SCALE DEFINITIONS
+
+=============================================================================
+*/
+
 typedef struct
 {
     word leftpix,rightpix;
     word dataofs[64];
 // table data after dataofs[rightpix-leftpix+1]
-} t_compshape;
+} compshape_t;
+
+
+void ScaleShape (int xcenter, int shapenum, int height, uint32_t flags);
+void SimpleScaleShape (int xcenter, int shapenum, int height);
+#ifdef USE_DIR3DSPR
+void Transform3DShape (statobj_t *statptr);
+#endif
 
 /*
 =============================================================================
@@ -1478,10 +1496,6 @@ void GP2X_ButtonUp(int button);
 
 #ifdef USE_PARALLAX
     void DrawParallax(byte *vbuf, unsigned vbufPitch);
-#endif
-
-#ifdef USE_DIR3DSPR
-    void Scale3DShape(byte *vbuf, unsigned vbufPitch, statobj_t *ob);
 #endif
 
 #endif

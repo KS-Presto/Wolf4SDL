@@ -61,7 +61,7 @@ unsigned screenofs;
 int      viewscreenx, viewscreeny;
 int      viewwidth;
 int      viewheight;
-short    centerx;
+short    centerx,centery;
 int      shootdelta;           // pixels away from centerx a target can be
 fixed    scale;
 int32_t  heightnumerator;
@@ -1335,6 +1335,7 @@ boolean SetViewSize (unsigned width, unsigned height)
     viewwidth = width&~15;                  // must be divisable by 16
     viewheight = height&~1;                 // must be even
     centerx = viewwidth/2-1;
+    centery = viewheight / 2;
     shootdelta = viewwidth/10;
     if((unsigned) viewheight == screenHeight)
         viewscreenx = viewscreeny = screenofs = 0;

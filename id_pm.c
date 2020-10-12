@@ -144,10 +144,10 @@ byte *PM_GetTexture(int wallpic)
     return PM_GetPage(wallpic);
 }
 
-uint16_t *PM_GetSprite(int shapenum)
+byte *PM_GetSprite(int shapenum)
 {
     // correct alignment is enforced by PM_Startup()
-    return (uint16_t *) (void *) PM_GetPage(PMSpriteStart + shapenum);
+    return PM_GetPage(PMSpriteStart + shapenum);
 }
 
 byte *PM_GetSound(int soundpagenum)

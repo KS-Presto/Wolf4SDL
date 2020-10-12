@@ -28,8 +28,8 @@
 =============================================================================
 */
 
-static byte *vbuf = NULL;
-unsigned vbufPitch = 0;
+byte     *vbuf;
+unsigned vbufPitch;
 
 int32_t    lasttimecount;
 int32_t    frameon;
@@ -759,174 +759,6 @@ int CalcRotate (objtype *ob)
     return angle/(ANGLES/8);
 }
 
-void ScaleShape (int xcenter, int shapenum, unsigned height, uint32_t flags)
-{
-    t_compshape *shape;
-    unsigned scale,pixheight;
-    unsigned starty,endy;
-    word *cmdptr;
-    byte *cline;
-    byte *line;
-    byte *vmem;
-    int actx,i,upperedge;
-    short newstart;
-    int scrstarty,screndy,lpix,rpix,pixcnt,ycnt;
-    unsigned j;
-    byte col;
-
-#ifdef USE_SHADING
-    byte *curshades;
-    if(flags & FL_FULLBRIGHT)
-        curshades = shadetable[0];
-    else
-        curshades = shadetable[GetShade(height)];
-#endif
-
-    shape = (t_compshape *) PM_GetSprite(shapenum);
-
-    scale=height>>3;                 // low three bits are fractional
-    if(!scale) return;   // too close or far away
-
-    pixheight=scale*SPRITESCALEFACTOR;
-    actx=xcenter-scale;
-    upperedge=viewheight/2-scale;
-
-    cmdptr=(word *) shape->dataofs;
-
-    for(i=shape->leftpix,pixcnt=i*pixheight,rpix=(pixcnt>>6)+actx;i<=shape->rightpix;i++,cmdptr++)
-    {
-        lpix=rpix;
-        if(lpix>=viewwidth) break;
-        pixcnt+=pixheight;
-        rpix=(pixcnt>>6)+actx;
-        if(lpix!=rpix && rpix>0)
-        {
-            if(lpix<0) lpix=0;
-            if(rpix>viewwidth) rpix=viewwidth,i=shape->rightpix+1;
-            cline=(byte *)shape + *cmdptr;
-            while(lpix<rpix)
-            {
-                if(wallheight[lpix]<=(int)height)
-                {
-                    line=cline;
-                    while((endy = READWORD(line)) != 0)
-                    {
-                        endy >>= 1;
-                        newstart = READWORD(line + 2);
-                        starty = READWORD(line + 4) >> 1;
-                        j=starty;
-                        ycnt=j*pixheight;
-                        screndy=(ycnt>>6)+upperedge;
-                        if(screndy<0) vmem=vbuf+lpix;
-                        else vmem=vbuf+screndy*vbufPitch+lpix;
-                        for(;j<endy;j++)
-                        {
-                            scrstarty=screndy;
-                            ycnt+=pixheight;
-                            screndy=(ycnt>>6)+upperedge;
-                            if(scrstarty!=screndy && screndy>0)
-                            {
-#ifdef USE_SHADING
-                                col=curshades[((byte *)shape)[newstart+j]];
-#else
-                                col=((byte *)shape)[newstart+j];
-#endif
-                                if(scrstarty<0) scrstarty=0;
-                                if(screndy>viewheight) screndy=viewheight,j=endy;
-
-                                while(scrstarty<screndy)
-                                {
-                                    *vmem=col;
-                                    vmem+=vbufPitch;
-                                    scrstarty++;
-                                }
-                            }
-                        }
-
-                        line += 6;
-                    }
-                }
-                lpix++;
-            }
-        }
-    }
-}
-
-void SimpleScaleShape (int xcenter, int shapenum, unsigned height)
-{
-    t_compshape   *shape;
-    unsigned scale,pixheight;
-    unsigned starty,endy;
-    word *cmdptr;
-    byte *cline;
-    byte *line;
-    int actx,i,upperedge;
-    short newstart;
-    int scrstarty,screndy,lpix,rpix,pixcnt,ycnt;
-    unsigned j;
-    byte col;
-    byte *vmem;
-
-    shape = (t_compshape *) PM_GetSprite(shapenum);
-
-    scale=height>>1;
-    pixheight=scale*SPRITESCALEFACTOR;
-    actx=xcenter-scale;
-    upperedge=viewheight/2-scale;
-
-    cmdptr=shape->dataofs;
-
-    for(i=shape->leftpix,pixcnt=i*pixheight,rpix=(pixcnt>>6)+actx;i<=shape->rightpix;i++,cmdptr++)
-    {
-        lpix=rpix;
-        if(lpix>=viewwidth) break;
-        pixcnt+=pixheight;
-        rpix=(pixcnt>>6)+actx;
-        if(lpix!=rpix && rpix>0)
-        {
-            if(lpix<0) lpix=0;
-            if(rpix>viewwidth) rpix=viewwidth,i=shape->rightpix+1;
-            cline = (byte *)shape + *cmdptr;
-            while(lpix<rpix)
-            {
-                line=cline;
-                while((endy = READWORD(line)) != 0)
-                {
-                    endy >>= 1;
-                    newstart = READWORD(line + 2);
-                    starty = READWORD(line + 4) >> 1;
-                    j=starty;
-                    ycnt=j*pixheight;
-                    screndy=(ycnt>>6)+upperedge;
-                    if(screndy<0) vmem=vbuf+lpix;
-                    else vmem=vbuf+screndy*vbufPitch+lpix;
-                    for(;j<endy;j++)
-                    {
-                        scrstarty=screndy;
-                        ycnt+=pixheight;
-                        screndy=(ycnt>>6)+upperedge;
-                        if(scrstarty!=screndy && screndy>0)
-                        {
-                            col=((byte *)shape)[newstart+j];
-                            if(scrstarty<0) scrstarty=0;
-                            if(screndy>viewheight) screndy=viewheight,j=endy;
-
-                            while(scrstarty<screndy)
-                            {
-                                *vmem=col;
-                                vmem+=vbufPitch;
-                                scrstarty++;
-                            }
-                        }
-                    }
-
-                    line += 6;
-                }
-                lpix++;
-            }
-        }
-    }
-}
 
 /*
 =====================
@@ -1079,8 +911,8 @@ void DrawScaleds (void)
         // draw farthest
         //
 #ifdef USE_DIR3DSPR
-        if(farthest->transsprite)
-            Scale3DShape(vbuf, vbufPitch, farthest->transsprite);
+        if (farthest->transsprite)
+            Transform3DShape(farthest->transsprite);
         else
 #endif
             ScaleShape(farthest->viewx, farthest->shapenum, farthest->viewheight, farthest->flags);

@@ -28,7 +28,7 @@ uint8_t *PM_GetEnd();
 
 byte *PM_GetTexture(int wallpic);
 
-uint16_t *PM_GetSprite(int shapenum);
+byte *PM_GetSprite(int shapenum);
 
 byte *PM_GetSound(int soundpagenum);
 

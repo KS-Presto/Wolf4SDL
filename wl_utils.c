@@ -28,7 +28,14 @@ void *safe_malloc (size_t size, const char *fname, uint32_t line)
 
 fixed FixedMul (fixed a, fixed b)
 {
-	return (fixed)(((int64_t)a * b + 0x8000) >> 16);
+	return (fixed)(((int64_t)a * b + 0x8000) >> FRACBITS);
+}
+
+fixed FixedDiv (fixed a, fixed b)
+{
+	int64_t c = ((int64_t)a << FRACBITS) / (int64_t)b;
+
+	return (fixed)c;
 }
 
 word READWORD (byte *ptr)
