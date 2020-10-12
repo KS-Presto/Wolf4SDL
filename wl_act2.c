@@ -3799,7 +3799,7 @@ void    A_StartDeathCam (objtype *ob)
         return;
     }
 
-    if(usedoublebuffering) VH_UpdateScreen();
+    if(usedoublebuffering) VW_UpdateScreen();
 
     gamestate.victoryflag = true;
     unsigned fadeheight = viewsize != 21 ? screenHeight-scaleFactor*STATUSLINES : screenHeight;
@@ -3825,7 +3825,7 @@ void    A_StartDeathCam (objtype *ob)
     }
 
     VW_UpdateScreen ();
-    if(usedoublebuffering) VH_UpdateScreen();
+    if(usedoublebuffering) VW_UpdateScreen();
 
     IN_UserInput(300);
 

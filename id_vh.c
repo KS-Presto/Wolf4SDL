@@ -18,12 +18,12 @@ void VWB_DrawPropString(const char* string)
 	int i;
 	unsigned sx, sy;
 
-	byte *vbuf = VL_LockSurface(curSurface);
-	if(vbuf == NULL) return;
+	dest = VL_LockSurface(screenBuffer);
+	if(dest == NULL) return;
 
 	font = (fontstruct *) grsegs[STARTFONT+fontnumber];
 	height = font->height;
-	dest = vbuf + scaleFactor * (py * curPitch + px);
+	dest += scaleFactor * (py * bufferPitch + px);
 
 	while ((ch = (byte)*string++)!=0)
 	{
@@ -37,7 +37,7 @@ void VWB_DrawPropString(const char* string)
 				{
 					for(sy=0; sy<scaleFactor; sy++)
 						for(sx=0; sx<scaleFactor; sx++)
-							dest[(scaleFactor*i+sy)*curPitch+sx]=fontcolor;
+							dest[(scaleFactor*i+sy)*bufferPitch+sx]=fontcolor;
 				}
 			}
 
@@ -47,7 +47,7 @@ void VWB_DrawPropString(const char* string)
 		}
 	}
 
-	VL_UnlockSurface(curSurface);
+	VL_UnlockSurface(screenBuffer);
 }
 
 
@@ -71,10 +71,10 @@ void VW_MeasurePropString (const char *string, word *width, word *height)
 =============================================================================
 */
 
-void VH_UpdateScreen()
+void VH_UpdateScreen (SDL_Surface *surface)
 {
-	SDL_BlitSurface(screenBuffer, NULL, screen, NULL);
-	SDL_Flip(screen);
+	SDL_BlitSurface (surface,NULL,screen,NULL);
+	SDL_Flip (screen);
 }
 
 void VWB_DrawTile8 (int x, int y, int tile)
@@ -230,8 +230,7 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
         if(abortable && IN_CheckAck ())
         {
             VL_UnlockSurface(source);
-            SDL_BlitSurface(source, NULL, screen, NULL);
-            SDL_Flip(screen);
+            VH_UpdateScreen (source);
             return true;
         }
 
@@ -319,7 +318,6 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 finished:
     VL_UnlockSurface(source);
     VL_UnlockSurface(screen);
-    SDL_BlitSurface(source, NULL, screen, NULL);
-    SDL_Flip(screen);
+    VH_UpdateScreen (source);
     return false;
 }

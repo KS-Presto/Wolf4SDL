@@ -663,7 +663,7 @@ void CheckKeys (void)
     {
         int lastoffs = StopMusic();
         VWB_DrawPic (16 * 8, 80 - 2 * 8, PAUSEDPIC);
-        VH_UpdateScreen();
+        VW_UpdateScreen();
         IN_Ack ();
         Paused = false;
         ContinueMusic(lastoffs);

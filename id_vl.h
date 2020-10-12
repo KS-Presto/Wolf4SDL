@@ -14,10 +14,11 @@ void Quit (const char *error,...);
 
 //===========================================================================
 
-extern SDL_Surface *screen, *screenBuffer, *curSurface;
+extern SDL_Surface *screen, *screenBuffer;
 
 extern  boolean  fullscreen, usedoublebuffering;
-extern  unsigned screenWidth, screenHeight, screenBits, screenPitch, bufferPitch, curPitch;
+extern  unsigned screenWidth, screenHeight, screenPitch, bufferPitch;
+extern  int16_t  screenBits;
 extern  int      scaleFactor;
 
 extern	boolean  screenfaded;
@@ -32,7 +33,7 @@ extern SDL_Color gamepal[256];
 //
 
 #define VL_WaitVBL(a)        SDL_Delay((a)*8)
-#define VL_ClearScreen(c)    SDL_FillRect(curSurface,NULL,(c))
+#define VL_ClearScreen(c)    SDL_FillRect(screenBuffer,NULL,(c))
 
 void VL_DePlaneVGA (byte *source, int width, int height);
 void VL_SetVGAPlaneMode (void);
