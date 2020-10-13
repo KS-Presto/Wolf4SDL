@@ -1,3 +1,5 @@
+// WL_PLANE.C
+
 #include "version.h"
 
 #ifdef USE_FLOORCEILINGTEX
@@ -5,84 +7,276 @@
 #include "wl_def.h"
 #include "wl_shade.h"
 
-// Textured Floor and Ceiling by DarkOne
-// With multi-textured floors and ceilings stored in lower and upper bytes of
-// according tile in third mapplane, respectively.
-void DrawFloorAndCeiling (int min_wallheight)
+int16_t *spanstart;
+byte    *ceilingsource,*floorsource;
+
+#ifndef USE_MULTIFLATS
+void GetFlatTextures (void)
 {
-    fixed dist;                                // distance to row projection
-    fixed tex_step;                            // global step per one screen pixel
-    fixed gu, gv, du, dv;                      // global texture coordinates
-    int x, y;
-    int u, v;                                  // local texture coordinates
-    unsigned top_offset,bot_offset,top_add,bot_add;
-    byte *toptex, *bottex;
-    unsigned lasttoptex = 0xffffffff, lastbottex = 0xffffffff;
-
-    int halfheight = viewheight >> 1;
-    int y0 = min_wallheight >> 3;              // starting y value
-    if(y0 > halfheight)
-        return;                                // view obscured by walls
-    if(!y0) y0 = 1;                            // don't let division by zero
-    unsigned bot_offset0 = ylookup[halfheight + y0];
-    unsigned top_offset0 = ylookup[halfheight - y0 - 1];
-
-    // draw horizontal lines
-    for(y = y0, bot_offset = bot_offset0, top_offset = top_offset0;
-        y < halfheight; y++, bot_offset += bufferPitch, top_offset -= bufferPitch)
-    {
-        dist = (heightnumerator / (y + 1)) << 5;
-        gu =  viewx + FixedMul(dist, viewcos);
-        gv = -viewy + FixedMul(dist, viewsin);
-        tex_step = (dist << 8) / viewwidth / 175;
-        du =  FixedMul(tex_step, viewsin);
-        dv = -FixedMul(tex_step, viewcos);
-        gu -= (viewwidth >> 1) * du;
-        gv -= (viewwidth >> 1) * dv; // starting point (leftmost)
-#ifdef USE_SHADING
-        byte *curshades = shadetable[GetShade(y << 3)];
-#endif
-        for(x = 0, bot_add = bot_offset, top_add = top_offset;
-            x < viewwidth; x++, bot_add++, top_add++)
-        {
-            if(wallheight[x] >> 3 <= y)
-            {
-                int curx = (gu >> TILESHIFT) & (MAPSIZE - 1);
-                int cury = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
-                unsigned curtex = MAPSPOT(curx, cury, 2);
-                if(curtex)
-                {
-                    unsigned curtoptex = curtex >> 8;
-                    if (curtoptex != lasttoptex)
-                    {
-                        lasttoptex = curtoptex;
-                        toptex = PM_GetTexture(curtoptex);
-                    }
-                    unsigned curbottex = curtex & 0xff;
-                    if (curbottex != lastbottex)
-                    {
-                        lastbottex = curbottex;
-                        bottex = PM_GetTexture(curbottex);
-                    }
-                    u = (gu >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
-                    v = (gv >> (TILESHIFT - TEXTURESHIFT)) & (TEXTURESIZE - 1);
-                    unsigned texoffs = (u << TEXTURESHIFT) + (TEXTURESIZE - 1) - v;
-#ifdef USE_SHADING
-                    if(curtoptex)
-                        vbuf[top_add] = curshades[toptex[texoffs]];
-                    if(curbottex)
-                        vbuf[bot_add] = curshades[bottex[texoffs]];
+#ifdef USE_FEATUREFLAGS
+    ceilingsource = PM_GetPage(ffDataBottomRight >> 8);
+    floorsource = PM_GetPage(ffDataBottomRight & 0xff);
 #else
-                    if(curtoptex)
-                        vbuf[top_add] = toptex[texoffs];
-                    if(curbottex)
-                        vbuf[bot_add] = bottex[texoffs];
+    ceilingsource = PM_GetPage(0);
+    floorsource = PM_GetPage(1);
 #endif
-                }
+}
+#endif
+
+/*
+===================
+=
+= DrawSpan
+=
+= Height ranges from 0 (infinity) to [centery] (nearest)
+=
+= With multi-textured floors and ceilings stored in lower and upper bytes of
+= according tilex/tiley in the third mapplane, respectively
+=
+===================
+*/
+#ifdef USE_MULTIFLATS
+void DrawSpan (int16_t x1, int16_t x2, int16_t height)
+{
+    byte      tilex,tiley,lasttilex,lasttiley;
+    byte      *dest;
+    byte      *shade;
+    word      texture,spot;
+    uint32_t  rowofs;
+    int16_t   ceilingpage,floorpage,lastceilingpage,lastfloorpage;
+    int16_t   count,prestep;
+    fixed     basedist,stepscale;
+    fixed     xfrac,yfrac;
+    fixed     xstep,ystep;
+
+    count = x2 - x1;
+
+    if (!count)
+        return;                                                 // nothing to draw
+
+#ifdef USE_SHADING
+    shade = shadetable[GetShade(height << 3)];
+#endif
+    dest = vbuf + ylookup[centery - 1 - height] + x1;
+    rowofs = ylookup[(height << 1) + 1];                        // toprow to bottomrow delta
+
+    prestep = centerx - x1 + 1;
+    basedist = FixedDiv(scale,height + 1) >> 1;                 // distance to row projection
+    stepscale = basedist / scale;
+
+    xstep = FixedMul(stepscale,viewsin);
+    ystep = -FixedMul(stepscale,viewcos);
+
+    xfrac = (viewx + FixedMul(basedist,viewcos)) - (xstep * prestep);
+    yfrac = -(viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
+
+//
+// draw two spans simultaneously
+//
+    lastceilingpage = lastfloorpage = -1;
+    lasttilex = lasttiley = 0;
+
+    //
+    // Beware - This loop is SLOW, and WILL cause framedrops on slower machines and/or on higher resolutions.
+    // I can't stress it enough: this is one of the worst loops in history! No amount of optimisation will
+    // change that! This loop SUCKS!
+    //
+    // Someday flats rendering will be re-written, but until then, YOU HAVE BEEN WARNED.
+    //
+    while (count--)
+    {
+        //
+        // get tile coords of texture
+        //
+        tilex = (xfrac >> TILESHIFT) & (mapwidth - 1);
+        tiley = ~(yfrac >> TILESHIFT) & (mapheight - 1);
+
+        //
+        // get floor & ceiling textures if it's a new tile
+        //
+        if (lasttilex != tilex || lasttiley != tiley)
+        {
+            lasttilex = tilex;
+            lasttiley = tiley;
+            spot = MAPSPOT(tilex,tiley,2);
+
+            if (spot)
+            {
+                ceilingpage = spot >> 8;
+                floorpage = spot & 0xff;
             }
-            gu += du;
-            gv += dv;
         }
+
+        if (spot)
+        {
+            texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) + (~(yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
+
+            //
+            // write ceiling pixel
+            //
+            if (ceilingpage)
+            {
+                if (lastceilingpage != ceilingpage)
+                {
+                    lastceilingpage = ceilingpage;
+                    ceilingsource = PM_GetPage(ceilingpage);
+                }
+#ifdef USE_SHADING
+                *dest = shade[ceilingsource[texture]];
+#else
+                *dest = ceilingsource[texture];
+#endif
+            }
+
+            //
+            // write floor pixel
+            //
+            if (floorpage)
+            {
+                if (lastfloorpage != floorpage)
+                {
+                    lastfloorpage = floorpage;
+                    floorsource = PM_GetPage(floorpage);
+                }
+#ifdef USE_SHADING
+                dest[rowofs] = shade[floorsource[texture]];
+#else
+                dest[rowofs] = floorsource[texture];
+#endif
+            }
+        }
+
+        dest++;
+
+        xfrac += xstep;
+        yfrac += ystep;
+    }
+}
+
+#else
+
+/*
+===================
+=
+= DrawSpan
+=
+= Height ranges from 0 (infinity) to [centery] (nearest)
+=
+===================
+*/
+
+void DrawSpan (int16_t x1, int16_t x2, int16_t height)
+{
+    byte     *dest;
+    byte     *shade;
+    word     texture;
+    uint32_t rowofs;                                    
+    int16_t  count,prestep;
+    fixed    basedist,stepscale;
+    fixed    xfrac,yfrac;
+    fixed    xstep,ystep;
+
+    count = x2 - x1;
+
+    if (!count)
+        return;                                         // nothing to draw
+
+#ifdef USE_SHADING
+    shade = shadetable[GetShade(height << 3)];
+#endif
+    dest = vbuf + ylookup[centery - 1 - height] + x1;
+    rowofs = ylookup[(height << 1) + 1];                // toprow to bottomrow delta
+
+    prestep = centerx - x1 + 1;
+    basedist = FixedDiv(scale,height + 1) >> 1;         // distance to row projection
+    stepscale = basedist / scale;
+
+    xstep = FixedMul(stepscale,viewsin);
+    ystep = -FixedMul(stepscale,viewcos);
+
+    xfrac = (viewx + FixedMul(basedist,viewcos)) - (xstep * prestep);
+    yfrac = -(viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
+
+//
+// draw two spans simultaneously
+//
+	while (count--)
+	{
+		texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) + (~(yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
+
+#ifdef USE_SHADING
+        *dest = shade[ceilingsource[texture]];
+        dest[rowofs] = shade[floorsource[texture]];
+#else
+        *dest = ceilingsource[texture];
+        dest[rowofs] = floorsource[texture];
+#endif
+		dest++;
+		xfrac += xstep;
+		yfrac += ystep;
+	}
+}
+#endif
+
+/*
+===================
+=
+= DrawPlanes
+=
+===================
+*/
+
+void DrawPlanes (void)
+{
+    int     x,y;
+    int16_t	height;
+
+//
+// loop over all columns
+//
+    y = centery;
+
+    for (x = 0; x < viewwidth; x++)
+    {
+        height = wallheight[x] >> 3;
+
+        if (height < y)
+        {
+            //
+            // more starts
+            //
+            while (y > height)
+                spanstart[--y] = x;
+        }
+        else if (height > y)
+        {
+            //
+            // draw clipped spans
+            //
+            if (height > centery)
+                height = centery;
+
+            while (y < height)
+            {
+                if (y > 0)
+                    DrawSpan (spanstart[y],x,y);
+
+                y++;
+            }
+        }
+    }
+
+    //
+    // draw spans
+    //
+    height = centery;
+
+    while (y < height)
+    {
+        if (y > 0)
+            DrawSpan (spanstart[y],viewwidth,y);
+
+        y++;
     }
 }
 

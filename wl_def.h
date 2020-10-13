@@ -1480,7 +1480,7 @@ void GP2X_ButtonUp(int button);
      * ffDataTopLeft:     lower 8-bit: ShadeDefID
      * ffDataTopRight:    FeatureFlags
      * ffDataBottomLeft:  CloudSkyDefID or ParallaxStartTexture
-     * ffDataBottomRight: unused
+     * ffDataBottomRight: high byte: ceiling texture - low byte: floor texture
      *************************************************************/
 
     // The feature flags are stored as a wall in the upper right corner of each level
@@ -1492,7 +1492,13 @@ void GP2X_ButtonUp(int button);
 #endif
 
 #ifdef USE_FLOORCEILINGTEX
-    void DrawFloorAndCeiling (int min_wallheight);
+    extern int16_t *spanstart;
+    extern byte    *ceilingsource,*floorsource;
+
+    void DrawPlanes (void);
+#ifndef USE_MULTIFLATS
+    void GetFlatTextures (void);
+#endif
 #endif
 
 #ifdef USE_PARALLAX

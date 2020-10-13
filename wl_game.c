@@ -774,6 +774,12 @@ void SetupGameLevel (void)
         }
     }
 
+//
+// load floor/ceiling textures
+//
+#if defined(USE_FLOORCEILINGTEX) && !defined(USE_MULTIFLATS)
+    GetFlatTextures ();
+#endif
 
 //
 // have the caching manager load and purge stuff to make sure all marks

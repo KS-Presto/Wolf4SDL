@@ -1641,7 +1641,7 @@ void ThreeDRefresh (void)
         DrawClouds(min_wallheight);
 #endif
 #ifdef USE_FLOORCEILINGTEX
-    DrawFloorAndCeiling(min_wallheight);
+    DrawPlanes ();
 #endif
 
 //

@@ -86,7 +86,11 @@ void VL_Shutdown (void)
     free (ylookup);
     free (pixelangle);
     free (wallheight);
+#ifdef USE_FLOORCEILINGTEX
+    free (spanstart);
 
+    spanstart = NULL;
+#endif
     screenBuffer = NULL;
     ylookup = NULL;
     pixelangle = NULL;
@@ -153,6 +157,9 @@ void VL_SetVGAPlaneMode (void)
     ylookup = SafeMalloc(screenHeight * sizeof(*ylookup));
     pixelangle = SafeMalloc(screenWidth * sizeof(*pixelangle));
     wallheight = SafeMalloc(screenWidth * sizeof(*wallheight));
+#ifdef USE_FLOORCEILINGTEX
+    spanstart = SafeMalloc((screenHeight / 2) * sizeof(*spanstart));
+#endif
 
     for (i = 0; i < screenHeight; i++)
         ylookup[i] = i * bufferPitch;
