@@ -127,6 +127,9 @@ void Quit(const char *errorStr, ...);
 #define LAST_WALLNUM    BIT_WALL-1
 #define LAST_DOORNUM    BIT_DOOR-1
 
+// the door is the last picture before the sprites
+#define DOORWALL        (PMSpriteStart-8)
+
 #define MAXACTORS       150         // max number of nazis, etc / map
 #define MAXSTATS        400         // max number of lamps, bonus, etc
 #define MAXDOORS        64          // max number of sliding doors
@@ -1119,6 +1122,8 @@ void PreloadGraphics(void);
 */
 
 int DebugKeys (void);
+void ViewMap (void);
+
 
 /*
 =============================================================================

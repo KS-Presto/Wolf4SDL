@@ -15,9 +15,6 @@
 =============================================================================
 */
 
-// the door is the last picture before the sprites
-#define DOORWALL        (PMSpriteStart-8)
-
 #define ACTORSIZE       0x4000
 
 /*

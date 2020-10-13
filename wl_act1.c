@@ -152,6 +152,7 @@ void SpawnStatic (int tilex, int tiley, int type)
     laststatobj->tilex = tilex;
     laststatobj->tiley = tiley;
     laststatobj->visspot = &spotvis[tilex][tiley];
+    laststatobj->itemnumber = statinfo[type].type;
 
     switch (statinfo[type].type)
     {
@@ -183,7 +184,6 @@ void SpawnStatic (int tilex, int tiley, int type)
         case    bo_gibs:
         case    bo_spear:
             laststatobj->flags = FL_BONUS;
-            laststatobj->itemnumber = statinfo[type].type;
             break;
     }
 

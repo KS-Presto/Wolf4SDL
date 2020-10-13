@@ -21,8 +21,6 @@
 =============================================================================
 */
 
-#define VIEWTILEX       (viewwidth/16)
-#define VIEWTILEY       (viewheight/16)
 
 /*
 =============================================================================
@@ -36,28 +34,6 @@
 
 int DebugKeys (void);
 
-
-// from WL_DRAW.C
-
-void ScalePost();
-
-/*
-=============================================================================
-
-                                                 LOCAL VARIABLES
-
-=============================================================================
-*/
-
-#if 0
-int     maporgx;
-int     maporgy;
-enum {mapview,tilemapview,actoratview,visview}  viewtype;
-
-void ViewMap (void);
-#endif
-
-//===========================================================================
 
 /*
 ==================
@@ -124,6 +100,7 @@ void CountObjects (void)
 =
 ===================
 */
+
 void PictureGrabber (void)
 {
     int i;
@@ -149,78 +126,6 @@ void PictureGrabber (void)
     IN_Ack();
 }
 
-
-//===========================================================================
-
-/*
-===================
-=
-= BasicOverhead
-=
-===================
-*/
-
-void BasicOverhead (void)
-{
-    int x, y, z, offx, offy;
-
-    z = 128/MAPSIZE; // zoom scale
-    offx = 320/2;
-    offy = (160-MAPSIZE*z)/2;
-
-#ifdef MAPBORDER
-    int temp = viewsize;
-    NewViewSize(16);
-    DrawPlayBorder();
-#endif
-
-    // right side (raw)
-
-    for(x=0;x<MAPSIZE;x++)
-        for(y=0;y<MAPSIZE;y++)
-            VWB_Bar(x*z+offx, y*z+offy,z,z,(unsigned)(uintptr_t)actorat[x][y]);
-
-    // left side (filtered)
-
-    uintptr_t tile;
-    int color;
-    offx -= 128;
-
-    for(x=0;x<MAPSIZE;x++)
-    {
-        for(y=0;y<MAPSIZE;y++)
-        {
-            tile = (uintptr_t)actorat[x][y];
-            if (ISPOINTER(tile) && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
-            else if (!tile || ISPOINTER(tile))
-            {
-                if (spotvis[x][y]) color = 111;  // visable
-                else color = 0;  // nothing
-            }
-            else if (MAPSPOT(x,y,1) == PUSHABLETILE) color = 171;  // pushwall
-            else if (tile == BIT_WALL) color = 158; // solid obj
-            else if (tile < BIT_DOOR) color = 154;  // walls
-            else if (tile < BIT_ALLTILES) color = 146;  // doors
-
-            VWB_Bar(x*z+offx, y*z+offy,z,z,color);
-        }
-    }
-
-    VWB_Bar(player->tilex*z+offx,player->tiley*z+offy,z,z,15); // player
-
-    // resize the border to match
-
-    VW_UpdateScreen();
-    IN_Ack();
-
-#ifdef MAPBORDER
-    NewViewSize(temp);
-    DrawPlayBorder();
-#endif
-}
-
-
-//===========================================================================
 
 /*
 ================
@@ -618,11 +523,6 @@ again:
         IN_Ack ();
         return 1;
     }
-    else if (Keyboard[sc_O])        // O = basic overhead
-    {
-        BasicOverhead();
-        return 1;
-    }
     else if(Keyboard[sc_P])         // P = Ripper's picture grabber
     {
         PictureGrabber();
@@ -744,8 +644,177 @@ again:
     return 0;
 }
 
+#endif
 
-#if 0
+/*
+=============================================================================
+
+                                 OVERHEAD MAP
+
+=============================================================================
+*/
+
+#ifdef VIEWMAP
+
+#define COL_FLOOR   0x19                // empty area color
+#define COL_SECRET  WHITE               // pushwall color
+
+
+int16_t maporgx,maporgy;
+int16_t viewtilex,viewtiley;
+int16_t tilemapratio,tilewallratio;
+int16_t tilesize;
+
+
+/*
+===================
+=
+= DrawMapFloor
+=
+===================
+*/
+
+void DrawMapFloor (int16_t sx, int16_t sy, byte color)
+{
+    int x,y;
+
+    for (x = 0; x < tilesize; x++)
+    {
+        for (y = 0; y < tilesize; y++)
+            *(vbuf + ylookup[sy + y] + (sx + x)) = color;
+    }
+}
+
+
+/*
+===================
+=
+= DrawMapWall
+=
+===================
+*/
+
+void DrawMapWall (int16_t sx, int16_t sy, int16_t wallpic)
+{
+    int  x,y;
+    byte *src;
+    word texturemask;
+
+    src = PM_GetPage(wallpic);
+
+    texturemask = TEXTURESIZE * (tilewallratio - 1);
+
+    for (x = 0; x < tilesize; x++, src += texturemask)
+    {
+        for (y = 0; y < tilesize; y++, src += tilewallratio)
+            *(vbuf + ylookup[sy + y] + (sx + x)) = *src;
+    }
+}
+
+
+/*
+===================
+=
+= DrawMapDoor
+=
+===================
+*/
+
+void DrawMapDoor (int16_t sx, int16_t sy, int16_t doornum)
+{
+    int doorpage;
+
+    switch (doorobjlist[doornum].lock)
+    {
+        case dr_normal:
+            doorpage = DOORWALL;
+            break;
+
+        case dr_lock1:
+        case dr_lock2:
+        case dr_lock3:
+        case dr_lock4:
+            doorpage = DOORWALL + 6;
+            break;
+
+        case dr_elevator:
+            doorpage = DOORWALL + 4;
+            break;
+    }
+    
+    DrawMapWall (sx,sy,doorpage);
+}
+
+
+/*
+===================
+=
+= DrawMapSprite
+=
+===================
+*/
+
+void DrawMapSprite (int16_t sx, int16_t sy, int16_t shapenum)
+{
+    int         x;
+    compshape_t *shape;
+    byte        *linesrc,*linecmds;
+    byte        *src;
+    int16_t     end,start,top;
+
+    linesrc = PM_GetSpritePage(shapenum);
+    shape = (compshape_t *)linesrc;
+
+    for (x = shape->leftpix; x <= shape->rightpix; x++)
+    {
+        //
+        // reconstruct sprite and draw it
+        //
+        linecmds = &linesrc[shape->dataofs[x - shape->leftpix]];
+
+        while (*linecmds)
+        {
+            end = READWORD(linecmds) >> 1;          // end of segment
+            top = READWORD(linecmds + 2);           // corrected top of shape for this segment
+            start = READWORD(linecmds + 4) >> 1;    // table location of entry spot
+
+            for (src = &linesrc[top + start]; start != end; start++, src++)
+            {
+                if (!(x % tilewallratio) && !(start % tilewallratio))
+                    *(vbuf + ylookup[sy + (start / tilewallratio)] + (sx + (x / tilewallratio))) = *src;
+            }
+
+            linecmds += 6;                          // next segment list
+        }
+    }
+}
+
+
+/*
+===================
+=
+= DrawMapBorder
+=
+===================
+*/
+
+void DrawMapBorder (void)
+{
+    int height;
+
+    height = screenHeight - ((screenHeight / tilesize) * tilesize);
+
+    vbuf += ylookup[screenHeight - 1];
+
+    while (height--)
+    {
+        memset (vbuf,BLACK,screenWidth);
+    
+        vbuf -= bufferPitch;
+    }
+}
+
+
 /*
 ===================
 =
@@ -756,55 +825,140 @@ again:
 
 void OverheadRefresh (void)
 {
-    unsigned        x,y,endx,endy,sx,sy;
-    unsigned        tile;
+    int       x,y;
+    byte      rotate[9] = {6,5,4,3,2,1,0,7,0};
+    int16_t   endx,endy;
+    int16_t   sx,sy,shapenum;
+    uintptr_t tile;
+    statobj_t *statptr;
+    objtype   *obj;
 
+    vbuf = VL_LockSurface(screenBuffer);
 
-    endx = maporgx+VIEWTILEX;
-    endy = maporgy+VIEWTILEY;
+    if (!vbuf)
+        Quit ("OverheadRefresh: Unable to create surface!");
 
-    for (y=maporgy;y<endy;y++)
+    endx = maporgx + viewtilex;
+    endy = maporgy + viewtiley;
+
+    for (y = maporgy; y < endy; y++)
     {
-        for (x=maporgx;x<endx;x++)
+        for (x = maporgx; x < endx; x++)
         {
-            sx = (x-maporgx)*16;
-            sy = (y-maporgy)*16;
+            sx = (x - maporgx) * tilesize;
+            sy = (y - maporgy) * tilesize;
 
-            switch (viewtype)
+            tile = (uintptr_t)actorat[x][y];
+
+            if (tile)
             {
-#if 0
-                case mapview:
-                    tile = *(mapsegs[0]+farmapylookup[y]+x);
-                    break;
+                //
+                // draw walls
+                //
+                if (tile < BIT_DOOR && tile != 64)
+                {
+                    if (Keyboard[sc_P] && MAPSPOT(x,y,1) == PUSHABLETILE)
+                        DrawMapFloor (sx,sy,COL_SECRET);
+                    else
+                        DrawMapWall (sx,sy,horizwall[tile]);
+                }
+                else if (tile < BIT_ALLTILES && tile != 64)
+                    DrawMapDoor (sx,sy,tile & ~BIT_DOOR);
+                else
+                {
+                    DrawMapFloor (sx,sy,COL_FLOOR);
 
-                case tilemapview:
-                    tile = tilemap[x][y];
-                    break;
+                    //
+                    // draw actors & static objects
+                    //
+                    if (ISPOINTER(tile))
+                    {
+                        obj = (objtype *)tile;
+                        shapenum = obj->state->shapenum;
 
-                case visview:
-                    tile = spotvis[x][y];
-                    break;
-#endif
-                case actoratview:
-                    tile = (unsigned)actorat[x][y];
-                    break;
+                        if (obj->state->rotate)
+                            shapenum += rotate[obj->dir];
+
+                        DrawMapSprite (sx,sy,shapenum);
+                    }
+                    else if (tile == 64)
+                    {
+                        for (statptr = &statobjlist[0]; statptr != laststatobj; statptr++)
+                        {
+                            if (statptr->tilex != x || statptr->tiley != y)
+                                continue;
+
+                            if (statptr->itemnumber == block)
+                                DrawMapSprite (sx,sy,statptr->shapenum);
+                        }
+                    }
+                }
             }
-
-            if (tile<MAXWALLTILES)
-                LatchDrawTile(sx,sy,tile);
             else
-            {
-                LatchDrawChar(sx,sy,NUMBERCHARS+((tile&0xf000)>>12));
-                LatchDrawChar(sx+8,sy,NUMBERCHARS+((tile&0x0f00)>>8));
-                LatchDrawChar(sx,sy+8,NUMBERCHARS+((tile&0x00f0)>>4));
-                LatchDrawChar(sx+8,sy+8,NUMBERCHARS+(tile&0x000f));
-            }
+                DrawMapFloor (sx,sy,COL_FLOOR);
         }
     }
-}
-#endif
 
-#if 0
+    //
+    // cover the empty bar at the bottom of the screen if necessary
+    //
+    if (screenHeight != (viewtiley * tilesize))
+        DrawMapBorder ();
+
+    VL_WaitVBL (3);                // don't scroll too fast
+
+    VL_UnlockSurface (screenBuffer);
+    VH_UpdateScreen (screenBuffer);
+}
+
+
+/*
+===================
+=
+= SetupMapView
+=
+===================
+*/
+
+void SetupMapView (void)
+{
+    switch (scaleFactor)
+    {
+        case 1: tilesize = 16; break;
+        case 2: tilesize = 32; break;
+
+        default: tilesize = TEXTURESIZE; break;
+    }
+
+#ifdef USE_HIRES
+    tilesize >>= 1;
+#endif
+    tilemapratio = MAPSIZE / tilesize;
+    tilewallratio = TEXTURESIZE / tilesize;
+
+    viewtilex = screenWidth / tilesize;
+    viewtiley = screenHeight / tilesize;
+
+    if (viewtilex > mapwidth)
+        viewtilex = mapwidth;
+    if (viewtiley > mapheight)
+        viewtiley = mapheight;
+
+    maporgx = player->tilex - (viewtilex >> 1);
+    maporgy = player->tiley - (viewtiley >> 1);
+
+    if (maporgx < 0)
+        maporgx = 0;
+    if (maporgx > mapwidth - viewtilex)
+        maporgx = mapwidth - viewtilex;
+
+    if (maporgy < 0)
+        maporgy = 0;
+    if (maporgy > mapheight - viewtiley)
+        maporgy = mapheight - viewtiley;
+}
+
+
 /*
 ===================
 =
@@ -815,22 +969,7 @@ void OverheadRefresh (void)
 
 void ViewMap (void)
 {
-    boolean         button0held;
-
-    viewtype = actoratview;
-    //      button0held = false;
-
-
-    maporgx = player->tilex - VIEWTILEX/2;
-    if (maporgx<0)
-        maporgx = 0;
-    if (maporgx>MAPSIZE-VIEWTILEX)
-        maporgx=MAPSIZE-VIEWTILEX;
-    maporgy = player->tiley - VIEWTILEY/2;
-    if (maporgy<0)
-        maporgy = 0;
-    if (maporgy>MAPSIZE-VIEWTILEY)
-        maporgy=MAPSIZE-VIEWTILEY;
+    SetupMapView ();
 
     do
     {
@@ -838,32 +977,24 @@ void ViewMap (void)
         // let user pan around
         //
         PollControls ();
-        if (controlx < 0 && maporgx>0)
-            maporgx--;
-        if (controlx > 0 && maporgx<mapwidth-VIEWTILEX)
-            maporgx++;
-        if (controly < 0 && maporgy>0)
-            maporgy--;
-        if (controly > 0 && maporgy<mapheight-VIEWTILEY)
-            maporgy++;
 
-#if 0
-        if (c.button0 && !button0held)
-        {
-            button0held = true;
-            viewtype++;
-            if (viewtype>visview)
-                viewtype = mapview;
-        }
-        if (!c.button0)
-            button0held = false;
-#endif
+        if (controlx < 0 && maporgx > 0)
+            maporgx--;
+        if (controlx > 0 && maporgx < mapwidth - viewtilex)
+            maporgx++;
+        if (controly < 0 && maporgy > 0)
+            maporgy--;
+        if (controly > 0 && maporgy < mapheight - viewtiley)
+            maporgy++;
 
         OverheadRefresh ();
 
     } while (!Keyboard[sc_Escape]);
 
     IN_ClearKeysDown ();
+
+    if (viewsize != 21)
+        DrawPlayScreen ();
 }
-#endif
+
 #endif

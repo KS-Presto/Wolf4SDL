@@ -738,6 +738,18 @@ void CheckKeys (void)
         return;
     }
 #endif
+
+#ifdef VIEWMAP
+    if (Keyboard[sc_O])
+    {
+        ViewMap ();
+
+        if (MousePresent && IN_IsInputGrabbed())
+            IN_CenterMouse();     // Clear accumulated mouse movement
+
+        lasttimecount = GetTimeCount();
+    }
+#endif
 }
 
 
