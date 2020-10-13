@@ -854,17 +854,8 @@ void KillActor (objtype *ob)
 {
     int     tilex,tiley;
 
-#ifdef ADDEDFIX // 6
-    if (ob->obclass != mechahitlerobj)        // MCS: fixes jumping Hitler
-    {
-#endif
-
-        tilex = ob->tilex = (word)(ob->x >> TILESHIFT);         // drop item on center
-        tiley = ob->tiley = (word)(ob->y >> TILESHIFT);
-
-#ifdef ADDEDFIX // 6
-    }
-#endif
+    tilex = ob->x >> TILESHIFT;         // drop item on center
+    tiley = ob->y >> TILESHIFT;
 
     switch (ob->obclass)
     {
