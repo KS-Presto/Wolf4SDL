@@ -51,7 +51,7 @@ void DrawParallax (void)
         if(newtex != curtex)
         {
             curtex = newtex;
-            skytex = PM_GetTexture(startpage - curtex);
+            skytex = PM_GetPage(startpage - curtex);
         }
         int texoffs = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
         int yend = skyheight - (wallheight[x] >> 3);

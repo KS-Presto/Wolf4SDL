@@ -472,7 +472,7 @@ void HitVertWall (void)
         else
             wallpic = vertwall[tilehit];
     
-        postsource = PM_GetTexture(wallpic) + texture;
+        postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
         postsourcesky = postsource - texture;
 #endif
@@ -538,7 +538,7 @@ void HitHorizWall (void)
         else
             wallpic = horizwall[tilehit];
     
-        postsource = PM_GetTexture(wallpic) + texture;
+        postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
         postsourcesky = postsource - texture;
 #endif
@@ -603,7 +603,7 @@ void HitHorizDoor (void)
                 break;
         }
 
-        postsource = PM_GetTexture(doorpage) + texture;
+        postsource = PM_GetPage(doorpage) + texture;
     }
 
     ScalePost ();
@@ -665,7 +665,7 @@ void HitVertDoor (void)
                 break;
         }
     
-        postsource = PM_GetTexture(doorpage) + texture;
+        postsource = PM_GetPage(doorpage) + texture;
     }
 
     ScalePost ();

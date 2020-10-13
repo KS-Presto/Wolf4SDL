@@ -409,8 +409,8 @@ void SD_PrepareSound(int which)
     int page = DigiList[which].startpage;
     int size = DigiList[which].length;
 
-    byte *origsamples = PM_GetSound(page);
-    if(origsamples + size >= PM_GetEnd())
+    byte *origsamples = PM_GetSoundPage(page);
+    if(origsamples + size >= PM_GetPageEnd())
         Quit("SD_PrepareSound(%i): Sound reaches out of page file!\n", which);
 
     int destsamples = (int) ((float) size * (float) param_samplerate

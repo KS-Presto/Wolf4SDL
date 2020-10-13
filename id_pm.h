@@ -1,3 +1,5 @@
+// ID_PM.H
+
 #ifndef __ID_PM_H_
 #define __ID_PM_H_
 
@@ -7,29 +9,21 @@
 #define PMPageSize 4096
 #endif
 
-extern int ChunksInFile;
-extern int PMSpriteStart;
-extern int PMSoundStart;
+#define PM_GetSpritePage(v)    PM_GetPage (PMSpriteStart + (v))
+#define PM_GetSoundPage(v)     PM_GetPage (PMSoundStart + (v))
+
+extern word ChunksInFile;
+extern word PMSpriteStart;
+extern word PMSoundStart;
 
 extern bool PMSoundInfoPagePadded;
 
-// ChunksInFile+1 pointers to page starts.
-// The last pointer points one byte after the last page.
-extern uint8_t **PMPages;
+extern byte **PMPages;
 
-void PM_Startup();
-void PM_Shutdown();
-
-uint32_t PM_GetPageSize(int page);
-
-uint8_t *PM_GetPage(int page);
-
-uint8_t *PM_GetEnd();
-
-byte *PM_GetTexture(int wallpic);
-
-byte *PM_GetSprite(int shapenum);
-
-byte *PM_GetSound(int soundpagenum);
+void     PM_Startup (void);
+void     PM_Shutdown (void);
+uint32_t PM_GetPageSize (int page);
+byte     *PM_GetPage (int page);
+byte     *PM_GetPageEnd (void);
 
 #endif

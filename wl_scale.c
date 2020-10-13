@@ -116,7 +116,7 @@ void ScaleShape (int xcenter, int shapenum, int height, uint32_t flags)
     if (!scale)
         return;                 // too close or far away
 
-    linesrc = PM_GetSprite(shapenum);
+    linesrc = PM_GetSpritePage(shapenum);
     shape = (compshape_t *)linesrc;
 
 #ifdef USE_SHADING
@@ -194,7 +194,7 @@ void SimpleScaleShape (int xcenter, int shapenum, int height)
 
     scale = height >> 1;
 
-    linesrc = PM_GetSprite(shapenum);
+    linesrc = PM_GetSpritePage(shapenum);
     shape = (compshape_t *)linesrc;
 
     fracstep = FixedDiv(scale,TEXTURESIZE/2);
@@ -254,7 +254,7 @@ void Scale3DShape (int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
     fixed       dxx,dzz;
     fixed       dxa,dza;
 
-    linesrc = PM_GetSprite(shapenum);
+    linesrc = PM_GetSpritePage(shapenum);
     shape = (compshape_t *)linesrc;
 
     len = shape->rightpix - shape->leftpix + 1;
