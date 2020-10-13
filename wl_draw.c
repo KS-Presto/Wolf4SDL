@@ -309,12 +309,8 @@ int16_t CalcHeight (void)
 
 void ScalePost (void)
 {
-    byte     *src,*dest;
-    byte     *shade;
-    uint32_t destofs,doubPitch;
-    int16_t  height;
-    int32_t  srcindex;
-    fixed    frac,fracstep;
+    int ywcount, yoffs, yw, yd, yendoffs;
+    byte col;
 
 #ifdef USE_SKYWALLPARALLAX
     if (tilehit == 16)
@@ -324,52 +320,62 @@ void ScalePost (void)
     }
 #endif
 
-    height = wallheight[postx] >> 3;    // fractional height (low 3 bits frac)
-
-    if (!height)
-        return;
-
 #ifdef USE_SHADING
-    shade = shadetable[GetShade(wallheight[postx])];
+    byte *curshades = shadetable[GetShade(wallheight[postx])];
 #endif
-    fracstep = FixedDiv(TEXTURESIZE / 2,height);
-    frac = fracstep >> 1;
 
-    destofs = bufferPitch;
-    doubPitch = bufferPitch << 1;
+    ywcount = yd = wallheight[postx] >> 3;
+    if(yd <= 0) yd = 100;
 
-    src = &postsource[(TEXTURESIZE / 2) - 1];
-    dest = vbuf + ylookup[centery - 1] + postx;
+    yoffs = (viewheight / 2 - ywcount) * bufferPitch;
+    if(yoffs < 0) yoffs = 0;
+    yoffs += postx;
 
-    if (height > centery)
-        height = centery;
+    yendoffs = viewheight / 2 + ywcount - 1;
+    yw=TEXTURESIZE-1;
 
-    while (height--)
+    while(yendoffs >= viewheight)
     {
-        srcindex = frac >> FRACBITS;
+        ywcount -= TEXTURESIZE/2;
+        while(ywcount <= 0)
+        {
+            ywcount += yd;
+            yw--;
+        }
+        yendoffs--;
+    }
+    if(yw < 0) return;
 
 #ifdef USE_SHADING
-        *dest = shade[*(src - srcindex)];
-        dest[destofs] = shade[*(src + srcindex + 1)];
+    col = curshades[postsource[yw]];
 #else
-        *dest = *(src - srcindex);
-        dest[destofs] = *(src + srcindex + 1);
+    col = postsource[yw];
 #endif
-        dest -= bufferPitch;
-        destofs += doubPitch;
-        frac += fracstep;
+    yendoffs = yendoffs * bufferPitch + postx;
+    while(yoffs <= yendoffs)
+    {
+        vbuf[yendoffs] = col;
+        ywcount -= TEXTURESIZE/2;
+        if(ywcount <= 0)
+        {
+            do
+            {
+                ywcount += yd;
+                yw--;
+            }
+            while(ywcount <= 0);
+            if(yw < 0) break;
+#ifdef USE_SHADING
+            col = curshades[postsource[yw]];
+#else
+            col = postsource[yw];
+#endif
+        }
+        yendoffs -= bufferPitch;
     }
 }
 
 #ifdef USE_SKYWALLPARALLAX
-/*
-===================
-=
-= ScaleSkyPost
-=
-===================
-*/
-
 void ScaleSkyPost (void)
 {
     int ywcount, yoffs, yendoffs, texoffs;
