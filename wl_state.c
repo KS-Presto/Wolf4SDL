@@ -170,7 +170,7 @@ void NewState (objtype *ob, statetype *state)
                 doornum = temp&63;                      \
             else                                        \
             {                                           \
-                doornum = (int) temp & LAST_DOORNUM;    \
+                doornum = (int) temp & ~BIT_DOOR;       \
                 if (ob->obclass != ghostobj             \
                     && ob->obclass != spectreobj)       \
                 {                                       \
@@ -181,7 +181,7 @@ void NewState (objtype *ob, statetype *state)
             }
 #else
     #define DOORCHECK                                   \
-            doornum = (int) temp & LAST_DOORNUM;        \
+            doornum = (int) temp & ~BIT_DOOR;           \
             if (ob->obclass != ghostobj                 \
                 && ob->obclass != spectreobj)           \
             {                                           \

@@ -35,8 +35,8 @@ static int DebugOk;
 objtype objlist[MAXACTORS];
 objtype *newobj, *obj, *player, *lastobj, *objfreelist, *killerobj;
 
-boolean noclip, ammocheat;
-int godmode, singlestep, extravbls = 0;
+boolean singlestep,godmode,noclip,ammocheat;
+int     extravbls;
 
 tiletype tilemap[MAPSIZE][MAPSIZE]; // wall values only
 bool     spotvis[MAPSIZE][MAPSIZE];
