@@ -887,7 +887,7 @@ void FinishSignon (void)
 
     SETFONTCOLOR(0,15);
 #else
-    VH_UpdateScreen();
+    VW_UpdateScreen();
 
     if (!param_nowait)
         VW_WaitVBL(3*70);
