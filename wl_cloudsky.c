@@ -75,7 +75,7 @@ static int GetCloudSkyDefID()
 static int GetCloudSkyDefID()
 {
     int skyID;
-    switch(gamestate.episode * 10 + mapon)
+    switch(gamestate.episode * 10 + gamestate.mapon)
     {
         case  0: skyID =  0; break;
         case  1: skyID =  1; break;

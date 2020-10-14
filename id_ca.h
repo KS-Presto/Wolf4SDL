@@ -4,11 +4,7 @@
 //===========================================================================
 
 #define NUMMAPS         60
-#ifdef USE_FLOORCEILINGTEX
-    #define MAPPLANES       3
-#else
-    #define MAPPLANES       2
-#endif
+#define MAPPLANES       3
 
 #define UNCACHEAUDIOCHUNK(chunk) {if(audiosegs[chunk]) {free(audiosegs[chunk]); audiosegs[chunk]=NULL;}}
 
@@ -16,19 +12,18 @@
 
 typedef struct
 {
-    int32_t planestart[3];
-    word    planelength[3];
+    int32_t planestart[MAPPLANES];
+    word    planelength[MAPPLANES];
     word    width,height;
     char    name[16];
 } maptype;
 
 //===========================================================================
 
-extern  int   mapon;
-
-extern  word *mapsegs[MAPPLANES];
-extern  byte *audiosegs[NUMSNDCHUNKS];
-extern  byte *grsegs[NUMCHUNKS];
+extern  word    *mapsegs[MAPPLANES];
+extern  maptype *mapheaderseg[NUMMAPS];
+extern  byte    *audiosegs[NUMSNDCHUNKS];
+extern  byte    *grsegs[NUMCHUNKS];
 
 extern  char  extension[5];
 extern  char  graphext[5];

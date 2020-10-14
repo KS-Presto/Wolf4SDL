@@ -696,7 +696,7 @@ byte vgaCeiling[]=
 
 void VGAClearScreen (void)
 {
-    byte ceiling=vgaCeiling[gamestate.episode*10+mapon];
+    byte ceiling=vgaCeiling[gamestate.episode*10+gamestate.mapon];
 
     int y;
     byte *dest = vbuf;
@@ -1603,7 +1603,7 @@ void ThreeDRefresh (void)
 //
 // clear out the traced array
 //
-    memset(spotvis,0,maparea);
+    memset(spotvis,0,MAPAREA);
 #ifdef PLAYDEMOLIKEORIGINAL      // ADDEDFIX 30 - Chris
     if (DEMOCOND_SDL)
 #endif

@@ -19,7 +19,7 @@ static int GetParallaxStartTexture()
 static int GetParallaxStartTexture()
 {
     int startTex;
-    switch(gamestate.episode * 10 + mapon)
+    switch(gamestate.episode * 10 + gamestate.mapon)
     {
         case  0: startTex = 20; break;
         default: startTex =  0; break;

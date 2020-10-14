@@ -36,7 +36,7 @@ static inline int GetShadeDefID()
 static int GetShadeDefID()
 {
     int shadeID;
-    switch(gamestate.episode * 10 + mapon)
+    switch(gamestate.episode * 10 + gamestate.mapon)
     {
         case  0: shadeID = 4; break;
         case  1:

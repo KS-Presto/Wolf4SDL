@@ -632,6 +632,7 @@ static void ScanInfoPlane(void)
 void SetupGameLevel (void)
 {
     int  x,y;
+    int  mapnum;
     word *map;
     word tile;
 
@@ -658,8 +659,12 @@ void SetupGameLevel (void)
 //
 // load the level
 //
-    CA_CacheMap (gamestate.mapon+10*gamestate.episode);
-    mapon-=gamestate.episode*10;
+    mapnum = gamestate.mapon+10*gamestate.episode;
+
+    CA_CacheMap (mapnum);
+
+    mapwidth = mapheaderseg[mapnum]->width;
+    mapheight = mapheaderseg[mapnum]->height;
 
 #ifdef USE_FEATUREFLAGS
     // Temporary definition to make things clearer

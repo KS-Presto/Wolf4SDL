@@ -45,6 +45,7 @@ objtype *actorat[MAPSIZE][MAPSIZE];
 //
 // replacing refresh manager
 //
+word     mapwidth,mapheight;
 unsigned tics;
 
 //

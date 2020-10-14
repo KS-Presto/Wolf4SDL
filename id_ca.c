@@ -46,7 +46,7 @@ typedef struct
 typedef struct
 {
     word RLEWtag;
-    int32_t headeroffsets[100];
+    int32_t headeroffsets[NUMMAPS];
 } mapfiletype;
 
 
@@ -58,10 +58,8 @@ typedef struct
 =============================================================================
 */
 
-int     mapon;
-
 word    *mapsegs[MAPPLANES];
-static maptype* mapheaderseg[NUMMAPS];
+maptype *mapheaderseg[NUMMAPS];
 byte    *audiosegs[NUMSNDCHUNKS];
 byte    *grsegs[NUMCHUNKS];
 
@@ -596,7 +594,7 @@ void CAL_SetupMapFile (void)
 // allocate space for 3 64*64 planes
 //
     for (i=0;i<MAPPLANES;i++)
-        mapsegs[i] = SafeMalloc(maparea * sizeof(*mapsegs[i]));
+        mapsegs[i] = SafeMalloc(MAPAREA * sizeof(*mapsegs[i]));
 }
 
 
@@ -660,8 +658,6 @@ void CA_Startup (void)
     CAL_SetupMapFile ();
     CAL_SetupGrFile ();
     CAL_SetupAudioFile ();
-
-    mapon = -1;
 }
 
 //==========================================================================
@@ -1020,12 +1016,13 @@ void CA_CacheMap (int mapnum)
     int32_t   expanded;
 #endif
 
-    mapon = mapnum;
+    if (mapheaderseg[mapnum]->width != MAPSIZE || mapheaderseg[mapnum]->height != MAPSIZE)
+        Quit ("CA_CacheMap: Map not %u*%u!",MAPSIZE,MAPSIZE);
 
 //
 // load the planes into the allready allocated buffers
 //
-    size = maparea * sizeof(*dest);
+    size = MAPAREA * sizeof(*dest);
 
     for (plane = 0; plane<MAPPLANES; plane++)
     {

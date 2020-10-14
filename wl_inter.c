@@ -550,9 +550,9 @@ LevelCompleted (void)
     VWB_DrawPic (0, 16, L_GUYPIC);
 
 #ifndef SPEAR
-    if (mapon < 8)
+    if (gamestate.mapon < 8)
 #else
-    if (mapon != 4 && mapon != 9 && mapon != 15 && mapon < 17)
+    if (gamestate.mapon != 4 && gamestate.mapon != 9 && gamestate.mapon != 15 && gamestate.mapon < 17)
 #endif
     {
 #ifndef JAPAN
@@ -580,9 +580,9 @@ LevelCompleted (void)
 #endif
 
 #ifdef SPANISH
-        Write (30, 12, parTimes[gamestate.episode * 10 + mapon].timestr);
+        Write (30, 12, parTimes[gamestate.episode * 10 + gamestate.mapon].timestr);
 #else
-        Write (26, 12, parTimes[gamestate.episode * 10 + mapon].timestr);
+        Write (26, 12, parTimes[gamestate.episode * 10 + gamestate.mapon].timestr);
 #endif
 
         //
@@ -593,8 +593,8 @@ LevelCompleted (void)
         if (sec > 99 * 60)      // 99 minutes max
             sec = 99 * 60;
 
-        if (gamestate.TimeCount < parTimes[gamestate.episode * 10 + mapon].time * 4200)
-            timeleft = (int32_t) ((parTimes[gamestate.episode * 10 + mapon].time * 4200) / 70 - sec);
+        if (gamestate.TimeCount < parTimes[gamestate.episode * 10 + gamestate.mapon].time * 4200)
+            timeleft = (int32_t) ((parTimes[gamestate.episode * 10 + gamestate.mapon].time * 4200) / 70 - sec);
 
         min = sec / 60;
         sec %= 60;
@@ -814,16 +814,16 @@ done:   itoa (kr, tempstr, 10);
         //
         // SAVE RATIO INFORMATION FOR ENDGAME
         //
-        LevelRatios[mapon].kill = kr;
-        LevelRatios[mapon].secret = sr;
-        LevelRatios[mapon].treasure = tr;
-        LevelRatios[mapon].time = min * 60 + sec;
+        LevelRatios[gamestate.mapon].kill = kr;
+        LevelRatios[gamestate.mapon].secret = sr;
+        LevelRatios[gamestate.mapon].treasure = tr;
+        LevelRatios[gamestate.mapon].time = min * 60 + sec;
     }
     else
     {
 #ifdef SPEAR
 #ifndef SPEARDEMO
-        switch (mapon)
+        switch (gamestate.mapon)
         {
             case 4:
                 Write (14, 4, " trans\n" " grosse\n" STR_DEFEATED);

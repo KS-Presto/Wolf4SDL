@@ -1068,9 +1068,9 @@ void A_DeathScream (objtype *ob)
 {
 #ifndef UPLOAD
 #ifndef SPEAR
-    if (mapon==9 && !US_RndT())
+    if (gamestate.mapon==9 && !US_RndT())
 #else
-    if ((mapon==18 || mapon==19) && !US_RndT())
+    if ((gamestate.mapon==18 || gamestate.mapon==19) && !US_RndT())
 #endif
     {
         switch(ob->obclass)

@@ -209,11 +209,8 @@ typedef uint8_t tiletype;
 #define MINDIST         (0x5800l)
 
 #define mapshift        6
-#define MAPSIZE         (1<<mapshift)
-#define maparea         MAPSIZE*MAPSIZE
-
-#define mapheight       MAPSIZE
-#define mapwidth        MAPSIZE
+#define MAPSIZE         (1 << mapshift)
+#define MAPAREA         (MAPSIZE * MAPSIZE)
 
 #ifdef USE_HIRES
 
@@ -1034,6 +1031,7 @@ extern  objtype         *actorat[MAPSIZE][MAPSIZE];
 
 extern  objtype         *player;
 
+extern  word            mapwidth,mapheight;
 extern  unsigned        tics;
 extern  int             viewsize;
 
