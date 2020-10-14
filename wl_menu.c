@@ -416,14 +416,10 @@ US_ControlPanel (ScanCode scancode)
     switch (scancode)
     {
         case sc_F1:
-#ifdef SPEAR
-            BossKey ();
-#else
-#ifdef GOODTIMES
+#if defined(SPEAR) || defined(GOODTIMES)
             BossKey ();
 #else
             HelpScreens ();
-#endif
 #endif
             goto finishup;
 
@@ -641,7 +637,7 @@ CP_ReadThis (int)
 #endif
 
 
-#ifdef GOODTIMES
+#if defined(SPEAR) || defined(GOODTIMES)
 ////////////////////////////////////////////////////////////////////
 //
 // BOSS KEY
@@ -650,58 +646,54 @@ CP_ReadThis (int)
 void
 BossKey (void)
 {
-#ifdef NOTYET
-    int i;
-    byte palette1[256][3];
+    int i,lastBlinkTime;
+    ControlInfo ci;
+
     SD_MusicOff ();
-/*       _AX = 3;
-        geninterrupt(0x10); */
-    _asm
+
+    VL_ClearScreen (BLACK);
+    VL_FadeIn (0,255,gamepal,0);
+
+    SETFONTCOLOR (7,BLACK);
+    fontnumber = 0;
+    PrintX = 0;
+    PrintY = 1;
+
+    US_Print ("C>");
+    VW_UpdateScreen();
+
+    i = 0;
+    lastBlinkTime = GetTimeCount();
+
+    do
     {
-    mov eax, 3 int 0x10}
-    puts ("C>");
-    SetTextCursor (2, 0);
-//      while (!Keyboard[sc_Escape])
-    IN_Ack ();
-    IN_ClearKeysDown ();
+        IN_ProcessEvents ();
 
-    SD_MusicOn ();
-    VL_SetVGAPlaneMode ();
-    for (i = 0; i < 768; i++)
-        palette1[0][i] = 0;
+        if (GetTimeCount() - lastBlinkTime > 7)
+        {
+            if (!i)
+            {
+                SETFONTCOLOR (7,BLACK);
+            }
+            else
+            {
+                SETFONTCOLOR (BLACK,BLACK);
+            }
 
-    VL_SetPalette (&palette1[0][0]);
-#endif
+            PrintX = 14;
+            US_Print ("_");
+            VW_UpdateScreen ();
+
+            i ^= 1;
+            lastBlinkTime = GetTimeCount();
+        }
+        else
+            SDL_Delay (5);
+
+    } while (LastScan != sc_Escape);
+
+    VL_ClearScreen (BLACK);
 }
-#else
-#ifdef SPEAR
-void
-BossKey (void)
-{
-#ifdef NOTYET
-    int i;
-    byte palette1[256][3];
-    SD_MusicOff ();
-/*       _AX = 3;
-        geninterrupt(0x10); */
-    _asm
-    {
-    mov eax, 3 int 0x10}
-    puts ("C>");
-    SetTextCursor (2, 0);
-//      while (!Keyboard[sc_Escape])
-    IN_Ack ();
-    IN_ClearKeysDown ();
-
-    SD_MusicOn ();
-    VL_SetVGAPlaneMode ();
-    for (i = 0; i < 768; i++)
-        palette1[0][i] = 0;
-
-    VL_SetPalette (&palette1[0][0]);
-#endif
-}
-#endif
 #endif
 
 
