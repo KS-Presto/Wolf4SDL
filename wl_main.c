@@ -1436,7 +1436,6 @@ void Quit (const char *errorStr, ...)
 #ifdef NOTYET
             SetTextCursor(0,2);
 #endif
-            VW_WaitVBL(100);
         }
         exit(1);
     }
@@ -1467,7 +1466,6 @@ void Quit (const char *errorStr, ...)
 #ifdef NOTYET
         SetTextCursor(0,7);
 #endif
-        VW_WaitVBL(200);
         exit(1);
     }
     else
