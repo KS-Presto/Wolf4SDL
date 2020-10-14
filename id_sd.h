@@ -107,6 +107,12 @@ typedef struct
     fixed globalsoundx, globalsoundy;
 } globalsoundpos;
 
+typedef struct
+{
+    uint32_t startpage;
+    uint32_t length;
+} digiinfo;
+
 extern globalsoundpos channelSoundPos[];
 
 // Global variables
@@ -116,6 +122,8 @@ extern  boolean         AdLibPresent,
 extern  SDMode          SoundMode;
 extern  SDSMode         DigiMode;
 extern  SMMode          MusicMode;
+extern  word            NumDigi;
+extern  digiinfo        *DigiList;
 extern  int             DigiMap[];
 extern  int             DigiChannel[];
 

@@ -1154,6 +1154,9 @@ extern  boolean fizzlein, fpscounter;
 extern  fixed   viewx,viewy;                    // the focal point
 extern  fixed   viewsin,viewcos;
 
+extern  int     postx;
+extern  byte    *postsource;
+
 void    ScalePost (void);
 void    ThreeDRefresh (void);
 void    CalcTics (void);

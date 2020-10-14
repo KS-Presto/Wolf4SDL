@@ -8,6 +8,8 @@ word PMSoundStart;
 
 bool PMSoundInfoPagePadded = false;
 
+word *pageLengths;
+
 byte *PMPageData;
 byte **PMPages;
 
@@ -25,7 +27,7 @@ void PM_Startup (void)
     int      i;
     int      padding;
     byte     *page;
-    uint16_t *pageLengths;
+    //uint16_t *pageLengths;
     uint32_t *pageOffsets;
     uint32_t pagesize;
     int32_t  filesize,datasize;
@@ -155,7 +157,6 @@ void PM_Startup (void)
     //
     PMPages[ChunksInFile] = page;
 
-    free (pageLengths);
     free (pageOffsets);
 
     fclose (file);
@@ -172,9 +173,11 @@ void PM_Startup (void)
 
 void PM_Shutdown (void)
 {
+    free (pageLengths);
     free (PMPages);
     free (PMPageData);
 
+    pageLengths = NULL;
     PMPages = NULL;
     PMPageData = NULL;
 }

@@ -324,11 +324,11 @@ void ScalePost (void)
     ywcount = yd = wallheight[postx] >> 3;
     if(yd <= 0) yd = 100;
 
-    yoffs = (viewheight / 2 - ywcount) * bufferPitch;
+    yoffs = (centery - ywcount) * bufferPitch;
     if(yoffs < 0) yoffs = 0;
     yoffs += postx;
 
-    yendoffs = viewheight / 2 + ywcount - 1;
+    yendoffs = centery + ywcount - 1;
     yw=TEXTURESIZE-1;
 
     while(yendoffs >= viewheight)

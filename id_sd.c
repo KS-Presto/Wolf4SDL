@@ -62,12 +62,6 @@ typedef struct
 	longword chunklength;
 } wavechunk;
 
-typedef struct
-{
-    uint32_t startpage;
-    uint32_t length;
-} digiinfo;
-
 static Mix_Chunk *SoundChunks[ STARTMUSIC - STARTDIGISOUNDS];
 
 globalsoundpos channelSoundPos[MIX_CHANNELS];
@@ -94,7 +88,7 @@ static  int                     LeftPosition;
 static  int                     RightPosition;
 
         word                    NumDigi;
-static  digiinfo               *DigiList;
+        digiinfo                *DigiList;
 static  boolean                 DigiPlaying;
 
 //      PC Sound variables

@@ -18,6 +18,7 @@ extern word PMSoundStart;
 
 extern bool PMSoundInfoPagePadded;
 
+extern word *pageLengths;
 extern byte **PMPages;
 
 void     PM_Startup (void);

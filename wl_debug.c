@@ -137,66 +137,43 @@ void PictureGrabber (void)
 
 void ShapeTest (void)
 {
-    //TODO
-#if NOTYET
-    extern  word    NumDigi;
-    extern  word    *DigiList;
-    extern  int     postx;
-    extern  int     postwidth;
-    extern  byte    *postsource;
-    static  char    buf[10];
+    boolean    done;
+    ScanCode   scan;
+    int        i,j,k,x;
+    int        v2;
+    int        oldviewheight;
+    longword   l;
+    byte       v;
+    byte       *addr;
+    soundnames sound;
 
-    boolean         done;
-    ScanCode        scan;
-    int             i,j,k,x;
-    longword        l;
-    byte            *addr;
-    soundnames      sound;
-    //      PageListStruct  far *page;
-
-    CenterWindow(20,16);
+    CenterWindow (20,16);
     VW_UpdateScreen();
-    for (i = 0,done = false; !done;)
+
+    i = 0;
+    done = false;
+
+    while (!done)
     {
-        US_ClearWindow();
-        sound = (soundnames) -1;
+        US_ClearWindow ();
+        sound = (soundnames)-1;
 
-        //              page = &PMPages[i];
-        US_Print(" Page #");
-        US_PrintUnsigned(i);
+        US_Print (" Page #");
+        US_PrintSigned (i);
+
         if (i < PMSpriteStart)
-            US_Print(" (Wall)");
+            US_Print (" (Wall)");
         else if (i < PMSoundStart)
-            US_Print(" (Sprite)");
+            US_Print (" (Sprite)");
         else if (i == ChunksInFile - 1)
-            US_Print(" (Sound Info)");
+            US_Print (" (Sound Info)");
         else
-            US_Print(" (Sound)");
+            US_Print (" (Sound)");
 
-        /*              US_Print("\n XMS: ");
-        if (page->xmsPage != -1)
-        US_PrintUnsigned(page->xmsPage);
-        else
-        US_Print("No");
-
-        US_Print("\n Main: ");
-        if (page->mainPage != -1)
-        US_PrintUnsigned(page->mainPage);
-        else if (page->emsPage != -1)
-        {
-        US_Print("EMS ");
-        US_PrintUnsigned(page->emsPage);
-        }
-        else
-        US_Print("No");
-
-        US_Print("\n Last hit: ");
-        US_PrintUnsigned(page->lastHit);*/
-
-        US_Print("\n Address: ");
-        addr = (byte *) PM_GetPage(i);
-        sprintf(buf,"0x%08X",(int32_t) addr);
-        US_Print(buf);
+        US_Print ("\n Address: ");
+        addr = PM_GetPage(i);
+        sprintf (str,"0x%08X",(int32_t)addr);
+        US_Print (str);
 
         if (addr)
         {
@@ -205,122 +182,166 @@ void ShapeTest (void)
                 //
                 // draw the wall
                 //
-                vbuf += 32*SCREENWIDTH;
-                postx = 128;
-                postwidth = 1;
+                vbuf = VL_LockSurface(screenBuffer);
+               
+                if (!vbuf)
+                    Quit ("ShapeTest: Unable to create surface for walls!");
+
+                postx = (screenWidth / 2) - ((TEXTURESIZE / 2) * scaleFactor);
                 postsource = addr;
-                for (x=0;x<64;x++,postx++,postsource+=64)
+
+                centery = screenHeight / 2;
+                oldviewheight = viewheight;
+                viewheight = 0x7fff;            // quick hack to skip clipping
+
+                for (x = 0, j = 0; x < TEXTURESIZE * scaleFactor; x++, j++, postx++)
                 {
-                    wallheight[postx] = 256;
+                    wallheight[postx] = 256 * scaleFactor;
                     ScalePost ();
+
+                    if (j == scaleFactor)
+                    {
+                        j = 0;
+                        postsource += TEXTURESIZE;
+                    }
                 }
-                vbuf -= 32*SCREENWIDTH;
+
+                viewheight = oldviewheight;
+                centery = viewheight / 2;
+
+                VL_UnlockSurface (screenBuffer);
+                vbuf = NULL;
             }
             else if (i < PMSoundStart)
             {
                 //
                 // draw the sprite
                 //
-                vbuf += 32*SCREENWIDTH;
-                SimpleScaleShape (160, i-PMSpriteStart, 64);
-                vbuf -= 32*SCREENWIDTH;
+                vbuf = VL_LockSurface(screenBuffer);
+
+                if (!vbuf)
+                    Quit ("ShapeTest: Unable to create surface for sprites!");
+
+                centery = screenHeight / 2;
+                oldviewheight = viewheight;
+                viewheight = 0x7fff;            // quick hack to skip clipping
+
+                SimpleScaleShape (screenWidth / 2,i - PMSpriteStart,64 * scaleFactor);
+
+                viewheight = oldviewheight;
+                centery = viewheight / 2;
+
+                VL_UnlockSurface(screenBuffer);
+                vbuf = NULL;
             }
             else if (i == ChunksInFile - 1)
             {
-                US_Print("\n\n Number of sounds: ");
-                US_PrintUnsigned(NumDigi);
-                for (l = j = k = 0;j < NumDigi;j++)
-                {
-                    l += DigiList[(j * 2) + 1];
-                    k += (DigiList[(j * 2) + 1] + (PMPageSize - 1)) / PMPageSize;
-                }
-                US_Print("\n Total bytes: ");
-                US_PrintUnsigned(l);
-                US_Print("\n Total pages: ");
-                US_PrintUnsigned(k);
+                //
+                // display sound info
+                //
+                US_Print ("\n\n Number of sounds: ");
+                US_PrintUnsigned (NumDigi);
+
+				for (l = j = 0; j < NumDigi; j++)
+					l += DigiList[j].length;
+
+                US_Print ("\n Total bytes: ");
+                US_PrintUnsigned (l);
+                US_Print ("\n Total pages: ");
+                US_PrintUnsigned (ChunksInFile - PMSoundStart - 1);
             }
             else
             {
-                byte *dp = addr;
-                for (j = 0;j < NumDigi;j++)
+                //
+                // display sounds
+                //
+                for (j = 0; j < NumDigi; j++)
                 {
-                    k = (DigiList[(j * 2) + 1] + (PMPageSize - 1)) / PMPageSize;
-                    if ((i >= PMSoundStart + DigiList[j * 2])
-                            && (i < PMSoundStart + DigiList[j * 2] + k))
+                    if (j == NumDigi - 1)
+                        k = ChunksInFile - 1;    // don't let it overflow
+                    else
+                        k = DigiList[j + 1].startpage;
+
+                    if (i >= PMSoundStart + DigiList[j].startpage && i < PMSoundStart + k)
                         break;
                 }
+
                 if (j < NumDigi)
                 {
-                    sound = (soundnames) j;
-                    US_Print("\n Sound #");
-                    US_PrintUnsigned(j);
-                    US_Print("\n Segment #");
-                    US_PrintUnsigned(i - PMSoundStart - DigiList[j * 2]);
+                    sound = (soundnames)j;
+
+                    US_Print ("\n Sound #");
+                    US_PrintSigned (j);
+                    US_Print ("\n Segment #");
+                    US_PrintSigned (i - PMSoundStart - DigiList[j].startpage);
                 }
-                for (j = 0;j < PageLengths[i];j += 32)
+
+                for (j = 0; j < pageLengths[i]; j += 32)
                 {
-                    byte v = dp[j];
-                    int v2 = (unsigned)v;
+                    v = addr[j];
+                    v2 = (unsigned)v;
                     v2 -= 128;
                     v2 /= 4;
+
                     if (v2 < 0)
-                        VWB_Vlin(WindowY + WindowH - 32 + v2,
-                        WindowY + WindowH - 32,
-                        WindowX + 8 + (j / 32),BLACK);
+                        VWB_Vlin (WindowY + WindowH - 32 + v2,
+                                  WindowY + WindowH - 32,
+                                  WindowX + 8 + (j / 32),BLACK);
                     else
-                        VWB_Vlin(WindowY + WindowH - 32,
-                        WindowY + WindowH - 32 + v2,
-                        WindowX + 8 + (j / 32),BLACK);
+                        VWB_Vlin (WindowY + WindowH - 32,
+                                  WindowY + WindowH - 32 + v2,
+                                  WindowX + 8 + (j / 32),BLACK);
                 }
             }
         }
 
         VW_UpdateScreen();
 
-        IN_Ack();
+        IN_Ack ();
         scan = LastScan;
 
-        IN_ClearKey(scan);
+        IN_ClearKey (scan);
+
         switch (scan)
         {
             case sc_LeftArrow:
                 if (i)
                     i--;
                 break;
+
             case sc_RightArrow:
                 if (++i >= ChunksInFile)
                     i--;
                 break;
+
             case sc_W:      // Walls
                 i = 0;
                 break;
+
             case sc_S:      // Sprites
                 i = PMSpriteStart;
                 break;
+
             case sc_D:      // Digitized
                 i = PMSoundStart;
                 break;
+
             case sc_I:      // Digitized info
                 i = ChunksInFile - 1;
                 break;
-/*            case sc_L:      // Load all pages
-                for (j = 0;j < ChunksInFile;j++)
-                    PM_GetPage(j);
-                break;*/
+
             case sc_P:
                 if (sound != -1)
-                    SD_PlayDigitized(sound,8,8);
+                    SD_PlayDigitized (sound,8,8);
                 break;
+
             case sc_Escape:
                 done = true;
                 break;
-/*            case sc_Enter:
-                PM_GetPage(i);
-                break;*/
         }
     }
-    SD_StopDigitized();
-#endif
+
+    SD_StopDigitized ();
 }
 
 
