@@ -176,7 +176,7 @@ boolean CA_WriteFile (const char *filename, void *ptr, int32_t length)
 ==========================
 */
 
-boolean CA_LoadFile (const char *filename, memptr *ptr)
+boolean CA_LoadFile (const char *filename, void **ptr)
 {
     int32_t size;
 
@@ -587,7 +587,7 @@ void CAL_SetupMapFile (void)
         mapheaderseg[i] = SafeMalloc(sizeof(*mapheaderseg[i]));
 
         lseek(maphandle,pos,SEEK_SET);
-        read (maphandle,(memptr)mapheaderseg[i],sizeof(*mapheaderseg[i]));
+        read (maphandle,mapheaderseg[i],sizeof(*mapheaderseg[i]));
     }
 
 //

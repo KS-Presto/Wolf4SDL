@@ -1647,8 +1647,6 @@ CopyProtection (void)
                     start = STARTADLIBSOUNDS;
             }
 
-/*                        for (i=0;i<NUMSOUNDS;i++,start++)
-                                MM_FreePtr ((memptr *)&audiosegs[start]); */
             return;
         }
     }

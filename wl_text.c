@@ -750,7 +750,7 @@ void HelpScreens (void)
     int     artnum;
     char    *text;
 #ifndef ARTSEXTERN
-    memptr  layout;
+    void    *layout;
 #endif
 
 
@@ -789,7 +789,7 @@ void EndText (void)
     int     artnum;
     char    *text;
 #ifndef ARTSEXTERN
-    memptr  layout;
+    void    *layout;
 #endif
 
     ClearMemory ();

@@ -75,7 +75,6 @@ typedef uint16_t word;
 typedef int32_t fixed;
 typedef uint32_t longword;
 typedef int8_t boolean;
-typedef void * memptr;
 
 typedef struct
 {
@@ -1055,7 +1054,7 @@ extern  int         godmode;
 
 extern  boolean     demorecord,demoplayback;
 extern  int8_t      *demoptr, *lastdemoptr;
-extern  memptr      demobuffer;
+extern  void        *demobuffer;
 
 //
 // control info

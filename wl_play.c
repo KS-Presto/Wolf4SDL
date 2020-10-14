@@ -73,7 +73,7 @@ boolean buttonheld[NUMBUTTONS];
 
 boolean demorecord, demoplayback;
 int8_t *demoptr, *lastdemoptr;
-memptr demobuffer;
+void   *demobuffer;
 
 //
 // current user input
