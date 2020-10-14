@@ -1018,8 +1018,6 @@ static fixed FixedByFracOrig(fixed a, fixed b)
 void Thrust (int angle, int32_t speed)
 {
     int32_t xmove,ymove;
-    unsigned offset;
-
 
     //
     // ZERO FUNNY COUNTER IF MOVED!
@@ -1048,10 +1046,9 @@ void Thrust (int angle, int32_t speed)
     player->tilex = (short)(player->x >> TILESHIFT);                // scale to tile values
     player->tiley = (short)(player->y >> TILESHIFT);
 
-    offset = (player->tiley<<mapshift)+player->tilex;
-    player->areanumber = *(mapsegs[0] + offset) -AREATILE;
+    player->areanumber = MAPSPOT(player->tilex,player->tiley,0) - AREATILE;
 
-    if (*(mapsegs[1] + offset) == EXITTILE)
+    if (MAPSPOT(player->tilex,player->tiley,1) == EXITTILE)
         VictoryTile ();
 }
 
@@ -1136,7 +1133,7 @@ void Cmd_Use (void)
     }
 
     doornum = tilemap[checkx][checky];
-    if (*(mapsegs[1]+(checky<<mapshift)+checkx) == PUSHABLETILE)
+    if (MAPSPOT(checkx,checky,1) == PUSHABLETILE)
     {
         //
         // pushable wall
@@ -1153,7 +1150,7 @@ void Cmd_Use (void)
         buttonheld[bt_use] = true;
 
         tilemap[checkx][checky]++;              // flip switch
-        if (*(mapsegs[0]+(player->tiley<<mapshift)+player->tilex) == ALTELEVATORTILE)
+        if (MAPSPOT(player->tilex,player->tiley,0) == ALTELEVATORTILE)
             playstate = ex_secretlevel;
         else
             playstate = ex_completed;
@@ -1193,7 +1190,7 @@ void SpawnPlayer (int tilex, int tiley, int dir)
     player->active = ac_yes;
     player->tilex = tilex;
     player->tiley = tiley;
-    player->areanumber = (byte) *(mapsegs[0]+(player->tiley<<mapshift)+player->tilex);
+    player->areanumber = MAPSPOT(tilex,tiley,0) - AREATILE;
     player->x = ((int32_t)tilex<<TILESHIFT)+TILEGLOBAL/2;
     player->y = ((int32_t)tiley<<TILESHIFT)+TILEGLOBAL/2;
     player->state = &s_player;

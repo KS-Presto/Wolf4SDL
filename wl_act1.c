@@ -381,7 +381,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
     // for door sides
     //
     tilemap[tilex][tiley] = doornum | BIT_DOOR;
-    map = mapsegs[0] + (tiley<<mapshift) +tilex;
+    map = &MAPSPOT(tilex,tiley,0);
     if (vertical)
     {
         *map = *(map-1);                        // set area number
@@ -459,7 +459,7 @@ void CloseDoor (int door)
         if (ISPOINTER(check) && ((check->x-MINDIST) >> TILESHIFT) == tilex )
             return;
     }
-    else if (!doorobjlist[door].vertical)
+    else
     {
         if (player->tilex == tilex)
         {
@@ -480,8 +480,8 @@ void CloseDoor (int door)
     //
     // play door sound if in a connected area
     //
-    area = *(mapsegs[0] + (doorobjlist[door].tiley<<mapshift)
-        +doorobjlist[door].tilex)-AREATILE;
+    area = MAPSPOT(tilex,tiley,0) - AREATILE;
+
     if (areabyplayer[area])
     {
         PlaySoundLocTile(CLOSEDOORSND,doorobjlist[door].tilex,doorobjlist[door].tiley); // JAB
@@ -574,8 +574,7 @@ void DoorOpening (int door)
         //
         // door is just starting to open, so connect the areas
         //
-        map = mapsegs[0] + (doorobjlist[door].tiley<<mapshift)
-            +doorobjlist[door].tilex;
+        map = &MAPSPOT(doorobjlist[door].tilex,doorobjlist[door].tiley,0);
 
         if (doorobjlist[door].vertical)
         {
@@ -662,7 +661,7 @@ void DoorClosing (int door)
 
         doorobjlist[door].action = dr_closed;
 
-        map = mapsegs[0] + (doorobjlist[door].tiley<<mapshift) + doorobjlist[door].tilex;
+        map = &MAPSPOT(tilex,tiley,0);
 
         if (doorobjlist[door].vertical)
         {
@@ -783,8 +782,8 @@ void PushWall (int checkx, int checky, int dir)
     pwalltile = tilemap[pwallx][pwally];
     tilemap[pwallx][pwally] = BIT_WALL;
     tilemap[pwallx+dx][pwally+dy] = BIT_WALL;
-    *(mapsegs[1]+(pwally<<mapshift)+pwallx) = 0;   // remove P tile info
-    *(mapsegs[0]+(pwally<<mapshift)+pwallx) = *(mapsegs[0]+(player->tiley<<mapshift)+player->tilex); // set correct floorcode (BrotherTank's fix)
+    MAPSPOT(pwallx,pwally,1) = 0;   // remove P tile info
+    MAPSPOT(pwallx,pwally,0) = MAPSPOT(player->tilex,player->tiley,0); // set correct floorcode (BrotherTank's fix) TODO: use a better method...
 
     SD_PlaySound (PUSHWALLSND);
 }
@@ -820,7 +819,7 @@ void MovePWalls (void)
         //
         tilemap[pwallx][pwally] = 0;
         actorat[pwallx][pwally] = 0;
-        *(mapsegs[0]+(pwally<<mapshift)+pwallx) = player->areanumber+AREATILE;
+        MAPSPOT(pwallx,pwally,0) = player->areanumber+AREATILE;    // TODO: this is unnecessary, and makes a mess of mapsegs
 
         int dx=dirs[pwalldir][0], dy=dirs[pwalldir][1];
         //

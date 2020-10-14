@@ -96,8 +96,7 @@ void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
     newobj->dir = nodir;
 
     actorat[tilex][tiley] = newobj;
-    newobj->areanumber =
-        *(mapsegs[0] + (newobj->tiley<<mapshift)+newobj->tilex) - AREATILE;
+    newobj->areanumber = MAPSPOT(tilex,tiley,0) - AREATILE;
 }
 
 
@@ -356,9 +355,7 @@ boolean TryWalk (objtype *ob)
     }
 #endif
 
-    ob->areanumber =
-        *(mapsegs[0] + (ob->tiley<<mapshift)+ob->tilex) - AREATILE;
-
+    ob->areanumber = MAPSPOT(ob->tilex,ob->tiley,0) - AREATILE;
     ob->distance = TILEGLOBAL;
     return true;
 }

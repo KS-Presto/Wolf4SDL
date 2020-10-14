@@ -838,9 +838,8 @@ void DrawScaleds (void)
         if ((visptr->shapenum = obj->state->shapenum)==0)
             continue;                                               // no shape
 
-        spotloc = (obj->tilex<<mapshift)+obj->tiley;   // optimize: keep in struct?
-        visspot = &spotvis[0][0]+spotloc;
-        tilespot = &tilemap[0][0]+spotloc;
+        visspot = &spotvis[obj->tilex][obj->tiley];
+        tilespot = &tilemap[obj->tilex][obj->tiley];
 
         //
         // could be in any of the nine surrounding tiles

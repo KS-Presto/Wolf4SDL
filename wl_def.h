@@ -100,7 +100,7 @@ void Quit(const char *errorStr, ...);
 #include "wl_utils.h"
 
 
-#define MAPSPOT(x,y,plane) (mapsegs[plane][((y)<<mapshift)+(x)])
+#define MAPSPOT(x,y,plane) (mapsegs[plane][((y) << MAPSHIFT) + (x)])
 
 #define SIGN(x)         ((x)>0?1:-1)
 #define ABS(x)          ((int)(x)>0?(x):-(x))
@@ -208,8 +208,8 @@ typedef uint8_t tiletype;
 
 #define MINDIST         (0x5800l)
 
-#define mapshift        6
-#define MAPSIZE         (1 << mapshift)
+#define MAPSHIFT        6
+#define MAPSIZE         (1 << MAPSHIFT)
 #define MAPAREA         (MAPSIZE * MAPSIZE)
 
 #ifdef USE_HIRES

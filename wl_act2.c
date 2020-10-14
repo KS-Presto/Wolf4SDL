@@ -885,7 +885,7 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
     }
 
 
-    map = mapsegs[0]+(tiley<<mapshift)+tilex;
+    map = &MAPSPOT(tilex,tiley,0);
     tile = *map;
     if (tile == AMBUSHTILE)
     {
