@@ -16,12 +16,12 @@ Main features:
  - Cross-platform:
       Supported operating systems are at least:
        - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
-         (32 and 64 bit), Windows 7 (32 and 64 bit), Windows 10 (32 and 64 bits)
+         (32 and 64 bit), Windows 7 (32 and 64 bit), Windows 10 (32 and 64 bit)
        - Linux
        - BSD variants
        - Mac OS X (x86)
        - KallistiOS (used for Dreamcast)
-      Only little endian platforms like x86, ARM and SH-4 are supported, yet.
+      Only little endian platforms like x86, ARM and SH-4 are currently supported.
 
  - AdLib sounds and music:
       This port includes the OPL2 emulator from MAME, so you can not only
