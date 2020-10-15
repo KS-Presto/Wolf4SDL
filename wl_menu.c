@@ -23,7 +23,8 @@ extern int numEpisodesMissing;
 //
 // PRIVATE PROTOTYPES
 //
-int CP_ReadThis (int);
+int  CP_ReadThis (int);
+void SetTextColor (CP_itemtype *items, int hlight);
 
 #ifdef SPEAR
 #define STARTITEM       newgame
@@ -3049,7 +3050,7 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
     y = basey + which * 13;
 
     VWB_DrawPic (x, y, C_CURSOR1PIC);
-    TextColor (items + which, 1);
+    SetTextColor (items + which, 1);
     if (redrawitem)
     {
         PrintX = item_i->x + item_i->indent;
@@ -3275,7 +3276,7 @@ void
 EraseGun (CP_iteminfo * item_i, CP_itemtype * items, int x, int y, int which)
 {
     VWB_Bar (x - 1, y, 25, 16, BKGDCOLOR);
-    TextColor (items + which, 0);
+    SetTextColor (items + which, 0);
 
     PrintX = item_i->x + item_i->indent;
     PrintY = item_i->y + which * 13;
@@ -3307,7 +3308,7 @@ DrawGun (CP_iteminfo * item_i, CP_itemtype * items, int x, int *y, int which, in
     VWB_Bar (x - 1, *y, 25, 16, BKGDCOLOR);
     *y = basey + which * 13;
     VWB_DrawPic (x, *y, C_CURSOR1PIC);
-    TextColor (items + which, 1);
+    SetTextColor (items + which, 1);
 
     PrintX = item_i->x + item_i->indent;
     PrintY = item_i->y + which * 13;
@@ -3360,7 +3361,7 @@ DrawMenu (CP_iteminfo * item_i, CP_itemtype * items)
 
     for (i = 0; i < item_i->amount; i++)
     {
-        TextColor (items + i, which == i);
+        SetTextColor (items + i, which == i);
 
         PrintY = item_i->y + i * 13;
         if ((items + i)->active)
@@ -3383,7 +3384,7 @@ DrawMenu (CP_iteminfo * item_i, CP_itemtype * items)
 //
 ////////////////////////////////////////////////////////////////////
 void
-TextColor (CP_itemtype * items, int hlight)
+SetTextColor (CP_itemtype * items, int hlight)
 {
     if (hlight)
     {
