@@ -1,6 +1,6 @@
 This file explains how you can compile Wolf4SDL using Bloodshed's Dev-C++.
 
-The steps explained in this documents have been tested on Windows 10 x64.
+The steps explained in this document have been tested on Windows 10 x64.
 
 Please make sure that you review the "Troubleshooting" section at the
 end of the file should you get any issues when compiling.
@@ -21,10 +21,10 @@ end of the file should you get any issues when compiling.
  - Open Wolf4SDL.dev
  - Go to "Tools" -> "Package Manager"
  - Click on the "Install" button in the toolbar
- - Select "SDL-devel-1.2.15-mingw32.DevPak" (where ever you saved it)
+ - Select "SDL-devel-1.2.15-mingw32.DevPak" (wherever you saved it)
  - Some "Next" buttons and a "Finish" button later...
  - Click on the "Install" button in the toolbar
- - Select "SDL_mixer-devel-1.2.12.DevPak" (where ever you saved it)
+ - Select "SDL_mixer-devel-1.2.12.DevPak" (wherever you saved it)
  - Some "Next" buttons and a "Finish" button later...
  - Close the Package Manager
  
@@ -65,4 +65,4 @@ end of the file should you get any issues when compiling.
    
  - Solution:
    - Make sure there is no C:\mingw folder. Otherwise Dev-C++ will mix different
-     versions of MinGW libraries...
+     versions of MinGW libraries.
