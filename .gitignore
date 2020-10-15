@@ -41,3 +41,9 @@ Thumbs.db
 ###############################
 *.layout
 *.depend
+
+# VS Files & Folders #
+##############
+*.user
+/debug
+/.vs
