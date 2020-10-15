@@ -162,14 +162,14 @@
     <ClInclude Include="wl_shade.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="win\Wolf4SDL.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="win\Wolf4SDL.rc" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Changes.txt" />
     <Text Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="win\Wolf4SDL.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

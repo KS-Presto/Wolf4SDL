@@ -4,90 +4,114 @@
 CPP  = g++.exe
 CC   = gcc.exe
 WINDRES = windres.exe
-RES  = 
-OBJ  = OBJ/wl_text.o OBJ/id_ca.o OBJ/id_in.o OBJ/id_pm.o OBJ/id_sd.o OBJ/id_us_1.o OBJ/id_vh.o OBJ/id_vl.o OBJ/signon.o OBJ/wl_act1.o OBJ/wl_act2.o OBJ/wl_agent.o OBJ/wl_debug.o OBJ/wl_draw.o OBJ/wl_game.o OBJ/wl_inter.o OBJ/wl_main.o OBJ/wl_menu.o OBJ/wl_play.o OBJ/wl_state.o OBJ/sdl_winmain.o OBJ/fmopl.o $(RES)
-LINKOBJ  = OBJ/wl_text.o OBJ/id_ca.o OBJ/id_in.o OBJ/id_pm.o OBJ/id_sd.o OBJ/id_us_1.o OBJ/id_vh.o OBJ/id_vl.o OBJ/signon.o OBJ/wl_act1.o OBJ/wl_act2.o OBJ/wl_agent.o OBJ/wl_debug.o OBJ/wl_draw.o OBJ/wl_game.o OBJ/wl_inter.o OBJ/wl_main.o OBJ/wl_menu.o OBJ/wl_play.o OBJ/wl_state.o OBJ/sdl_winmain.o OBJ/fmopl.o $(RES)
-LIBS =  -L"C:/Dev-Cpp/lib" -mwindows -lmingw32 -lSDL -lSDL_mixer  
-INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/include/SDL" 
-CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/include/SDL" 
-BIN  = OBJ/Wolf4SDL.exe
+RES  = obj/Wolf4SDL_private.res
+OBJ  = obj/id_ca.o obj/id_in.o obj/id_pm.o obj/id_sd.o obj/id_us.o obj/id_vh.o obj/id_vl.o obj/sdl_winmain.o obj/signon.o obj/wl_act1.o obj/wl_act2.o obj/wl_agent.o obj/wl_atmos.o obj/wl_cloudsky.o obj/wl_debug.o obj/wl_draw.o obj/wl_game.o obj/wl_inter.o obj/wl_main.o obj/wl_menu.o obj/wl_parallax.o obj/wl_plane.o obj/wl_play.o obj/wl_shade.o obj/wl_state.o obj/wl_text.o obj/wl_utils.o obj/fmopl.o obj/wl_scale.o $(RES)
+LINKOBJ  = obj/id_ca.o obj/id_in.o obj/id_pm.o obj/id_sd.o obj/id_us.o obj/id_vh.o obj/id_vl.o obj/sdl_winmain.o obj/signon.o obj/wl_act1.o obj/wl_act2.o obj/wl_agent.o obj/wl_atmos.o obj/wl_cloudsky.o obj/wl_debug.o obj/wl_draw.o obj/wl_game.o obj/wl_inter.o obj/wl_main.o obj/wl_menu.o obj/wl_parallax.o obj/wl_plane.o obj/wl_play.o obj/wl_shade.o obj/wl_state.o obj/wl_text.o obj/wl_utils.o obj/fmopl.o obj/wl_scale.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" -L"C:/Dev-Cpp/lib/SDL" -L"C:/Dev-Cpp/lib/SDL_Mixer" -L"C:/Dev-Cpp/lib/SDL" -L"C:/Dev-Cpp/lib/SDL_Mixer" -mwindows -lmingw32 -lSDL -lSDL_mixer  
+INCS =  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/include/SDL"  -I"C:/Dev-Cpp/include/SDL_Mixer"  -I"C:/Dev-Cpp/include/SDL"  -I"C:/Dev-Cpp/include/SDL_Mixer" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include"  -I"C:/Dev-Cpp/include/SDL"  -I"C:/Dev-Cpp/include/SDL_Mixer" 
+BIN  = obj/Wolf4SDL.exe
 CXXFLAGS = $(CXXINCS)  
 CFLAGS = $(INCS) -Dmain=SDL_main  
 RM = rm -f
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before OBJ/Wolf4SDL.exe all-after
+all: all-before obj/Wolf4SDL.exe all-after
 
 
 clean: clean-custom
 	${RM} $(OBJ) $(BIN)
 
 $(BIN): $(OBJ)
-	$(CPP) $(LINKOBJ) -o "OBJ\Wolf4SDL.exe" $(LIBS)
+	$(CC) $(LINKOBJ) -o "obj\Wolf4SDL.exe" $(LIBS)
 
-OBJ/wl_text.o: wl_text.cpp
-	$(CPP) -c wl_text.cpp -o OBJ/wl_text.o $(CXXFLAGS)
+obj/id_ca.o: id_ca.c
+	$(CC) -c id_ca.c -o obj/id_ca.o $(CFLAGS)
 
-OBJ/id_ca.o: id_ca.cpp
-	$(CPP) -c id_ca.cpp -o OBJ/id_ca.o $(CXXFLAGS)
+obj/id_in.o: id_in.c
+	$(CC) -c id_in.c -o obj/id_in.o $(CFLAGS)
 
-OBJ/id_in.o: id_in.cpp
-	$(CPP) -c id_in.cpp -o OBJ/id_in.o $(CXXFLAGS)
+obj/id_pm.o: id_pm.c
+	$(CC) -c id_pm.c -o obj/id_pm.o $(CFLAGS)
 
-OBJ/id_pm.o: id_pm.cpp
-	$(CPP) -c id_pm.cpp -o OBJ/id_pm.o $(CXXFLAGS)
+obj/id_sd.o: id_sd.c
+	$(CC) -c id_sd.c -o obj/id_sd.o $(CFLAGS)
 
-OBJ/id_sd.o: id_sd.cpp
-	$(CPP) -c id_sd.cpp -o OBJ/id_sd.o $(CXXFLAGS)
+obj/id_us.o: id_us.c
+	$(CC) -c id_us.c -o obj/id_us.o $(CFLAGS)
 
-OBJ/id_us_1.o: id_us_1.cpp
-	$(CPP) -c id_us_1.cpp -o OBJ/id_us_1.o $(CXXFLAGS)
+obj/id_vh.o: id_vh.c
+	$(CC) -c id_vh.c -o obj/id_vh.o $(CFLAGS)
 
-OBJ/id_vh.o: id_vh.cpp
-	$(CPP) -c id_vh.cpp -o OBJ/id_vh.o $(CXXFLAGS)
+obj/id_vl.o: id_vl.c
+	$(CC) -c id_vl.c -o obj/id_vl.o $(CFLAGS)
 
-OBJ/id_vl.o: id_vl.cpp
-	$(CPP) -c id_vl.cpp -o OBJ/id_vl.o $(CXXFLAGS)
+obj/sdl_winmain.o: sdl_winmain.c
+	$(CC) -c sdl_winmain.c -o obj/sdl_winmain.o $(CFLAGS)
 
-OBJ/signon.o: signon.cpp
-	$(CPP) -c signon.cpp -o OBJ/signon.o $(CXXFLAGS)
+obj/signon.o: signon.c
+	$(CC) -c signon.c -o obj/signon.o $(CFLAGS)
 
-OBJ/wl_act1.o: wl_act1.cpp
-	$(CPP) -c wl_act1.cpp -o OBJ/wl_act1.o $(CXXFLAGS)
+obj/wl_act1.o: wl_act1.c
+	$(CC) -c wl_act1.c -o obj/wl_act1.o $(CFLAGS)
 
-OBJ/wl_act2.o: wl_act2.cpp
-	$(CPP) -c wl_act2.cpp -o OBJ/wl_act2.o $(CXXFLAGS)
+obj/wl_act2.o: wl_act2.c
+	$(CC) -c wl_act2.c -o obj/wl_act2.o $(CFLAGS)
 
-OBJ/wl_agent.o: wl_agent.cpp
-	$(CPP) -c wl_agent.cpp -o OBJ/wl_agent.o $(CXXFLAGS)
+obj/wl_agent.o: wl_agent.c
+	$(CC) -c wl_agent.c -o obj/wl_agent.o $(CFLAGS)
 
-OBJ/wl_debug.o: wl_debug.cpp
-	$(CPP) -c wl_debug.cpp -o OBJ/wl_debug.o $(CXXFLAGS)
+obj/wl_atmos.o: wl_atmos.c
+	$(CC) -c wl_atmos.c -o obj/wl_atmos.o $(CFLAGS)
 
-OBJ/wl_draw.o: wl_draw.cpp
-	$(CPP) -c wl_draw.cpp -o OBJ/wl_draw.o $(CXXFLAGS)
+obj/wl_cloudsky.o: wl_cloudsky.c
+	$(CC) -c wl_cloudsky.c -o obj/wl_cloudsky.o $(CFLAGS)
 
-OBJ/wl_game.o: wl_game.cpp
-	$(CPP) -c wl_game.cpp -o OBJ/wl_game.o $(CXXFLAGS)
+obj/wl_debug.o: wl_debug.c
+	$(CC) -c wl_debug.c -o obj/wl_debug.o $(CFLAGS)
 
-OBJ/wl_inter.o: wl_inter.cpp
-	$(CPP) -c wl_inter.cpp -o OBJ/wl_inter.o $(CXXFLAGS)
+obj/wl_draw.o: wl_draw.c
+	$(CC) -c wl_draw.c -o obj/wl_draw.o $(CFLAGS)
 
-OBJ/wl_main.o: wl_main.cpp
-	$(CPP) -c wl_main.cpp -o OBJ/wl_main.o $(CXXFLAGS)
+obj/wl_game.o: wl_game.c
+	$(CC) -c wl_game.c -o obj/wl_game.o $(CFLAGS)
 
-OBJ/wl_menu.o: wl_menu.cpp
-	$(CPP) -c wl_menu.cpp -o OBJ/wl_menu.o $(CXXFLAGS)
+obj/wl_inter.o: wl_inter.c
+	$(CC) -c wl_inter.c -o obj/wl_inter.o $(CFLAGS)
 
-OBJ/wl_play.o: wl_play.cpp
-	$(CPP) -c wl_play.cpp -o OBJ/wl_play.o $(CXXFLAGS)
+obj/wl_main.o: wl_main.c
+	$(CC) -c wl_main.c -o obj/wl_main.o $(CFLAGS)
 
-OBJ/wl_state.o: wl_state.cpp
-	$(CPP) -c wl_state.cpp -o OBJ/wl_state.o $(CXXFLAGS)
+obj/wl_menu.o: wl_menu.c
+	$(CC) -c wl_menu.c -o obj/wl_menu.o $(CFLAGS)
 
-OBJ/sdl_winmain.o: sdl_winmain.cpp
-	$(CPP) -c sdl_winmain.cpp -o OBJ/sdl_winmain.o $(CXXFLAGS)
+obj/wl_parallax.o: wl_parallax.c
+	$(CC) -c wl_parallax.c -o obj/wl_parallax.o $(CFLAGS)
 
-OBJ/fmopl.o: mame/fmopl.cpp
-	$(CPP) -c mame/fmopl.cpp -o OBJ/fmopl.o $(CXXFLAGS)
+obj/wl_plane.o: wl_plane.c
+	$(CC) -c wl_plane.c -o obj/wl_plane.o $(CFLAGS)
+
+obj/wl_play.o: wl_play.c
+	$(CC) -c wl_play.c -o obj/wl_play.o $(CFLAGS)
+
+obj/wl_shade.o: wl_shade.c
+	$(CC) -c wl_shade.c -o obj/wl_shade.o $(CFLAGS)
+
+obj/wl_state.o: wl_state.c
+	$(CC) -c wl_state.c -o obj/wl_state.o $(CFLAGS)
+
+obj/wl_text.o: wl_text.c
+	$(CC) -c wl_text.c -o obj/wl_text.o $(CFLAGS)
+
+obj/wl_utils.o: wl_utils.c
+	$(CC) -c wl_utils.c -o obj/wl_utils.o $(CFLAGS)
+
+obj/fmopl.o: mame/fmopl.c
+	$(CC) -c mame/fmopl.c -o obj/fmopl.o $(CFLAGS)
+
+obj/wl_scale.o: wl_scale.c
+	$(CC) -c wl_scale.c -o obj/wl_scale.o $(CFLAGS)
+
+obj/Wolf4SDL_private.res: Wolf4SDL_private.rc 
+	$(WINDRES) -i Wolf4SDL_private.rc --input-format=rc -o obj/Wolf4SDL_private.res -O coff 
