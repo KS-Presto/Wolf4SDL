@@ -1,7 +1,7 @@
-Wolf4SDL by Moritz "Ripper" Kroll (http://www.chaos-software.de.vu)
+Wolf4SDL by Moritz "Ripper" Kroll (http://www.chaos-software.de.vu - OFFLINE)
 Original Wolfenstein 3D by id Software (http://www.idsoftware.com)
 Modifications to r262 by Andy_Nonymous and others
-    (http://diehardwolfers.areyep.com/viewtopic.php?t=6693)
+(http://diehardwolfers.areyep.com/viewtopic.php?t=6693)
 =============================================================================
 
 Wolf4SDL is an open-source port of id Software's classic first-person shooter
@@ -16,7 +16,7 @@ Main features:
  - Cross-platform:
       Supported operating systems are at least:
        - Windows 98, Windows ME, Windows 2000, Windows XP, Windows Vista
-         (32 and 64 bit), Windows 7 (32 and 64 bit)
+         (32 and 64 bit), Windows 7 (32 and 64 bit), Windows 10 (32 and 64 bits)
        - Linux
        - BSD variants
        - Mac OS X (x86)
@@ -103,7 +103,14 @@ Please make sure, that you use the correct version of the executable with the
 according data files version as the differences are hardcoded into the binary!
 
 On Windows SDL.dll and SDL_mixer.dll must also be copied into this directory.
-They are also available at http://www.chaos-software.de.vu
+
+SDL 1.2.15 Runtimes can be acquired at: 
+https://www.libsdl.org/download-1.2.php and download "SDL-1.2.15-win32.zip"
+
+SDL_mixer 1.2.12 Runtimes can be acquired at:
+https://www.libsdl.org/projects/SDL_mixer/release-1.2.html and download "SDL_mixer-1.2.12-win32.zip"
+
+! ATTENTION ! Do NOT download the x64 version of SDL or SDL_mixer. x86 binairies are required.
 
 If you play in windowed mode (--windowed parameter), press SCROLLLOCK or F12
 to grab the mouse. Press it again to release the mouse.
@@ -152,11 +159,12 @@ For Spear of Destiny the following additional options are available:
 Compiling from source code:
 ---------------------------
 
-The current version of the source code is available in the svn repository at:
-   svn://tron.homeunix.org:3690/wolf3d/trunk
+The current version of the source code is available on GitHub at:
+   https://github.com/AryanWolf3D/Wolf4SDL
 
 The following ways of compiling the source code are supported:
  - Makefile (for Linux, BSD variants and MinGW/MSYS)
+ - Visual C++ 2019 (Wolf4SDL.VC2019.sln and Wolf4SDL.VC2019.vcproj) (see README-VC.txt)
  - Visual C++ 2008 (Wolf4SDL.VC9.sln and Wolf4SDL.VC9.vcproj)
  - Visual C++ 2005 (Wolf4SDL.sln and Wolf4SDL.vcproj)
  - Visual C++ 6 (Wolf4SDL.dsw and Wolf4SDL.dsp)
@@ -167,8 +175,8 @@ The following ways of compiling the source code are supported:
  - Special compiling for GP2X (see README-GP2X.txt)
 
 To compile the source code you need the development libraries of
- - SDL (http://www.libsdl.org/download-1.2.php) and
- - SDL_mixer (http://www.libsdl.org/projects/SDL_mixer/)
+ - SDL (https://www.libsdl.org/download-1.2.php) and
+ - SDL_mixer (https://www.libsdl.org/projects/SDL_mixer/release-1.2.html)
 and have to adjust the include and library paths in the projects accordingly.
 
 Please note, that there is no official SDL_mixer development pack for MinGW,
