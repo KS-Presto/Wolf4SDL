@@ -4,7 +4,6 @@
 *.class
 *.dll
 *.exe
-*.o
 *.so
 *.wl6
 
@@ -41,3 +40,15 @@ Thumbs.db
 ###############################
 *.layout
 *.depend
+
+# Dev-CPP Files & Folders #
+##############
+/obj
+Wolf4SDL_private.h
+Wolf4SDL_private.rc
+
+# VS Files & Folders #
+##############
+*.user
+/debug
+/.vs

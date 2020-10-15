@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\dc">
+      <UniqueIdentifier>{1f7b2715-b3a7-4de2-a518-008137eb906a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mame">
+      <UniqueIdentifier>{df99e693-62e7-40a9-bc0a-efd1cd9c313e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dosbox">
+      <UniqueIdentifier>{df9259be-62ae-4d45-ab8a-1ebd326f84ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\dc">
+      <UniqueIdentifier>{9744f3aa-f886-4e5e-986e-701972fcfd5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="id_ca.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id_in.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id_pm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id_sd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id_us.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id_vh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="id_vl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl_winmain.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="signon.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_act1.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_act2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_agent.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_atmos.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_cloudsky.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_draw.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_game.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_inter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_menu.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_parallax.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_plane.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_play.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_scale.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_shade.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_state.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_text.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wl_utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dc\dc_cd.c">
+      <Filter>Source Files\dc</Filter>
+    </ClCompile>
+    <ClCompile Include="dc\dc_main.c">
+      <Filter>Source Files\dc</Filter>
+    </ClCompile>
+    <ClCompile Include="dc\dc_maple.c">
+      <Filter>Source Files\dc</Filter>
+    </ClCompile>
+    <ClCompile Include="dc\dc_video.c">
+      <Filter>Source Files\dc</Filter>
+    </ClCompile>
+    <ClCompile Include="dc\dc_vmu.c">
+      <Filter>Source Files\dc</Filter>
+    </ClCompile>
+    <ClCompile Include="dosbox\dbopl.cpp">
+      <Filter>Source Files\dosbox</Filter>
+    </ClCompile>
+    <ClCompile Include="mame\fmopl.c">
+      <Filter>Source Files\mame</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sodpal.inc">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="wolfpal.inc">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mame\fmopl.h">
+      <Filter>Source Files\mame</Filter>
+    </ClInclude>
+    <ClInclude Include="dosbox\dbopl.h">
+      <Filter>Source Files\dosbox</Filter>
+    </ClInclude>
+    <ClInclude Include="audiosod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="audiowl6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dc_vmu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="f_spear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="foreign.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfxv_apo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfxv_jap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfxv_sod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gfxv_wl6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gp2x.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_ca.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_in.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_pm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_sd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_us.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_vh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="id_vl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wl_atmos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wl_cloudsky.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wl_def.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wl_menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wl_shade.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dc\dc_main.h">
+      <Filter>Header Files\dc</Filter>
+    </ClInclude>
+    <ClInclude Include="dc\dc_vmu.h">
+      <Filter>Header Files\dc</Filter>
+    </ClInclude>
+    <ClInclude Include="win\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="win\Wolf4SDL.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Changes.txt" />
+    <Text Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="win\Wolf4SDL.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

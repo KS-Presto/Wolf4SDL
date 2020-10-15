@@ -5,16 +5,16 @@ UnitCount=53
 Type=0
 Ver=1
 ObjFiles=
-Includes=C:\Dev-Cpp\include\SDL
-Libs=
-PrivateResource=
+Includes=C:\Dev-Cpp\include\SDL;C:\Dev-Cpp\include\SDL_Mixer
+Libs=C:\Dev-Cpp\lib\SDL;C:\Dev-Cpp\lib\SDL_Mixer
+PrivateResource=Wolf4SDL_private.rc
 ResourceIncludes=
 MakeIncludes=
 Compiler=-Dmain=SDL_main_@@_
 CppCompiler=
 Linker=-lmingw32 -lSDL -lSDL_mixer_@@_
 IsCpp=0
-Icon=
+Icon=Wolf4SDL.ico
 ExeOutput=obj
 ObjectOutput=obj
 OverrideOutput=0
@@ -24,7 +24,7 @@ Folders=
 CommandLine=--goobers --windowed
 UseCustomMakefile=0
 CustomMakefile=
-IncludeVersionInfo=0
+IncludeVersionInfo=1
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0000000000000000000000
@@ -32,7 +32,7 @@ CompilerSettings=0000000000000000000000
 [Unit1]
 FileName=audiosod.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -42,7 +42,7 @@ BuildCmd=
 [Unit2]
 FileName=audiowl6.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -52,7 +52,7 @@ BuildCmd=
 [Unit3]
 FileName=f_spear.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -62,7 +62,7 @@ BuildCmd=
 [Unit4]
 FileName=foreign.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -72,7 +72,7 @@ BuildCmd=
 [Unit5]
 FileName=gfxv_apo.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -82,7 +82,7 @@ BuildCmd=
 [Unit6]
 FileName=gfxv_jap.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -92,7 +92,7 @@ BuildCmd=
 [Unit7]
 FileName=gfxv_sod.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -102,7 +102,7 @@ BuildCmd=
 [Unit8]
 FileName=gfxv_wl6.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -112,7 +112,7 @@ BuildCmd=
 [Unit9]
 FileName=gp2x.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -122,7 +122,7 @@ BuildCmd=
 [Unit10]
 FileName=id_ca.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -132,7 +132,7 @@ BuildCmd=
 [Unit11]
 FileName=id_in.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -142,7 +142,7 @@ BuildCmd=
 [Unit12]
 FileName=id_pm.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -152,7 +152,7 @@ BuildCmd=
 [Unit13]
 FileName=id_sd.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -162,7 +162,7 @@ BuildCmd=
 [Unit14]
 FileName=id_us.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -172,7 +172,7 @@ BuildCmd=
 [Unit15]
 FileName=id_vh.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -182,7 +182,7 @@ BuildCmd=
 [Unit16]
 FileName=id_vl.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -192,7 +192,7 @@ BuildCmd=
 [Unit17]
 FileName=version.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -202,7 +202,7 @@ BuildCmd=
 [Unit18]
 FileName=wl_atmos.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -212,7 +212,7 @@ BuildCmd=
 [Unit19]
 FileName=wl_cloudsky.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -222,7 +222,7 @@ BuildCmd=
 [Unit20]
 FileName=wl_def.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -232,7 +232,7 @@ BuildCmd=
 [Unit21]
 FileName=wl_menu.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -242,7 +242,7 @@ BuildCmd=
 [Unit22]
 FileName=wl_shade.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -252,7 +252,7 @@ BuildCmd=
 [Unit23]
 FileName=wl_utils.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -262,7 +262,7 @@ BuildCmd=
 [Unit24]
 FileName=id_ca.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -272,7 +272,7 @@ BuildCmd=
 [Unit25]
 FileName=id_in.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -282,7 +282,7 @@ BuildCmd=
 [Unit26]
 FileName=id_pm.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -292,7 +292,7 @@ BuildCmd=
 [Unit27]
 FileName=id_sd.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -302,7 +302,7 @@ BuildCmd=
 [Unit28]
 FileName=id_us.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -312,7 +312,7 @@ BuildCmd=
 [Unit29]
 FileName=id_vh.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -322,7 +322,7 @@ BuildCmd=
 [Unit30]
 FileName=id_vl.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -332,7 +332,7 @@ BuildCmd=
 [Unit31]
 FileName=sdl_winmain.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -342,7 +342,7 @@ BuildCmd=
 [Unit32]
 FileName=signon.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -352,7 +352,7 @@ BuildCmd=
 [Unit33]
 FileName=wl_act1.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -362,7 +362,7 @@ BuildCmd=
 [Unit34]
 FileName=wl_act2.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -372,7 +372,7 @@ BuildCmd=
 [Unit35]
 FileName=wl_agent.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -382,7 +382,7 @@ BuildCmd=
 [Unit36]
 FileName=wl_atmos.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -392,7 +392,7 @@ BuildCmd=
 [Unit37]
 FileName=wl_cloudsky.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -402,7 +402,7 @@ BuildCmd=
 [Unit38]
 FileName=wl_debug.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -410,9 +410,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit39]
-FileName=wl_dir3dspr.c
+FileName=wl_draw.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -420,9 +420,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit40]
-FileName=wl_draw.c
+FileName=wl_game.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -430,9 +430,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit41]
-FileName=wl_game.c
+FileName=wl_inter.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -440,9 +440,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit42]
-FileName=wl_inter.c
+FileName=wl_main.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -450,9 +450,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit43]
-FileName=wl_main.c
+FileName=wl_menu.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -460,9 +460,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit44]
-FileName=wl_menu.c
+FileName=wl_parallax.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -470,9 +470,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit45]
-FileName=wl_parallax.c
+FileName=wl_plane.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -480,9 +480,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit46]
-FileName=wl_plane.c
+FileName=wl_play.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -490,9 +490,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit47]
-FileName=wl_play.c
+FileName=wl_shade.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -500,9 +500,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit48]
-FileName=wl_shade.c
+FileName=wl_state.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -510,9 +510,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit49]
-FileName=wl_state.c
+FileName=wl_text.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -520,9 +520,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit50]
-FileName=wl_text.c
+FileName=wl_utils.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -530,9 +530,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit51]
-FileName=wl_utils.c
+FileName=mame\fmopl.h
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -558,9 +558,9 @@ ProductVersion=0.1
 AutoIncBuildNr=0
 
 [Unit52]
-FileName=mame\fmopl.h
+FileName=mame\fmopl.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -568,9 +568,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit53]
-FileName=mame\fmopl.c
+FileName=wl_scale.c
 CompileCpp=0
-Folder=Wolf4SDL
+Folder=
 Compile=1
 Link=1
 Priority=1000
@@ -578,10 +578,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [VersionInfo]
-Major=0
-Minor=1
-Release=1
-Build=1
+Major=1
+Minor=9
+Release=0
+Build=0
 LanguageID=1033
 CharsetID=1252
 CompanyName=
@@ -594,3 +594,4 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+
