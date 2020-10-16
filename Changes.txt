@@ -1,6 +1,16 @@
 Wolf4SDL v2.0
- - TAB-T RESTORED! Wolf4SDL is now ready for release \o/
- - Some other less important changes can be mentioned here by Aryan...
+ - TAB-T RESTORED! Yes!
+ - Reimplemented a pseudo version of BossKey
+ - MAPPLANES is now 3 by default (because the maptype struct assumes 3 planes minimum)
+ - Added an overhead map
+ - Fixed guards "jumping" and leaving two deathspots in actorat
+ - Replaced the poorly optimised floor/ceiling drawing function with ID's
+   original code from WOLFHACK.C & WHACK_A.ASM. Beware, multi-flats are still slow!
+ - Removed the old latch optimisations
+ - All VGAGRAPH chunks are cached in on startup, and the pics are unwoven to
+   simplify drawing
+ - Added a couple of files and tidied up the code
+ - Ported the code back to C
 
 Wolf4SDL v1.9R (rolling Github release)
  - Fixed a memory leak in ID_SD.CPP involving the superfluous SoundBuffers array
