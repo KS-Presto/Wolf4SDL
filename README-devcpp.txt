@@ -11,7 +11,7 @@ end of the file should you get any issues when compiling.
  - "Dev-C++ 5.0 Beta 9.2 (4.9.9.2)" with Mingw/GCC 3.4.2 (about 9 MB)
    http://www.bloodshed.net/dev/devcpp.html
  - SDL-devel-1.2.15-mingw32.DevPak (85 kB)
- - SDL_mixer-devel-1.2.12.DevPak (540 kB)
+ - SDL_mixer-devel-1.2.6-2-mingw32.DevPack (540 kB)
    (Both DevPacks can be found in the "devcpp_devpacks" folder in the source repo)
 
 ----------------
