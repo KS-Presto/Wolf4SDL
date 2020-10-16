@@ -1,3 +1,7 @@
+Wolf4SDL v2.0
+ - TAB-T RESTORED! Wolf4SDL is now ready for release \o/
+ - Some other less important changes can be mentioned here by Aryan...
+
 Wolf4SDL v1.9R (rolling Github release)
  - Fixed a memory leak in ID_SD.CPP involving the superfluous SoundBuffers array
  - Made CalcRotate more accurate (thanks to Ginyu)
