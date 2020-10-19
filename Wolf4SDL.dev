@@ -578,8 +578,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [VersionInfo]
-Major=1
-Minor=9
+Major=2
+Minor=0
 Release=0
 Build=0
 LanguageID=1033
