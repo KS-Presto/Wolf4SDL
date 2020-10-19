@@ -47,34 +47,37 @@ endif
 
 SRCS :=
 ifndef GPL
-    SRCS += mame/fmopl.cpp
+    SRCS += mame/fmopl.c
 else
     SRCS += dosbox/dbopl.cpp
 endif
-SRCS += id_ca.cpp
-SRCS += id_in.cpp
-SRCS += id_pm.cpp
-SRCS += id_sd.cpp
-SRCS += id_us_1.cpp
-SRCS += id_vh.cpp
-SRCS += id_vl.cpp
-SRCS += signon.cpp
-SRCS += wl_act1.cpp
-SRCS += wl_act2.cpp
-SRCS += wl_agent.cpp
-SRCS += wl_atmos.cpp
-SRCS += wl_cloudsky.cpp
-SRCS += wl_debug.cpp
-SRCS += wl_draw.cpp
-SRCS += wl_floorceiling.cpp
-SRCS += wl_game.cpp
-SRCS += wl_inter.cpp
-SRCS += wl_main.cpp
-SRCS += wl_menu.cpp
-SRCS += wl_parallax.cpp
-SRCS += wl_play.cpp
-SRCS += wl_state.cpp
-SRCS += wl_text.cpp
+SRCS += id_ca.c
+SRCS += id_in.c
+SRCS += id_pm.c
+SRCS += id_sd.c
+SRCS += id_us.c
+SRCS += id_vh.c
+SRCS += id_vl.c
+SRCS += signon.c
+SRCS += wl_act1.c
+SRCS += wl_act2.c
+SRCS += wl_agent.c
+SRCS += wl_atmos.c
+SRCS += wl_cloudsky.c
+SRCS += wl_debug.c
+SRCS += wl_draw.c
+SRCS += wl_plane.c
+SRCS += wl_game.c
+SRCS += wl_inter.c
+SRCS += wl_main.c
+SRCS += wl_menu.c
+SRCS += wl_parallax.c
+SRCS += wl_play.c
+SRCS += wl_scale.c
+SRCS += wl_shade.c
+SRCS += wl_state.c
+SRCS += wl_text.c
+SRCS += wl_utils.c
 
 DEPS = $(filter %.d, $(SRCS:.c=.d) $(SRCS:.cpp=.d))
 OBJS = $(filter %.o, $(SRCS:.c=.o) $(SRCS:.cpp=.o))
