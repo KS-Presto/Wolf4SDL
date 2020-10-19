@@ -750,6 +750,8 @@ int32_t CA_CacheAudioChunk (int chunk)
 
 void CA_CacheAdlibSoundChunk (int chunk)
 {
+    byte    *bufferseg;
+    byte    *ptr;
     int32_t pos = audiostarts[chunk];
     int32_t size = audiostarts[chunk+1]-pos;
 
@@ -757,7 +759,10 @@ void CA_CacheAdlibSoundChunk (int chunk)
         return;                        // already in memory
 
     lseek(audiohandle, pos, SEEK_SET);
-    byte *ptr = SafeMalloc(ORIG_ADLIBSOUND_SIZE - 1);
+
+    bufferseg = SafeMalloc(ORIG_ADLIBSOUND_SIZE - 1);
+    ptr = bufferseg;
+
     read(audiohandle, ptr, ORIG_ADLIBSOUND_SIZE - 1);   // without data[1]
 
     AdLibSound *sound = SafeMalloc(size + sizeof(*sound) - ORIG_ADLIBSOUND_SIZE);
@@ -790,7 +795,7 @@ void CA_CacheAdlibSoundChunk (int chunk)
 
     audiosegs[chunk]=(byte *) sound;
 
-    free (ptr);
+    free (bufferseg);
 }
 
 //===========================================================================
@@ -952,6 +957,7 @@ void CAL_DeplaneGrChunk (int chunk)
 void CA_CacheGrChunks (void)
 {
     int32_t pos,compressed;
+    int32_t *bufferseg;
     int32_t *source;
     int     chunk,next;
 
@@ -977,7 +983,9 @@ void CA_CacheGrChunks (void)
 
         lseek(grhandle,pos,SEEK_SET);
 
-        source = SafeMalloc(compressed);
+        bufferseg = SafeMalloc(compressed);
+        source = bufferseg;
+
         read(grhandle,source,compressed);
 
         CAL_ExpandGrChunk (chunk,source);
@@ -985,7 +993,7 @@ void CA_CacheGrChunks (void)
         if (chunk >= STARTPICS && chunk < STARTEXTERNS)
             CAL_DeplaneGrChunk (chunk);
 
-        free(source);
+        free(bufferseg);
     }
 }
 
@@ -1006,14 +1014,15 @@ void CA_CacheGrChunks (void)
 
 void CA_CacheMap (int mapnum)
 {
-    int32_t   pos,compressed;
-    int       plane;
+    int32_t  pos,compressed;
+    int      plane;
     word     *dest;
-    unsigned  size;
+    unsigned size;
+    word     *bufferseg;
     word     *source;
 #ifdef CARMACIZED
     word     *buffer2seg;
-    int32_t   expanded;
+    int32_t  expanded;
 #endif
 
     if (mapheaderseg[mapnum]->width != MAPSIZE || mapheaderseg[mapnum]->height != MAPSIZE)
@@ -1033,7 +1042,9 @@ void CA_CacheMap (int mapnum)
 
         lseek(maphandle,pos,SEEK_SET);
 
-        source = SafeMalloc(compressed);
+        bufferseg = SafeMalloc(compressed);
+        source = bufferseg;
+
         read(maphandle,source,compressed);
 #ifdef CARMACIZED
         //
@@ -1055,7 +1066,7 @@ void CA_CacheMap (int mapnum)
         //
         CA_RLEWexpand (source+1,dest,size,tinf->RLEWtag);
 #endif
-        free(source);
+        free(bufferseg);
     }
 }
 
