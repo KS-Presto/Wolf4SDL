@@ -627,7 +627,7 @@ DrawMainMenu (void)
 //
 ////////////////////////////////////////////////////////////////////
 int
-CP_ReadThis (int)
+CP_ReadThis (int blank)
 {
     StartCPMusic (CORNER_MUS);
     HelpScreens ();
