@@ -127,6 +127,78 @@ void PictureGrabber (void)
 }
 
 
+#ifndef VIEWMAP
+
+/*
+===================
+=
+= BasicOverhead
+=
+===================
+*/
+
+void BasicOverhead (void)
+{
+    int x, y, z, offx, offy;
+
+    z = 128/MAPSIZE; // zoom scale
+    offx = 320/2;
+    offy = (160-MAPSIZE*z)/2;
+
+#ifdef MAPBORDER
+    int temp = viewsize;
+    NewViewSize(16);
+    DrawPlayBorder();
+#endif
+
+    // right side (raw)
+
+    for(x=0;x<MAPSIZE;x++)
+        for(y=0;y<MAPSIZE;y++)
+            VWB_Bar(x*z+offx, y*z+offy,z,z,(unsigned)(uintptr_t)actorat[x][y]);
+
+    // left side (filtered)
+
+    uintptr_t tile;
+    int color;
+    offx -= 128;
+
+    for(x=0;x<MAPSIZE;x++)
+    {
+        for(y=0;y<MAPSIZE;y++)
+        {
+            tile = (uintptr_t)actorat[x][y];
+            if (ISPOINTER(tile) && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
+            else if (!tile || ISPOINTER(tile))
+            {
+                if (spotvis[x][y]) color = 111;  // visable
+                else color = 0;  // nothing
+            }
+            else if (MAPSPOT(x,y,1) == PUSHABLETILE) color = 171;  // pushwall
+            else if (tile == BIT_WALL) color = 158; // solid obj
+            else if (tile < BIT_DOOR) color = 154;  // walls
+            else if (tile < BIT_ALLTILES) color = 146;  // doors
+
+            VWB_Bar(x*z+offx, y*z+offy,z,z,color);
+        }
+    }
+
+    VWB_Bar(player->tilex*z+offx,player->tiley*z+offy,z,z,15); // player
+
+    // resize the border to match
+
+    VW_UpdateScreen();
+    IN_Ack();
+
+#ifdef MAPBORDER
+    NewViewSize(temp);
+    DrawPlayBorder();
+#endif
+}
+
+#endif
+
+
 /*
 ================
 =
@@ -544,6 +616,13 @@ again:
         IN_Ack ();
         return 1;
     }
+#ifndef VIEWMAP
+    else if (Keyboard[sc_O])        // O = basic overhead
+    {
+        BasicOverhead();
+        return 1;
+    }
+#endif
     else if(Keyboard[sc_P])         // P = Ripper's picture grabber
     {
         PictureGrabber();
