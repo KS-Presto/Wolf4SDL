@@ -53,3 +53,4 @@ Makefile.win
 *.user
 /debug
 /.vs
+/libraries
