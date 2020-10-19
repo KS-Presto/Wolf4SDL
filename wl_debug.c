@@ -139,60 +139,72 @@ void PictureGrabber (void)
 
 void BasicOverhead (void)
 {
-    int x, y, z, offx, offy;
+    int       x,y;
+    int       zoom,temp;
+    int       offx,offy;
+    uintptr_t tile;
+    int       color;
 
-    z = 128/MAPSIZE; // zoom scale
-    offx = 320/2;
-    offy = (160-MAPSIZE*z)/2;
+    zoom = 128 / MAPSIZE;
+    offx = 160;
+    offy = (160 - (MAPSIZE * zoom)) / 2;
 
 #ifdef MAPBORDER
-    int temp = viewsize;
-    NewViewSize(16);
-    DrawPlayBorder();
+    temp = viewsize;
+    NewViewSize (16);
+    DrawPlayBorder ();
 #endif
 
+    //
     // right side (raw)
+    //
+    for (y = 0; y < mapheight; y++)
+    {
+        for (x = 0; x < mapwidth; x++)
+            VWB_Bar ((x * zoom) + offx,(y * zoom) + offy,zoom,zoom,(byte)(uintptr_t)actorat[x][y]);
+    }
 
-    for(x=0;x<MAPSIZE;x++)
-        for(y=0;y<MAPSIZE;y++)
-            VWB_Bar(x*z+offx, y*z+offy,z,z,(unsigned)(uintptr_t)actorat[x][y]);
-
+    //
     // left side (filtered)
-
-    uintptr_t tile;
-    int color;
+    //
     offx -= 128;
 
-    for(x=0;x<MAPSIZE;x++)
+    for (y = 0; y < mapheight; y++)
     {
-        for(y=0;y<MAPSIZE;y++)
+        for (x = 0; x < mapwidth; x++)
         {
             tile = (uintptr_t)actorat[x][y];
-            if (ISPOINTER(tile) && ((objtype *)tile)->flags&FL_SHOOTABLE) color = 72;  // enemy
+
+            if (ISPOINTER(tile) && ((objtype *)tile)->flags & FL_SHOOTABLE)
+                color = 72;
             else if (!tile || ISPOINTER(tile))
             {
-                if (spotvis[x][y]) color = 111;  // visable
-                else color = 0;  // nothing
+                if (spotvis[x][y])
+                    color = 111;
+                else
+                    color = 0;      // nothing
             }
-            else if (MAPSPOT(x,y,1) == PUSHABLETILE) color = 171;  // pushwall
-            else if (tile == BIT_WALL) color = 158; // solid obj
-            else if (tile < BIT_DOOR) color = 154;  // walls
-            else if (tile < BIT_ALLTILES) color = 146;  // doors
+            else if (MAPSPOT(x,y,1) == PUSHABLETILE)
+                color = 171;
+            else if (tile == BIT_WALL)
+                color = 158;
+            else if (tile < BIT_DOOR)
+                color = 154;
+            else if (tile < BIT_ALLTILES)
+                color = 146;
 
-            VWB_Bar(x*z+offx, y*z+offy,z,z,color);
+            VWB_Bar ((x * zoom) + offx,(y * zoom) + offy,zoom,zoom,color);
         }
     }
 
-    VWB_Bar(player->tilex*z+offx,player->tiley*z+offy,z,z,15); // player
+    VWB_Bar ((player->tilex * zoom) + offx,(player->tiley * zoom) + offy,zoom,zoom,15);
 
-    // resize the border to match
-
-    VW_UpdateScreen();
-    IN_Ack();
+    VW_UpdateScreen ();
+    IN_Ack ();
 
 #ifdef MAPBORDER
-    NewViewSize(temp);
-    DrawPlayBorder();
+    NewViewSize (temp);
+    DrawPlayBorder ();
 #endif
 }
 
