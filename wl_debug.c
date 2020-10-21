@@ -616,6 +616,20 @@ again:
 
         return 1;
     }
+#ifdef REVEALMAP
+    else if (Keyboard[sc_M])        // M = Map reveal
+    {
+        mapreveal ^= true;
+        CenterWindow (18,3);
+        if (mapreveal)
+            US_PrintCentered ("Map reveal ON");
+        else
+            US_PrintCentered ("Map reveal OFF");
+        VW_UpdateScreen();
+        IN_Ack ();
+        return 1;
+    }
+#endif
     else if (Keyboard[sc_N])        // N = no clip
     {
         noclip^=1;
@@ -959,7 +973,13 @@ void OverheadRefresh (void)
         {
             sx = (x - maporgx) * tilesize;
             sy = (y - maporgy) * tilesize;
-
+#ifdef REVEALMAP
+            if (!mapseen[x][y] && !mapreveal)
+            {
+                DrawMapFloor (sx,sy,BLACK);
+                continue;
+            }
+#endif
             tile = (uintptr_t)actorat[x][y];
 
             if (tile)
@@ -967,14 +987,14 @@ void OverheadRefresh (void)
                 //
                 // draw walls
                 //
-                if (tile < BIT_DOOR && tile != 64)
+                if (tile < BIT_DOOR && tile != BIT_WALL)
                 {
-                    if (Keyboard[sc_P] && MAPSPOT(x,y,1) == PUSHABLETILE)
+                    if (DebugOk && Keyboard[sc_P] && MAPSPOT(x,y,1) == PUSHABLETILE)
                         DrawMapFloor (sx,sy,COL_SECRET);
                     else
                         DrawMapWall (sx,sy,horizwall[tile]);
                 }
-                else if (tile < BIT_ALLTILES && tile != 64)
+                else if (tile < BIT_ALLTILES && tile != BIT_WALL)
                     DrawMapDoor (sx,sy,tile & ~BIT_DOOR);
                 else
                 {
@@ -983,17 +1003,21 @@ void OverheadRefresh (void)
                     //
                     // draw actors & static objects
                     //
-                    if (ISPOINTER(tile))
+                    if (DebugOk && ISPOINTER(tile))
                     {
                         obj = (objtype *)tile;
-                        shapenum = obj->state->shapenum;
 
-                        if (obj->state->rotate)
-                            shapenum += rotate[obj->dir];
+                        if (spotvis[(byte)(obj->x >> TILESHIFT)][(byte)(obj->y >> TILESHIFT)])
+                        {
+                            shapenum = obj->state->shapenum;
 
-                        DrawMapSprite (sx,sy,shapenum);
+                            if (obj->state->rotate)
+                                shapenum += rotate[obj->dir];
+
+                            DrawMapSprite (sx,sy,shapenum);
+                        }
                     }
-                    else if (tile == 64)
+                    else if (tile == BIT_WALL)
                     {
                         for (statptr = &statobjlist[0]; statptr != laststatobj; statptr++)
                         {
@@ -1020,6 +1044,8 @@ void OverheadRefresh (void)
     VL_WaitVBL (3);                // don't scroll too fast
 
     VL_UnlockSurface (screenBuffer);
+    vbuf = NULL;
+
     VH_UpdateScreen (screenBuffer);
 }
 

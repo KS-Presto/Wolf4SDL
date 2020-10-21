@@ -684,6 +684,9 @@ void SetupGameLevel (void)
 //
     memset (tilemap,0,sizeof(tilemap));
     memset (actorat,0,sizeof(actorat));
+#ifdef REVEALMAP
+    memset (mapseen,0,sizeof(mapseen));
+#endif
     map = mapsegs[0];
     for (y=0;y<mapheight;y++)
     {

@@ -1146,6 +1146,9 @@ void WallRefresh (void)
             if ((ytilestep == -1 && yinttile <= ytile) || (ytilestep == 1 && yinttile >= ytile))
                 goto horizentry;
 vertentry:
+#ifdef REVEALMAP
+            mapseen[xtile][yinttile] = true;
+#endif
             //
             // get the wall value from tilemap
             //
@@ -1354,6 +1357,9 @@ passvert:
                 goto vertentry;
 
 horizentry:
+#ifdef REVEALMAP
+            mapseen[xinttile][ytile] = true;
+#endif
             //
             // get the wall value from tilemap
             //
@@ -1609,6 +1615,9 @@ void ThreeDRefresh (void)
     if (!tilemap[player->tilex][player->tiley] ||
          tilemap[player->tilex][player->tiley] & BIT_DOOR)
     spotvis[player->tilex][player->tiley] = true;       // Detect all sprites over player fix
+#ifdef REVEALMAP
+    mapseen[player->tilex][player->tiley] = true;
+#endif
 
     vbuf = VL_LockSurface(screenBuffer);
     if(vbuf == NULL) return;

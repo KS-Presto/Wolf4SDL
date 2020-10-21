@@ -362,44 +362,12 @@ extern statetype s_player;
 
 boolean SaveTheGame(FILE *file,int x,int y)
 {
-//    struct diskfree_t dfree;
-//    int32_t avail,size,checksum;
+    int i,j;
     int checksum;
+    word actnum,laststatobjnum;
     objtype *ob;
     objtype nullobj;
     statobj_t nullstat;
-
-/*    if (_dos_getdiskfree(0,&dfree))
-        Quit("Error in _dos_getdiskfree call");
-
-    avail = (int32_t)dfree.avail_clusters *
-                  dfree.bytes_per_sector *
-                  dfree.sectors_per_cluster;
-
-    size = 0;
-    for (ob = player; ob ; ob=ob->next)
-        size += sizeof(*ob);
-    size += sizeof(nullobj);
-
-    size += sizeof(gamestate) +
-            sizeof(LRstruct)*LRpack +
-            sizeof(tilemap) +
-            sizeof(actorat) +
-            sizeof(laststatobj) +
-            sizeof(statobjlist) +
-            sizeof(doorposition) +
-            sizeof(pwallstate) +
-            sizeof(pwalltile) +
-            sizeof(pwallx) +
-            sizeof(pwally) +
-            sizeof(pwalldir) +
-            sizeof(pwallpos);
-
-    if (avail < size)
-    {
-        Message(STR_NOSPACE1"\n"STR_NOSPACE2);
-        return false;
-    }*/
 
     checksum = 0;
 
@@ -414,19 +382,22 @@ boolean SaveTheGame(FILE *file,int x,int y)
     DiskFlopAnim(x,y);
     fwrite(tilemap,sizeof(tilemap),1,file);
     checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
+#ifdef REVEALMAP
+    DiskFlopAnim(x,y);
+    fwrite(mapseen,sizeof(mapseen),1,file);
+    checksum = DoChecksum((byte *)mapseen,sizeof(mapseen),checksum);
+#endif
     DiskFlopAnim(x,y);
 
-    int i,j;
-    for(i=0;i<MAPSIZE;i++)
+    for(i=0;i<mapwidth;i++)
     {
-        for(j=0;j<MAPSIZE;j++)
+        for(j=0;j<mapheight;j++)
         {
-            word actnum;
-            objtype *objptr=actorat[i][j];
-            if(ISPOINTER(objptr))
-                actnum=0x8000 | (word)(objptr-objlist);
+            ob=actorat[i][j];
+            if(ISPOINTER(ob))
+                actnum=0x8000 | (word)(ob-objlist);
             else
-                actnum=(word)(uintptr_t)objptr;
+                actnum=(word)(uintptr_t)ob;
             fwrite(&actnum,sizeof(actnum),1,file);
             checksum = DoChecksum((byte *)&actnum,sizeof(actnum),checksum);
         }
@@ -443,10 +414,9 @@ boolean SaveTheGame(FILE *file,int x,int y)
     memcpy(&nullobj,ob,sizeof(nullobj));
     nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_player);
     fwrite(&nullobj,sizeof(nullobj),1,file);
-    ob = ob->next;
 
     DiskFlopAnim(x,y);
-    for (; ob ; ob=ob->next)
+    for (ob = ob->next; ob; ob=ob->next)
     {
         memcpy(&nullobj,ob,sizeof(nullobj));
         nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_grdstand);
@@ -457,7 +427,7 @@ boolean SaveTheGame(FILE *file,int x,int y)
     fwrite(&nullobj,sizeof(nullobj),1,file);
 
     DiskFlopAnim(x,y);
-    word laststatobjnum=(word) (laststatobj-statobjlist);
+    laststatobjnum=(word) (laststatobj-statobjlist);
     fwrite(&laststatobjnum,sizeof(laststatobjnum),1,file);
     checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
 
@@ -513,6 +483,9 @@ boolean SaveTheGame(FILE *file,int x,int y)
 
 boolean LoadTheGame(FILE *file,int x,int y)
 {
+    int i,j;
+    int actnum = 0;
+    word laststatobjnum;
     int32_t checksum,oldchecksum;
     objtype nullobj;
     statobj_t nullstat;
@@ -533,13 +506,16 @@ boolean LoadTheGame(FILE *file,int x,int y)
     DiskFlopAnim(x,y);
     fread (tilemap,sizeof(tilemap),1,file);
     checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
-
+#ifdef REVEALMAP
+    DiskFlopAnim(x,y);
+    fread (mapseen,sizeof(mapseen),1,file);
+    checksum = DoChecksum((byte *)mapseen,sizeof(mapseen),checksum);
+#endif
     DiskFlopAnim(x,y);
 
-    int actnum=0, i,j;
-    for(i=0;i<MAPSIZE;i++)
+    for(i=0;i<mapwidth;i++)
     {
-        for(j=0;j<MAPSIZE;j++)
+        for(j=0;j<mapheight;j++)
         {
             fread (&actnum,sizeof(word),1,file);
             checksum = DoChecksum((byte *) &actnum,sizeof(word),checksum);
@@ -571,7 +547,6 @@ boolean LoadTheGame(FILE *file,int x,int y)
     }
 
     DiskFlopAnim(x,y);
-    word laststatobjnum;
     fread (&laststatobjnum,sizeof(laststatobjnum),1,file);
     laststatobj=statobjlist+laststatobjnum;
     checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);

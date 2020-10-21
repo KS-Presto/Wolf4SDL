@@ -44,7 +44,8 @@
 //#define USE_RAIN            // Enables rain support (see wl_atmos.c)
 //#define USE_SNOW            // Enables snow support (see wl_atmos.c)
 //#define FIXRAINSNOWLEAKS    // Enables leaking ceilings fix (by Adam Biser, only needed if maps with rain/snow and ceilings exist)
-#define VIEWMAP             // Enables the overhead map
+//#define VIEWMAP             // Enables the overhead map
+//#define REVEALMAP           // Enables showing only the areas of the overhead map that have been seen
 
 #define DEBUGKEYS             // Comment this out to compile without the Tab debug keys
 #define ARTSEXTERN

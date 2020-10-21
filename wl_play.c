@@ -30,17 +30,20 @@ exit_t playstate;
 
 static musicnames lastmusicchunk = (musicnames) 0;
 
-static int DebugOk;
+int     DebugOk;
 
 objtype objlist[MAXACTORS];
 objtype *newobj, *obj, *player, *lastobj, *objfreelist, *killerobj;
 
-boolean singlestep,godmode,noclip,ammocheat;
+boolean singlestep,godmode,noclip,ammocheat,mapreveal;
 int     extravbls;
 
 tiletype tilemap[MAPSIZE][MAPSIZE]; // wall values only
 bool     spotvis[MAPSIZE][MAPSIZE];
 objtype *actorat[MAPSIZE][MAPSIZE];
+#ifdef REVEALMAP
+bool     mapseen[MAPSIZE][MAPSIZE];
+#endif
 
 //
 // replacing refresh manager
