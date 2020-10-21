@@ -1,7 +1,8 @@
 Wolf4SDL v2.0
  - TAB-T RESTORED! Yes!
  - Reimplemented a pseudo version of BossKey
- - MAPPLANES is now 3 by default (because the maptype struct assumes 3 planes minimum)
+ - MAPPLANES is now 3 by default (because the maptype struct assumes 3 planes minimum),
+   also supports 4+ planes
  - Added an overhead map
  - Fixed guards "jumping" and leaving two deathspots in actorat
  - Replaced the poorly optimised floor/ceiling drawing function with ID's
