@@ -46,6 +46,9 @@ typedef struct
 typedef struct
 {
     word RLEWtag;
+#if MAPPLANES >= 4
+    word numplanes;       // unused, but WDC needs 2 bytes here for internal usage
+#endif
     int32_t headeroffsets[NUMMAPS];
 } mapfiletype;
 
