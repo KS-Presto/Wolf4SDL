@@ -1068,7 +1068,9 @@ void SetupMapView (void)
         default: tilesize = TEXTURESIZE; break;
     }
 
-#ifdef USE_HIRES
+#if TEXTURESHIFT == 8
+    tilesize >>= 2;
+#elif TEXTURESHIFT == 7
     tilesize >>= 1;
 #endif
     tilemapratio = MAPSIZE / tilesize;

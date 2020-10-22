@@ -27,7 +27,6 @@ void PM_Startup (void)
     int      i;
     int      padding;
     byte     *page;
-    //uint16_t *pageLengths;
     uint32_t *pageOffsets;
     uint32_t pagesize;
     int32_t  filesize,datasize;

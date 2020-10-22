@@ -211,21 +211,24 @@ typedef uint8_t tiletype;
 #define MAPSIZE         (1 << MAPSHIFT)
 #define MAPAREA         (MAPSIZE * MAPSIZE)
 
-#ifdef USE_HIRES
+#define TEXTURESHIFT    6
 
-#define TEXTURESHIFT    7
-#define TEXTURESIZE     (1 << TEXTURESHIFT)
+#if TEXTURESHIFT == 8
+
+#define FIXED2TEXSHIFT  0
+
+#elif TEXTURESHIFT == 7
+
 #define FIXED2TEXSHIFT  2
-#define TEXTUREMASK     (TEXTURESIZE * (TEXTURESIZE - 1))
 
 #else
 
-#define TEXTURESHIFT    6
-#define TEXTURESIZE     (1 << TEXTURESHIFT)
 #define FIXED2TEXSHIFT  4
-#define TEXTUREMASK     (TEXTURESIZE * (TEXTURESIZE - 1))
 
 #endif
+
+#define TEXTURESIZE     (1 << TEXTURESHIFT)
+#define TEXTUREMASK     (TEXTURESIZE * (TEXTURESIZE - 1))
 
 #define NORTH   0
 #define EAST    1

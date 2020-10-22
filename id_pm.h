@@ -3,11 +3,7 @@
 #ifndef __ID_PM_H_
 #define __ID_PM_H_
 
-#ifdef USE_HIRES
-#define PMPageSize 16384
-#else
-#define PMPageSize 4096
-#endif
+#define PMPageSize             (TEXTURESIZE * TEXTURESIZE)
 
 #define PM_GetSpritePage(v)    PM_GetPage (PMSpriteStart + (v))
 #define PM_GetSoundPage(v)     PM_GetPage (PMSoundStart + (v))

@@ -36,7 +36,6 @@
 //#define USE_DIR3DSPR        // Enables directional 3d sprites
 //#define USE_FLOORCEILINGTEX // Enables texture-mapped floors and ceilings (see wl_plane.c)
 //#define USE_MULTIFLATS      // Enables floor and ceiling textures stored in the third mapplane
-//#define USE_HIRES           // Enables high resolution textures/sprites (128x128)
 //#define USE_PARALLAX 16     // Enables parallax sky with 16 textures per sky (see wl_parallax.c)
 //#define USE_SKYWALLPARALLAX 16 // Enables parallax sky on walls with 16 repeats of sky texture
 //#define USE_CLOUDSKY        // Enables cloud sky support (see wl_cloudsky.c)
