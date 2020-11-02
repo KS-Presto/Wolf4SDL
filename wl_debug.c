@@ -898,11 +898,10 @@ void DrawMapSprite (int16_t sx, int16_t sy, int16_t shapenum)
         //
         linecmds = &linesrc[shape->dataofs[x - shape->leftpix]];
 
-        while (*linecmds)
+        for (end = READWORD(linecmds) >> 1; end; end = READWORD(linecmds) >> 1)
         {
-            end = READWORD(linecmds) >> 1;          // end of segment
-            top = READWORD(linecmds + 2);           // corrected top of shape for this segment
-            start = READWORD(linecmds + 4) >> 1;    // table location of entry spot
+            top = READWORD(linecmds + 2);
+            start = READWORD(linecmds + 4) >> 1;
 
             for (src = &linesrc[top + start]; start != end; start++, src++)
             {

@@ -40,11 +40,10 @@ void ScaleLine (int16_t x, int16_t toppix, fixed fracstep, byte *linesrc, byte *
     int16_t startpix,endpix;
     fixed   frac;
 
-    while (*linecmds)
+    for (end = READWORD(linecmds) >> 1; end; end = READWORD(linecmds) >> 1)
     {
-        end = READWORD(linecmds) >> 1;          // end of segment
-        top = READWORD(linecmds + 2);           // corrected top of shape for this segment
-        start = READWORD(linecmds + 4) >> 1;    // table loaction of entry spot
+        top = READWORD(linecmds + 2);
+        start = READWORD(linecmds + 4) >> 1;
 
         frac = start * fracstep;
 
