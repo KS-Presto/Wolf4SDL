@@ -167,9 +167,11 @@ void DrawStarSky (void)
 void DrawRain (void)
 {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
-    fixed dist;                                // distance to row projection
-    fixed tex_step;                            // global step per one screen pixel
-    fixed gu, gv, floorx, floory;              // global texture coordinates
+    byte      tilex,tiley;
+    int16_t   prestep;
+    fixed     basedist,stepscale;
+    fixed     xfrac,yfrac;
+    fixed     xstep,ystep;
 #endif
 
     int       i;
@@ -220,16 +222,28 @@ void DrawRain (void)
         if (xx >= 0 && xx < viewwidth && yy > 0 && yy < viewheight)
         {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
+            //
             // Find the rain's tile coordinate
-            // NOTE: This sometimes goes over the map edges.
-            dist = ((heightnumerator / ((height >> 3) + 1)) << 5);
-            gu =  viewx + FixedMul(dist, viewcos);
-            gv = -viewy + FixedMul(dist, viewsin);
-            floorx = (  gu >> TILESHIFT     ) & (MAPSIZE - 1);
-            floory = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
+            // NOTE: This sometimes goes over the map edges
+            //
+            prestep = centerx - xx + 1;
+            basedist = FixedDiv(scale,(height >> 3) + 1) >> 1;
+            stepscale = basedist / scale;
 
-            // Is there a ceiling tile?
-            if(MAPSPOT(floorx, floory, 2) >> 8) continue;
+            xstep = FixedMul(stepscale,viewsin);
+            ystep = -FixedMul(stepscale,viewcos);
+
+            xfrac = (viewx + FixedMul(basedist,viewcos)) - (xstep * prestep);
+            yfrac = -(viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
+
+            tilex = (xfrac >> TILESHIFT) & (mapwidth - 1);
+            tiley = ~(yfrac >> TILESHIFT) & (mapheight - 1);
+
+            //
+            // is there a ceiling tile?
+            //
+            if (MAPSPOT(tilex,tiley, 2) >> 8)
+                continue;
 #endif
 
             vbuf[ylookup[yy] + xx] = shade + 15;
@@ -256,9 +270,11 @@ void DrawRain (void)
 void DrawSnow (void)
 {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
-    fixed dist;                                // distance to row projection
-    fixed tex_step;                            // global step per one screen pixel
-    fixed gu, gv, floorx, floory;              // global texture coordinates
+    byte      tilex,tiley;
+    int16_t   prestep;
+    fixed     basedist,stepscale;
+    fixed     xfrac,yfrac;
+    fixed     xstep,ystep;
 #endif
 
     int       i;
@@ -309,16 +325,28 @@ void DrawSnow (void)
         if (xx > 0 && xx < viewwidth && yy > 0 && yy < viewheight)
         {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
+            //
             // Find the snow's tile coordinate
-            // NOTE: This sometimes goes over the map edges.
-            dist = ((heightnumerator / ((height >> 3) + 1)) << 5);
-            gu =  viewx + FixedMul(dist, viewcos);
-            gv = -viewy + FixedMul(dist, viewsin);
-            floorx = (  gu >> TILESHIFT     ) & (MAPSIZE - 1);
-            floory = (-(gv >> TILESHIFT) - 1) & (MAPSIZE - 1);
+            // NOTE: This sometimes goes over the map edges
+            //
+            prestep = centerx - xx + 1;
+            basedist = FixedDiv(scale,(height >> 3) + 1) >> 1;
+            stepscale = basedist / scale;
 
-            // Is there a ceiling tile?
-            if(MAPSPOT(floorx, floory, 2) >> 8) continue;
+            xstep = FixedMul(stepscale,viewsin);
+            ystep = -FixedMul(stepscale,viewcos);
+
+            xfrac = (viewx + FixedMul(basedist,viewcos)) - (xstep * prestep);
+            yfrac = -(viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
+
+            tilex = (xfrac >> TILESHIFT) & (mapwidth - 1);
+            tiley = ~(yfrac >> TILESHIFT) & (mapheight - 1);
+
+            //
+            // is there a ceiling tile?
+            //
+            if (MAPSPOT(tilex,tiley,2) >> 8)
+                continue;
 #endif
 
             if (shade < 10)
