@@ -1149,6 +1149,8 @@ extern  fixed   viewsin,viewcos;
 extern  int     postx;
 extern  byte    *postsource;
 
+extern  short   midangle;
+
 extern  word    horizwall[MAXWALLTILES],vertwall[MAXWALLTILES];
 
 

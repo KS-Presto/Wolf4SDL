@@ -1,3 +1,5 @@
+// WL_PARALLAX.C
+
 #include "version.h"
 
 #ifdef USE_PARALLAX
@@ -7,58 +9,84 @@
 #ifdef USE_FEATUREFLAGS
 
 // The lower left tile of every map determines the start texture of the parallax sky.
-static int GetParallaxStartTexture()
+int GetParallaxStartTexture (void)
 {
     int startTex = ffDataBottomLeft;
+
     assert(startTex >= 0 && startTex < PMSpriteStart);
+
     return startTex;
 }
 
 #else
 
-static int GetParallaxStartTexture()
+int GetParallaxStartTexture (void)
 {
     int startTex;
-    switch(gamestate.episode * 10 + gamestate.mapon)
+
+    switch (gamestate.episode * 10 + gamestate.mapon)
     {
         case  0: startTex = 20; break;
         default: startTex =  0; break;
     }
+
     assert(startTex >= 0 && startTex < PMSpriteStart);
+
     return startTex;
 }
 
 #endif
 
+/*
+====================
+=
+= DrawParallax
+=
+====================
+*/
+
 void DrawParallax (void)
 {
-    int x,y,offs;
-    int startpage = GetParallaxStartTexture();
-    int midangle = player->angle * (FINEANGLES / ANGLES);
-    int skyheight = viewheight >> 1;
-    int curtex = -1;
-    byte *skytex;
+    int     x,y;
+    byte    *dest,*skysource;
+    word    texture;
+    int16_t angle;
+    int16_t skypage,curskypage;
+    int16_t lastskypage;
+    int16_t xtex;
+    int16_t toppix;
 
-    startpage += USE_PARALLAX - 1;
+    skypage = GetParallaxStartTexture();
+    skypage += USE_PARALLAX - 1;
+    lastskypage = -1;
 
-    for(x = 0; x < viewwidth; x++)
+    for (x = 0; x < viewwidth; x++)
     {
-        int curang = pixelangle[x] + midangle;
-        if(curang < 0) curang += FINEANGLES;
-        else if(curang >= FINEANGLES) curang -= FINEANGLES;
-        int xtex = curang * USE_PARALLAX * TEXTURESIZE / FINEANGLES;
-        int newtex = xtex >> TEXTURESHIFT;
-        if(newtex != curtex)
-        {
-            curtex = newtex;
-            skytex = PM_GetPage(startpage - curtex);
-        }
-        int texoffs = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
-        int yend = skyheight - (wallheight[x] >> 3);
-        if(yend <= 0) continue;
+        toppix = centery - (wallheight[x] >> 3);
 
-        for(y = 0, offs = x; y < yend; y++, offs += bufferPitch)
-            vbuf[offs] = skytex[texoffs + (y * TEXTURESIZE) / skyheight];
+        if (toppix <= 0)
+            continue;                // nothing to draw
+
+        angle = pixelangle[x] + midangle;
+
+        if (angle < 0)
+            angle += FINEANGLES;
+        else if (angle >= FINEANGLES)
+            angle -= FINEANGLES;
+
+        xtex = ((angle * USE_PARALLAX) << TEXTURESHIFT) / FINEANGLES;
+        curskypage = xtex >> TEXTURESHIFT;
+
+        if (lastskypage != curskypage)
+        {
+            lastskypage = curskypage;
+            skysource = PM_GetPage(skypage - curskypage);
+        }
+
+        texture = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
+
+        for (y = 0, dest = &vbuf[x]; y < toppix; y++, dest += bufferPitch)
+            *dest = skysource[texture + ((y << TEXTURESHIFT) / centery)];
     }
 }
 
