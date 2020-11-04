@@ -1127,6 +1127,9 @@ extern  int32_t lasttimecount;
 extern  int32_t frameon;
 extern  boolean fizzlein,fpscounter;
 
+#if defined(USE_FLOORCEILINGTEX) || defined(USE_CLOUDSKY)
+extern  int16_t *spanstart;
+#endif
 extern  int16_t *wallheight;
 
 //
@@ -1489,7 +1492,6 @@ void GP2X_ButtonUp (int button);
 #endif
 
 #ifdef USE_FLOORCEILINGTEX
-    extern int16_t *spanstart;
     extern byte    *ceilingsource,*floorsource;
 
     void DrawPlanes (void);

@@ -86,7 +86,7 @@ void VL_Shutdown (void)
     free (ylookup);
     free (pixelangle);
     free (wallheight);
-#ifdef USE_FLOORCEILINGTEX
+#if defined(USE_FLOORCEILINGTEX) || defined(USE_CLOUDSKY)
     free (spanstart);
 
     spanstart = NULL;
@@ -157,7 +157,7 @@ void VL_SetVGAPlaneMode (void)
     ylookup = SafeMalloc(screenHeight * sizeof(*ylookup));
     pixelangle = SafeMalloc(screenWidth * sizeof(*pixelangle));
     wallheight = SafeMalloc(screenWidth * sizeof(*wallheight));
-#ifdef USE_FLOORCEILINGTEX
+#if defined(USE_FLOORCEILINGTEX) || defined(USE_CLOUDSKY)
     spanstart = SafeMalloc((screenHeight / 2) * sizeof(*spanstart));
 #endif
 

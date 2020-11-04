@@ -7,7 +7,6 @@
 #include "wl_def.h"
 #include "wl_shade.h"
 
-int16_t *spanstart;
 byte    *ceilingsource,*floorsource;
 
 #ifndef USE_MULTIFLATS

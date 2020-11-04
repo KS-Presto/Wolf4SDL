@@ -1,3 +1,5 @@
+// WL_CLOUDSKY.C
+
 #include "version.h"
 
 #ifdef USE_CLOUDSKY
@@ -5,44 +7,64 @@
 #include "wl_def.h"
 #include "wl_cloudsky.h"
 
-// Each colormap defines a number of colors which should be mapped from
-// the skytable. The according colormapentry_t array defines how these colors should
-// be mapped to the wolfenstein palette. The first int of each entry defines
-// how many colors are grouped to this entry and the absolute value of the
-// second int sets the starting palette index for this pair. If this value is
-// negative the index will be decremented for every color, if it's positive
-// it will be incremented.
-//
-// Example colormap:
-//   colormapentry_t colmapents_1[] = { { 6, -10 }, { 2, 40 } };
-//   colormap_t colorMaps[] = {
-//      { 8, colmapents_1 }
-//   };
-//
-//   The colormap 0 consists of 8 colors. The first color group consists of 6
-//   colors and starts descending at palette index 10: 10, 9, 8, 7, 6, 5
-//   The second color group consists of 2 colors and starts ascending at
-//   index 40: 40, 41
-//   There's no other color group because all colors of this colormap are
-//   already used (6+2=8)
-//
-// Warning: Always make sure that the sum of the amount of the colors in all
-//          color groups is the number of colors used for your colormap!
 
-colormapentry_t colmapents_1[] = { { 16, -31 }, { 16, 136 } };
-colormapentry_t colmapents_2[] = { { 16, -31 } };
+/*
+=============================================================================
 
-colormap_t colorMaps[] = {
+                            GLOBAL VARIABLES
+
+=============================================================================
+*/
+
+
+/*
+==================================
+=
+= Each colormap defines a number of colors which should be mapped from
+= the skytable. The according colormapentry_t array defines how these colors should
+= be mapped to the game palette. The first number in each entry defines
+= how many colors are grouped to this entry and the absolute value of the
+= second number sets the starting palette index for this pair. If this value is
+= negative the index will be decremented for every color, if it's positive
+= it will be incremented.
+=
+= Example colormap:
+=
+=   colormapentry_t colmapents_1[] = { { 6, -10 }, { 2, 40 } };
+=
+=   colormap_t colorMaps[] = { { 8, colmapents_1 } };
+=
+=   The colormap 0 consists of 8 colors. The first color group consists of 6
+=   colors and starts descending at palette index 10: 10, 9, 8, 7, 6, 5
+=   The second color group consists of 2 colors and starts ascending at
+=   index 40: 40, 41
+=   There's no other color group because all colors of this colormap are
+=   already used (6 + 2 = 8)
+=
+= REMEMBER: Always make sure that the sum of the amount of the colors in all
+= --------  color groups is the number of colors used for your colormap!
+=
+====================================================================================
+*/
+
+colormapentry_t colmapents_1[] = { { 16, -31 }, { 16, 136 }, };
+colormapentry_t colmapents_2[] = { { 16, -31 }, };
+
+colormap_t colorMaps[] =
+{
     { 32, colmapents_1 },
-    { 16, colmapents_2 }
+    { 16, colmapents_2 },
 };
 
 const int numColorMaps = lengthof(colorMaps);
 
+//
 // The sky definitions which can be selected as defined by GetCloudSkyDefID() in wl_def.h
 // You can use <TAB>+Z in debug mode to find out suitable values for seed and colorMapIndex
 // Each entry consists of seed, speed, angle and colorMapIndex
-cloudsky_t cloudSkys[] = {
+//
+cloudsky_t cloudSkys[] =
+{
     { 626,   800,  20,  0 },
     { 1234,  650,  60,  1 },
     { 0,     700,  120, 0 },
@@ -55,26 +77,29 @@ cloudsky_t cloudSkys[] = {
     { 4,     1200, 290, 0 },
 };
 
-byte skyc[65536L];
+byte       skyc[65536L];
 
-long cloudx = 0, cloudy = 0;
-cloudsky_t *curSky = NULL;
+fixed      cloudx,cloudy;
+cloudsky_t *curSky;
 
 #ifdef USE_FEATUREFLAGS
 
 // The lower left tile of every map determines the used cloud sky definition from cloudSkys.
-static int GetCloudSkyDefID()
+int GetCloudSkyDefID (void)
 {
     int skyID = ffDataBottomLeft;
+
     assert(skyID >= 0 && skyID < lengthof(cloudSkys));
+
     return skyID;
 }
 
 #else
 
-static int GetCloudSkyDefID()
+int GetCloudSkyDefID (void)
 {
     int skyID;
+
     switch(gamestate.episode * 10 + gamestate.mapon)
     {
         case  0: skyID =  0; break;
@@ -89,7 +114,9 @@ static int GetCloudSkyDefID()
         case  9: skyID =  9; break;
         default: skyID =  9; break;
     }
+
     assert(skyID >= 0 && skyID < lengthof(cloudSkys));
+
     return skyID;
 }
 
@@ -97,6 +124,9 @@ static int GetCloudSkyDefID()
 
 void SplitS(unsigned size,unsigned x1,unsigned y1,unsigned x2,unsigned y2)
 {
+    //
+    // I don't even want to touch this abomination... O_o
+    //
    if(size==1) return;
    if(!skyc[((x1+size/2)*256+y1)])
    {
@@ -134,126 +164,224 @@ void SplitS(unsigned size,unsigned x1,unsigned y1,unsigned x2,unsigned y2)
    SplitS(size/2,x1,y1,x1+size/2,y1+size/2);
 }
 
-void InitSky()
+
+/*
+====================
+=
+= InitSky
+=
+= Called from PlayLoop
+=
+====================
+*/
+
+void InitSky (void)
 {
-    int i,j,k,m,n,ind,calcedCols;
-    unsigned cloudskyid = GetCloudSkyDefID();
+    colormapentry_t *curEntry;
+    colormap_t      *curMap;
+    byte            colormap[256];
+    int             i,j,k,m,n,calcedCols;
+    int             cloudskyid = GetCloudSkyDefID();
+    int16_t         index;
+    int32_t         value;
+
     if(cloudskyid >= lengthof(cloudSkys))
         Quit("Illegal cloud sky id: %u", cloudskyid);
+
     curSky = &cloudSkys[cloudskyid];
 
-    memset(skyc, 0, sizeof(skyc));
+    cloudx = cloudy = 0;                             // reset cloud position
+    memset (skyc,0,sizeof(skyc));
     // funny water texture if used instead of memset ;D
-    // for(i = 0; i < 65536; i++)
+    // for (i = 0; i < 65536; i++)
     //     skyc[i] = rand() % 32 * 8;
 
-    srand(curSky->seed);
+    srand (curSky->seed);
     skyc[0] = rand() % 256;
-    SplitS(256, 0, 0, 256, 256);
+    SplitS (256,0,0,256,256);
 
-    // Smooth the clouds a bit
-    for(k = 0; k < 2; k++)
+    //
+    // smooth the clouds a bit
+    //
+    for (k = 0; k < 2; k++)
     {
-        for(i = 0; i < 256; i++)
+        for (i = 0; i < 256; i++)
         {
-            for(j = 0; j < 256; j++)
+            for (j = 0; j < 256; j++)
             {
-                int32_t val = -skyc[j * 256 + i];
-                for(m = 0; m < 3; m++)
+                value = -skyc[(j << 8) + i];
+
+                for (m = 0; m < 3; m++)
                 {
-                    for(n = 0; n < 3; n++)
-                    {
-                        val += skyc[((j + n - 1) & 0xff) * 256 + ((i + m - 1) & 0xff)];
-                    }
+                    for (n = 0; n < 3; n++)
+                        value += skyc[(((j + n - 1) & 0xff) << 8) + ((i + m - 1) & 0xff)];
                 }
-                skyc[j * 256 + i] = (byte)(val >> 3);
+
+                skyc[(j << 8) + i] = (byte)(value >> 3);
             }
         }
     }
 
-    // the following commented line could be useful, if you're trying to
+    //
+    // the following commented lines could be useful if you're trying to
     // create a new color map. This will display your current color map
-    // in one (of course repeating) stripe of the sky
-
-    // for(i = 0; i < 256; i++)
+    // in one repeating strip of the sky
+    //
+    // for (i = 0; i < 256; i++)
     //     skyc[i] = skyc[i + 256] = skyc[i + 512] = i;
 
-    if(curSky->colorMapIndex >= lengthof(colorMaps))
-        Quit("Illegal colorMapIndex for cloud sky def %u: %u", cloudskyid, curSky->colorMapIndex);
+    if (curSky->colorMapIndex >= numColorMaps)
+        Quit ("Illegal colorMapIndex for cloud sky def %u: %u",cloudskyid,curSky->colorMapIndex);
 
-    colormap_t *curMap = &colorMaps[curSky->colorMapIndex];
-    int numColors = curMap->numColors;
-    byte colormap[256];
-    colormapentry_t *curEntry = curMap->entries;
-    for(calcedCols = 0; calcedCols < numColors; curEntry++)
+    curMap = &colorMaps[curSky->colorMapIndex];
+    curEntry = curMap->entries;
+
+    for (calcedCols = 0; calcedCols < curMap->numColors; curEntry++)
     {
-        if(curEntry->startAndDir < 0)
+        if (curEntry->startAndDir < 0)
         {
-            for(i = 0, ind = -curEntry->startAndDir; i < curEntry->length; i++, ind--)
-                colormap[calcedCols++] = ind;
+            for (i = 0, index = -curEntry->startAndDir; i < curEntry->length; i++, index--)
+            {
+                if (index < 0)
+                    index = 0;                       // don't go below the first color
+
+                colormap[calcedCols++] = index;
+            }
         }
         else
         {
-            for(i = 0, ind = curEntry->startAndDir; i < curEntry->length; i++, ind++)
-                colormap[calcedCols++] = ind;
+            for (i = 0, index = curEntry->startAndDir; i < curEntry->length; i++, index++)
+            {
+                if (index > 255)
+                    index = 255;                     // don't go above the last color
+
+                colormap[calcedCols++] = index;
+            }
         }
     }
 
-    for(i = 0; i < 256; i++)
+    for (j = 0; j < 256; j++)
     {
-        for(j = 0; j < 256; j++)
-        {
-            skyc[i * 256 + j] = colormap[skyc[i * 256 + j] * numColors / 256];
-        }
+        for (i = 0; i < 256; i++)
+            skyc[(j << 8) + i] = colormap[(skyc[(j << 8) + i] * curMap->numColors) >> 8];
     }
 }
 
-// Based on Textured Floor and Ceiling by DarkOne
-void DrawClouds (int min_wallheight)
+
+/*
+===================
+=
+= DrawCloudSpan
+=
+= Height ranges from 0 (infinity) to [centery] (nearest)
+=
+===================
+*/
+
+void DrawCloudSpan (int16_t x1, int16_t x2, int16_t height)
 {
-    // Move clouds
-    fixed moveDist = tics * curSky->speed;
-    cloudx += FixedMul(moveDist,sintable[curSky->angle]);
-    cloudy -= FixedMul(moveDist,costable[curSky->angle]);
+    byte     *dest;
+    word     texture;
+    int16_t  count,prestep;
+    fixed    basedist;
+    fixed    stepscale;
+    fixed    xfrac,yfrac;
+    fixed    xstep,ystep;
 
-    // Draw them
-    int x, y, y0, halfheight;
-    unsigned top_offset,top_add,top_offset0;
-    fixed dist;                                // distance to row projection
-    fixed tex_step;                            // global step per one screen pixel
-    fixed gu, gv, du, dv;                      // global texture coordinates
-    int u, v;                                  // local texture coordinates
+    count = x2 - x1;
 
-    // ------ * prepare * --------
-    halfheight = viewheight >> 1;
-    y0 = min_wallheight >> 3;                  // starting y value
-    if(y0 > halfheight)
-        return;                                // view obscured by walls
-    if(!y0) y0 = 1;                            // don't let division by zero
-    top_offset0 = ylookup[halfheight - y0 - 1];
+    if (!count)
+        return;                                             // nothing to draw
 
-    // draw horizontal lines
-    for(y = y0, top_offset = top_offset0; y < halfheight; y++, top_offset -= bufferPitch)
+    dest = vbuf + ylookup[centery - 1 - height] + x1;
+
+    prestep = centerx - x1 + 1;
+    basedist = FixedDiv(scale,height) << 2;                 // distance to row projection
+    stepscale = basedist / scale;
+
+    xstep = FixedMul(stepscale,viewsin);
+    ystep = -FixedMul(stepscale,viewcos);
+
+    xfrac = (viewx + FixedMul(basedist,viewcos) + cloudx) - (xstep * prestep);
+    yfrac = -(viewy - FixedMul(basedist,viewsin) - cloudy) - (ystep * prestep);
+
+    while (count--)
     {
-        dist = (heightnumerator / y) << 8;
-        gu =  viewx + FixedMul(dist, viewcos) + cloudx;
-        gv = -viewy + FixedMul(dist, viewsin) + cloudy;
-        tex_step = (dist << 8) / viewwidth / 175;
-        du =  FixedMul(tex_step, viewsin);
-        dv = -FixedMul(tex_step, viewcos);
-        gu -= (viewwidth >> 1)*du;
-        gv -= (viewwidth >> 1)*dv;          // starting point (leftmost)
-        for(x = 0, top_add = top_offset; x < viewwidth; x++, top_add++)
+        texture = ((xfrac >> 5) & 0xff00) + (~(yfrac >> 13) & 0xff);
+
+        *dest++ = skyc[texture];
+
+        xfrac += xstep;
+        yfrac += ystep;
+    }
+}
+
+
+/*
+===================
+=
+= DrawCloudPlanes
+=
+===================
+*/
+
+void DrawCloudPlanes (void)
+{
+    int     x,y;
+    int16_t	height;
+    int32_t speed;
+
+    speed = curSky->speed * tics;
+
+    cloudx += FixedMul(speed,sintable[curSky->angle]);
+    cloudy -= FixedMul(speed,costable[curSky->angle]);
+
+//
+// loop over all columns
+//
+    y = centery;
+
+    for (x = 0; x < viewwidth; x++)
+    {
+        height = wallheight[x] >> 3;
+
+        if (height < y)
         {
-            if(wallheight[x] >> 3 <= y)
-            {
-                u = (gu >> 13) & 255;
-                v = (gv >> 13) & 255;
-                vbuf[top_add] = skyc[((255 - u) << 8) + 255 - v];
-            }
-            gu += du;
-            gv += dv;
+            //
+            // more starts
+            //
+            while (y > height)
+                spanstart[--y] = x;
         }
+        else if (height > y)
+        {
+            //
+            // draw clipped spans
+            //
+            if (height > centery)
+                height = centery;
+
+            while (y < height)
+            {
+                if (y > 0)
+                    DrawCloudSpan (spanstart[y],x,y);
+
+                y++;
+            }
+        }
+    }
+
+    //
+    // draw spans
+    //
+    height = centery;
+
+    while (y < height)
+    {
+        if (y > 0)
+            DrawCloudSpan (spanstart[y],viewwidth,y);
+
+        y++;
     }
 }
 

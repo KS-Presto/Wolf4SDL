@@ -33,8 +33,11 @@ boolean fpscounter;
 
 int fps_frames=0, fps_time=0, fps=0;
 
+#if defined(USE_FLOORCEILINGTEX) || defined(USE_CLOUDSKY)
+int16_t *spanstart;
+#endif
+
 int16_t *wallheight;
-int min_wallheight;
 
 //
 // math tables
@@ -288,8 +291,6 @@ int16_t CalcHeight (void)
 
     height = (int16_t)(heightnumerator / (nx >> 8));
 #endif
-    if (height < min_wallheight)
-        min_wallheight = height;
 
     return height;
 }
@@ -1589,7 +1590,6 @@ void Setup3DView (void)
     ypartialdown = viewy&(TILEGLOBAL-1);
     ypartialup = TILEGLOBAL-ypartialdown;
 
-    min_wallheight = viewheight;
     lastside = -1;                  // no optimization on the first post
 }
 
@@ -1641,10 +1641,12 @@ void ThreeDRefresh (void)
     if(GetFeatureFlags() & FF_PARALLAXSKY)
         DrawParallax();
 #endif
+
 #if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
     if(GetFeatureFlags() & FF_CLOUDSKY)
-        DrawClouds(min_wallheight);
+        DrawCloudPlanes ();
 #endif
+
 #ifdef USE_FLOORCEILINGTEX
     DrawPlanes ();
 #endif
