@@ -1,3 +1,5 @@
+// WL_ATMOS.H
+
 #include "version.h"
 
 #if defined(USE_STARSKY) || defined(USE_RAIN) || defined(USE_SNOW)
@@ -5,17 +7,19 @@
 #include "wl_def.h"
 
 #if defined(USE_RAIN) || defined(USE_SNOW)
-    uint32_t rainpos = 0;
+uint32_t rainpos;
 #endif
 
-typedef struct {
-    int32_t x, y, z;
+typedef struct
+{
+    fixed x,y,z;
 } point3d_t;
 
 #define MAXPOINTS 400
 point3d_t points[MAXPOINTS];
 
-byte moon[100]={
+byte moon[100] =
+{
      0,  0, 27, 18, 15, 16, 19, 29,  0,  0,
      0, 22, 16, 15, 15, 16, 16, 18, 24,  0,
     27, 17, 15, 17, 16, 16, 17, 17, 18, 29,
@@ -25,25 +29,40 @@ byte moon[100]={
     19, 16, 18, 19, 17, 17, 18, 19, 22, 24,
     28, 19, 17, 17, 17, 18, 19, 21, 25, 31,
      0, 23, 18, 19, 18, 20, 22, 24, 28,  0,
-     0,  0, 28, 21, 20, 22, 28, 30,  0,  0 };
+     0,  0, 28, 21, 20, 22, 28, 30,  0,  0,
+};
 
-void Init3DPoints()
+
+/*
+====================
+=
+= Init3DPoints
+=
+====================
+*/
+
+void Init3DPoints (void)
 {
-    int i;
-    int hvheight = viewheight >> 1;
-    for(i = 0; i < MAXPOINTS; i++)
+    int       i,j;
+    float     length;
+    point3d_t *pt;
+
+    for (i = 0; i < MAXPOINTS; i++)
     {
-        point3d_t *pt = &points[i];
+        pt = &points[i];
+
         pt->x = 16384 - (rand() & 32767);
         pt->z = 16384 - (rand() & 32767);
-        float len = sqrt((float)pt->x * pt->x + (float)pt->z * pt->z);
-        int j=50;
+
+        length = sqrt((float)pt->x * pt->x + (float)pt->z * pt->z);
+        j = 50;
+
         do
         {
             pt->y = 1024 + (rand() & 8191);
             j--;
-        }
-        while(j > 0 && (float)pt->y * 256.F / len >= hvheight);
+
+        } while (j > 0 && ((float)pt->y * 256.F) / length >= centery);
     }
 }
 
@@ -51,53 +70,99 @@ void Init3DPoints()
 
 #ifdef USE_STARSKY
 
+/*
+====================
+=
+= DrawStarSky
+=
+====================
+*/
+
 void DrawStarSky (void)
 {
-    int hvheight = viewheight >> 1;
-    int hvwidth = viewwidth >> 1;
+    int       i,j;
+    point3d_t *pt;
+    byte      *dest;
+    byte      shade;
+    int16_t   stopx,starty,stopy;
+    fixed     x,y,z;
+    fixed     xx,yy;
+    
+    dest = vbuf;
+    
+    for (i = 0; i < centery; i++, dest += bufferPitch)
+        memset (dest,0,viewwidth);
 
-    byte *ptr = vbuf;
-    int i,j;
-    for(i = 0; i < hvheight; i++, ptr += bufferPitch)
-        memset(ptr, 0, viewwidth);
-
-    for(i = 0; i < MAXPOINTS; i++)
+    for (i = 0; i < MAXPOINTS; i++)
     {
-        point3d_t *pt = &points[i];
-        int32_t x = pt->x * viewcos + pt->z * viewsin;
-        int32_t y = pt->y << 16;
-        int32_t z = (pt->z * viewcos - pt->x * viewsin) >> 8;
-        if(z <= 0) continue;
-        int shade = z >> 18;
-        if(shade > 15) continue;
-        int32_t xx = x / z * scaleFactor + hvwidth;
-        int32_t yy = hvheight - y / z;
-        if(xx >= 0 && xx < viewwidth && yy >= 0 && yy < hvheight)
+        pt = &points[i];
+
+        x = pt->x * viewcos + pt->z * viewsin;
+        y = pt->y << 16;
+        z = (pt->z * viewcos - pt->x * viewsin) >> 8;
+
+        if (z <= 0)
+            continue;
+
+        shade = (byte)(z >> 18);
+
+        if (shade > 15)
+            continue;
+
+        xx = ((x / z) * scaleFactor) + (centerx + 1);
+        yy = centery - (y / z);
+
+        if (xx >= 0 && xx < viewwidth && yy >= 0 && yy < centery)
             vbuf[ylookup[yy] + xx] = shade + 15;
     }
 
-    int32_t x = 16384 * viewcos + 16384 * viewsin;
-    int32_t z = (16384 * viewcos - 16384 * viewsin) >> 8;
-    if(z <= 0) return;
-    int32_t xx = x / z * scaleFactor + hvwidth;
-    int32_t yy = hvheight - ((hvheight - (hvheight >> 3)) << 22) / z;
-    if(xx > (scaleFactor * -10) && xx < viewwidth) 
+    x = (16384 * viewcos) + (16384 * viewsin);
+    z = ((16384 * viewcos) - (16384 * viewsin)) >> 8;
+
+    if (z <= 0)
+        return;
+
+    xx = ((x / z) * scaleFactor) + (centerx + 1);
+    yy = centery - (((centery - (centery >> 3)) << 22) / z);
+
+    if (xx > (scaleFactor * -10) && xx < viewwidth) 
     { 
-        int stopx = 10 * scaleFactor, starty = 0, stopy = 10 * scaleFactor; 
+        stopx = 10 * scaleFactor;
+        starty = 0;
+        stopy = 10 * scaleFactor;
         i = 0; 
-        if(xx < 0) i = -xx; 
-        if(xx >= viewwidth - 10 * scaleFactor) stopx = viewwidth - xx; 
-        if(yy < 0) starty = -yy;                // ADDEDFIX 1 - fixed typo (was startj)
-        if(yy >= viewheight - 10 * scaleFactor) stopy = viewheight - yy; 
-        for(; i < stopx; i++) 
-            for(j = starty; j < stopy; j++) 
-                vbuf[ylookup[yy + j] + xx + i] = moon[j / scaleFactor * 10 + i / scaleFactor]; 
+
+        if (xx < 0)
+            i = -xx; 
+        if (xx >= viewwidth - (10 * scaleFactor))
+            stopx = viewwidth - xx; 
+
+        if (yy < 0)
+            starty = -yy;
+        if (yy >= viewheight - (10 * scaleFactor))
+            stopy = viewheight - yy;
+
+        while (i < stopx)
+        {
+            for (j = starty; j < stopy; j++) 
+                vbuf[ylookup[yy + j] + xx + i] = moon[((j / scaleFactor) * 10) + (i / scaleFactor)];
+
+            i++;
+        }
     } 
 }
 
 #endif
 
 #ifdef USE_RAIN
+
+/*
+====================
+=
+= DrawRain
+=
+====================
+*/
 
 void DrawRain (void)
 {
@@ -107,36 +172,52 @@ void DrawRain (void)
     fixed gu, gv, floorx, floory;              // global texture coordinates
 #endif
 
-    fixed px = (player->y + FixedMul(0x7900, viewsin)) >> 6;
-    fixed pz = (player->x - FixedMul(0x7900, viewcos)) >> 6;
-    int32_t ax, az, x, y, z, xx, yy, height, actheight;
-    int i,shade;
-    int hvheight = viewheight >> 1;
-    int hvwidth = viewwidth >> 1;
+    int       i;
+    point3d_t *pt;
+    byte      shade;
+    int32_t   ax,az,x,y,z,xx,yy,height,actheight;
+    fixed     px,pz;
+
+    px = (player->y + FixedMul(0x7900, viewsin)) >> 6;
+    pz = (player->x - FixedMul(0x7900, viewcos)) >> 6;
 
     rainpos -= tics * 900;
-    for(i = 0; i < MAXPOINTS; i++)
+
+    for (i = 0; i < MAXPOINTS; i++)
     {
-        point3d_t *pt = &points[i];
+        pt = &points[i];
+
         ax = pt->x + px;
         ax = 0x1fff - (ax & 0x3fff);
         az = pt->z + pz;
         az = 0x1fff - (az & 0x3fff);
-        x = ax * viewcos + az * viewsin;
+        x = (ax * viewcos) + (az * viewsin);
         y = -(heightnumerator << 7) + ((((pt->y << 6) + rainpos) & 0x0ffff) << 11);
-        z = (az * viewcos - ax * viewsin) >> 8;
-        if(z <= 0) continue;
-        shade = z >> 17;
-        if(shade > 13) continue;
-        xx = x / z + hvwidth;
-        if(xx < 0 || xx >= viewwidth) continue;
-        actheight = y / z;
-        yy = hvheight - actheight;
-        height = (heightnumerator << 10) / z;
-        if(actheight < 0) actheight = -actheight;
-        if(actheight < (wallheight[xx] >> 3) && height < wallheight[xx]) continue;
+        z = ((az * viewcos) - (ax * viewsin)) >> 8;
 
-        if(xx >= 0 && xx < viewwidth && yy > 0 && yy < viewheight)
+        if (z <= 0)
+            continue;
+
+        shade = (byte)(z >> 17);
+
+        if (shade > 13)
+            continue;
+
+        xx = (x / z) + (centerx + 1);
+
+        if (xx < 0 || xx >= viewwidth)
+            continue;
+
+        actheight = y / z;
+        yy = centery - actheight;
+        height = (heightnumerator << 10) / z;
+
+        if (actheight < 0)
+            actheight = -actheight;
+        if (actheight < (wallheight[xx] >> 3) && height < wallheight[xx])
+            continue;
+
+        if (xx >= 0 && xx < viewwidth && yy > 0 && yy < viewheight)
         {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
             // Find the rain's tile coordinate
@@ -151,10 +232,11 @@ void DrawRain (void)
             if(MAPSPOT(floorx, floory, 2) >> 8) continue;
 #endif
 
-            vbuf[ylookup[yy] + xx] = shade+15;
-            vbuf[ylookup[yy - 1] + xx] = shade+16;
-            if(yy > 2)
-                vbuf[ylookup[yy - 2] + xx] = shade+17;
+            vbuf[ylookup[yy] + xx] = shade + 15;
+            vbuf[ylookup[yy - 1] + xx] = shade + 16;
+
+            if (yy > 2)
+                vbuf[ylookup[yy - 2] + xx] = shade + 17;
         }
     }
 }
@@ -162,6 +244,14 @@ void DrawRain (void)
 #endif
 
 #ifdef USE_SNOW
+
+/*
+====================
+=
+= DrawSnow
+=
+====================
+*/
 
 void DrawSnow (void)
 {
@@ -171,35 +261,52 @@ void DrawSnow (void)
     fixed gu, gv, floorx, floory;              // global texture coordinates
 #endif
 
-    fixed px = (player->y + FixedMul(0x7900, viewsin)) >> 6;
-    fixed pz = (player->x - FixedMul(0x7900, viewcos)) >> 6;
-    int32_t ax, az, x, y, z, xx, yy, height, actheight;
-    int i,shade;
-    int hvheight = viewheight >> 1;
-    int hvwidth = viewwidth >> 1;
-
+    int       i;
+    point3d_t *pt;
+    byte      shade;
+    int32_t   ax,az,x,y,z,xx,yy,height,actheight;
+    fixed     px,pz;
+    
+    px = (player->y + FixedMul(0x7900, viewsin)) >> 6;
+    pz = (player->x - FixedMul(0x7900, viewcos)) >> 6;
+    
     rainpos -= tics * 256;
-    for(i = 0; i < MAXPOINTS; i++)
+
+    for (i = 0; i < MAXPOINTS; i++)
     {
-        point3d_t *pt = &points[i];
+        pt = &points[i];
+
         ax = pt->x + px;
         ax = 0x1fff - (ax & 0x3fff);
         az = pt->z + pz;
         az = 0x1fff - (az & 0x3fff);
-        x = ax * viewcos + az * viewsin;
+        x = (ax * viewcos) + (az * viewsin);
         y = -(heightnumerator << 7) + ((((pt->y << 6) + rainpos) & 0x0ffff) << 11);
-        z = (az * viewcos - ax * viewsin) >> 8;
-        if(z <= 0) continue;
-        shade = z >> 17;
-        if(shade > 13) continue;
-        xx = x / z + hvwidth;
-        if(xx < 0 || xx >= viewwidth) continue;
+        z = ((az * viewcos) - (ax * viewsin)) >> 8;
+
+        if (z <= 0)
+            continue;
+
+        shade = (byte)(z >> 17);
+
+        if (shade > 13)
+            continue;
+
+        xx = (x / z) + (centerx + 1);
+
+        if (xx < 0 || xx >= viewwidth)
+            continue;
+
         actheight = y / z;
-        yy = hvheight - actheight;
+        yy = centery - actheight;
         height = (heightnumerator << 10) / z;
-        if(actheight < 0) actheight = -actheight;
-        if(actheight < (wallheight[xx] >> 3) && height < wallheight[xx]) continue;
-        if(xx > 0 && xx < viewwidth && yy > 0 && yy < viewheight)
+
+        if (actheight < 0)
+            actheight = -actheight;
+        if (actheight < (wallheight[xx] >> 3) && height < wallheight[xx])
+            continue;
+
+        if (xx > 0 && xx < viewwidth && yy > 0 && yy < viewheight)
         {
 #if defined(USE_FLOORCEILINGTEX) && defined(FIXRAINSNOWLEAKS)
             // Find the snow's tile coordinate
@@ -214,15 +321,15 @@ void DrawSnow (void)
             if(MAPSPOT(floorx, floory, 2) >> 8) continue;
 #endif
 
-            if(shade < 10)
+            if (shade < 10)
             {
-                vbuf[ylookup[yy] + xx] = shade+17;
-                vbuf[ylookup[yy] + xx - 1] = shade+16;
-                vbuf[ylookup[yy - 1] + xx] = shade+16;
-                vbuf[ylookup[yy - 1] + xx - 1] = shade+15;
+                vbuf[ylookup[yy] + xx] = shade + 17;
+                vbuf[ylookup[yy] + xx - 1] = shade + 16;
+                vbuf[ylookup[yy - 1] + xx] = shade + 16;
+                vbuf[ylookup[yy - 1] + xx - 1] = shade + 15;
             }
             else
-                vbuf[ylookup[yy] + xx] = shade+15;
+                vbuf[ylookup[yy] + xx] = shade + 15;
         }
     }
 }
