@@ -175,6 +175,13 @@ static const int oplChip = 0;
 
 #endif
 
+void Delay (int32_t wolfticks)
+{
+    if (wolfticks > 0)
+        SDL_Delay ((wolfticks * 100) / 7);
+}
+
+
 static void SDL_SoundFinished(void)
 {
 	SoundNumber   = (soundnames)0;

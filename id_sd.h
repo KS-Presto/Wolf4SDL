@@ -128,9 +128,10 @@ extern  int             DigiMap[];
 extern  int             DigiChannel[];
 
 #define GetTimeCount()  ((SDL_GetTicks()*7)/100)
-#define Delay(ticks)    if((ticks) > 0) SDL_Delay(((ticks) * 100) / 7)
 
 // Function prototypes
+void            Delay (int32_t wolfticks);
+
 extern  void    SD_Startup(void),
                 SD_Shutdown(void);
 
