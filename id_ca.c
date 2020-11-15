@@ -967,7 +967,7 @@ void CA_CacheGrChunks (void)
     for (chunk = STRUCTPIC + 1; chunk < NUMCHUNKS; chunk++)
     {
         if (grsegs[chunk])
-            return;                             // already in memory
+            continue;                             // already in memory
 
         //
         // load the chunk into a buffer
@@ -975,7 +975,7 @@ void CA_CacheGrChunks (void)
         pos = GRFILEPOS(chunk);
 
         if (pos<0)                              // $FFFFFFFF start is a sparse tile
-            return;
+            continue;
 
         next = chunk + 1;
 
