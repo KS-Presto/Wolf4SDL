@@ -263,7 +263,7 @@ typedef enum {
 #define NUMPICS      (GETPSYCHEDPIC - NUMFONT)
 #define NUMPICM      0
 #define NUMSPRITES   0
-#define NUMTILE8     72
+#define NUMTILE8     35
 #define NUMTILE8M    0
 #define NUMTILE16    0
 #define NUMTILE16M   0
