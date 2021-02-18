@@ -735,9 +735,19 @@ CP_CheckQuick (ScanCode scancode)
         case sc_F8:
             if (SaveGamesAvail[LSItems.curpos] && pickquick)
             {
+                char string[100] = STR_SGC;
+
                 fontnumber = 1;
-                Message (STR_SAVING "...");
-                CP_SaveGame (1);
+
+                strcat (string, SaveGameNames[LSItems.curpos]);
+                strcat (string, "\"?");
+
+                if (Confirm (string))
+                {
+                    Message (STR_SAVING "...");
+                    CP_SaveGame (1);
+                }
+
                 fontnumber = 0;
             }
             else
