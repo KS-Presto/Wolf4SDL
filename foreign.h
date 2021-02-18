@@ -32,7 +32,7 @@
 
 #define STR_GAME	"Game"
 #define STR_DEMO	"Demo"
-#define STR_SGC     "Save Game called\n\""
+#define STR_SGC		"Save Game called\n\""
 #define STR_LGC		"Load Game called\n\""
 #define STR_EMPTY	"empty"
 #define STR_CALIB	"Calibrate"
