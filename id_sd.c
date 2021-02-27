@@ -439,8 +439,10 @@ void SD_PrepareSound(int which)
             origsamples, size);
     }
 
-    SoundChunks[which] = Mix_LoadWAV_RW(SDL_RWFromMem(wavebuffer,
-        sizeof(headchunk) + sizeof(wavechunk) + destsamples * 2), 1);
+    SDL_RWops* temp = SDL_RWFromMem(wavebuffer,
+        sizeof(headchunk) + sizeof(wavechunk) + destsamples * 2);
+
+    SoundChunks[which] = Mix_LoadWAV_RW(temp, 1);
 
     free(wavebuffer);
 }

@@ -2,7 +2,7 @@ CONFIG ?= config.default
 -include $(CONFIG)
 
 
-BINARY    ?= wolf3d
+BINARY    ?= wolf4sdl
 PREFIX    ?= /usr/local
 MANPREFIX ?= $(PREFIX)
 
@@ -11,8 +11,11 @@ INSTALL_PROGRAM ?= $(INSTALL) -m 555 -s
 INSTALL_MAN     ?= $(INSTALL) -m 444
 INSTALL_DATA    ?= $(INSTALL) -m 444
 
-
-SDL_CONFIG  ?= sdl-config
+ifeq ($(SDL_MAJOR_VERSION),1)
+	SDL_CONFIG  ?= sdl-config
+else
+	SDL_CONFIG  ?= sdl2-config
+endif
 CFLAGS_SDL  ?= $(shell $(SDL_CONFIG) --cflags)
 LDFLAGS_SDL ?= $(shell $(SDL_CONFIG) --libs)
 
@@ -21,6 +24,7 @@ CFLAGS += $(CFLAGS_SDL)
 
 #CFLAGS += -Wall
 #CFLAGS += -W
+CFLAGS += -g
 CFLAGS += -Wpointer-arith
 CFLAGS += -Wreturn-type
 CFLAGS += -Wwrite-strings
@@ -40,7 +44,11 @@ CCFLAGS += -Wsequence-point
 CXXFLAGS += $(CFLAGS)
 
 LDFLAGS += $(LDFLAGS_SDL)
-LDFLAGS += -lSDL_mixer
+ifeq ($(SDL_MAJOR_VERSION),1)
+	LDFLAGS += -lSDL_mixer
+else
+	LDFLAGS += -lSDL2_mixer
+endif
 ifneq (,$(findstring MINGW,$(shell uname -s)))
 LDFLAGS += -static-libgcc
 endif
@@ -51,6 +59,7 @@ ifndef GPL
 else
     SRCS += dosbox/dbopl.cpp
 endif
+SRCS += sdl_wrap.c
 SRCS += id_ca.c
 SRCS += id_in.c
 SRCS += id_pm.c

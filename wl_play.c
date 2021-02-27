@@ -262,7 +262,7 @@ void PollKeyboardButtons (void)
     int i;
 
     for (i = 0; i < NUMBUTTONS; i++)
-        if (Keyboard[buttonscan[i]])
+        if (Keyboard(buttonscan[i]))
             buttonstate[i] = true;
 }
 
@@ -321,13 +321,13 @@ void PollKeyboardMove (void)
 {
     int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
 
-    if (Keyboard[dirscan[di_north]])
+    if (Keyboard(dirscan[di_north]))
         controly -= delta;
-    if (Keyboard[dirscan[di_south]])
+    if (Keyboard(dirscan[di_south]))
         controly += delta;
-    if (Keyboard[dirscan[di_west]])
+    if (Keyboard(dirscan[di_west]))
         controlx -= delta;
-    if (Keyboard[dirscan[di_east]])
+    if (Keyboard(dirscan[di_east]))
         controlx += delta;
 }
 
@@ -344,12 +344,16 @@ void PollMouseMove (void)
 {
     int mousexmove, mouseymove;
 
+#if SDL_MAJOR_VERSION == 1
     SDL_GetMouseState(&mousexmove, &mouseymove);
     if(IN_IsInputGrabbed())
         IN_CenterMouse();
 
     mousexmove -= screenWidth / 2;
     mouseymove -= screenHeight / 2;
+#else
+    SDL_GetRelativeMouseState(&mousexmove, &mouseymove);
+#endif
 
     controlx += mousexmove * 10 / (13 - mouseadjustment);
     controly += mouseymove * 20 / (13 - mouseadjustment);
@@ -569,7 +573,7 @@ void CheckKeys (void)
     //
     // SECRET CHEAT CODE: TAB-G-F10
     //
-    if (Keyboard[sc_Tab] && Keyboard[sc_G] && Keyboard[sc_F10])
+    if (Keyboard(sc_Tab) && Keyboard(sc_G) && Keyboard(sc_F10))
     {
         WindowH = 160;
         if (godmode)
@@ -595,7 +599,7 @@ void CheckKeys (void)
     //
     // SECRET CHEAT CODE: 'MLI'
     //
-    if (Keyboard[sc_M] && Keyboard[sc_L] && Keyboard[sc_I])
+    if (Keyboard(sc_M) && Keyboard(sc_L) && Keyboard(sc_I))
     {
         gamestate.health = 100;
         gamestate.ammo = 99;
@@ -626,7 +630,7 @@ void CheckKeys (void)
     // OPEN UP DEBUG KEYS
     //
 #ifdef DEBUGKEYS
-    if (Keyboard[sc_BackSpace] && Keyboard[sc_LShift] && Keyboard[sc_Alt] && param_debugmode)
+    if (Keyboard(sc_BackSpace) && Keyboard(sc_LShift) && Keyboard(sc_Alt) && param_debugmode)
     {
         ClearMemory ();
         ClearSplitVWB ();
@@ -643,7 +647,7 @@ void CheckKeys (void)
     //
     // TRYING THE KEEN CHEAT CODE!
     //
-    if (Keyboard[sc_B] && Keyboard[sc_A] && Keyboard[sc_T])
+    if (Keyboard(sc_B) && Keyboard(sc_A) && Keyboard(sc_T))
     {
         ClearMemory ();
         ClearSplitVWB ();
@@ -726,7 +730,7 @@ void CheckKeys (void)
 // TAB-? debug keys
 //
 #ifdef DEBUGKEYS
-    if (Keyboard[sc_Tab] && DebugOk)
+    if (Keyboard(sc_Tab) && DebugOk)
     {
         fontnumber = 0;
         SETFONTCOLOR (0, 15);
@@ -744,7 +748,7 @@ void CheckKeys (void)
 #endif
 
 #ifdef VIEWMAP
-    if (Keyboard[sc_O])
+    if (Keyboard(sc_O))
     {
         ViewMap ();
 

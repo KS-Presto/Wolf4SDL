@@ -340,7 +340,7 @@ static byte *ExtScanNames[] =   // Names corresponding to ExtScanCodes
                                         };*/
 
 #else
-static const char* const ScanNames[SDLK_LAST] =
+/*static const char* const ScanNames[SDLK_LAST] =
     {
         "?","?","?","?","?","?","?","?",                                //   0
         "BkSp","Tab","?","?","?","Return","?","?",                      //   8
@@ -383,7 +383,7 @@ static const char* const ScanNames[SDLK_LAST] =
         "Shift","RCtrl","Ctrl","RAlt","Alt","?","?","?",                // 304
         "?","?","?","?","PrtSc","?","?","?",                            // 312
         "?","?"                                                         // 320
-    };
+    };*/
 
 #endif
 
@@ -467,7 +467,7 @@ US_ControlPanel (ScanCode scancode)
         //
         // EASTER EGG FOR SPEAR OF DESTINY!
         //
-        if (Keyboard[sc_I] && Keyboard[sc_D])
+        if (Keyboard(sc_I) && Keyboard(sc_D))
         {
             VW_FadeOut ();
             StartCPMusic (XJAZNAZI_MUS);
@@ -483,7 +483,7 @@ US_ControlPanel (ScanCode scancode)
             VL_ConvertPalette(grsegs[IDGUYSPALETTE], pal, 256);
             VL_FadeIn (0, 255, pal, 30);
 
-            while (Keyboard[sc_I] || Keyboard[sc_D])
+            while (Keyboard(sc_I) || Keyboard(sc_D))
                 IN_WaitAndProcessEvents();
             IN_ClearKeysDown ();
             IN_Ack ();
@@ -1837,9 +1837,9 @@ MouseSensitivity (int blank)
                 break;
         }
 
-        if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
+        if (ci.button0 || Keyboard(sc_Space) || Keyboard(sc_Enter))
             exit = 1;
-        else if (ci.button1 || Keyboard[sc_Escape])
+        else if (ci.button1 || Keyboard(sc_Escape))
             exit = 2;
 
     }
@@ -2716,9 +2716,9 @@ CP_ChangeView (int blank)
                 break;
         }
 
-        if (ci.button0 || Keyboard[sc_Enter])
+        if (ci.button0 || Keyboard(sc_Enter))
             exit = 1;
-        else if (ci.button1 || Keyboard[sc_Escape])
+        else if (ci.button1 || Keyboard(sc_Escape))
         {
             SD_PlaySound (ESCPRESSEDSND);
             MenuFadeOut ();
@@ -3213,10 +3213,10 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
                 break;
         }
 
-        if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
+        if (ci.button0 || Keyboard(sc_Space) || Keyboard(sc_Enter))
             exit = 1;
 
-        if (ci.button1 && !Keyboard[sc_Alt] || Keyboard[sc_Escape])
+        if (ci.button1 && !Keyboard(sc_Alt) || Keyboard(sc_Escape))
             exit = 2;
 
     }
@@ -3408,7 +3408,7 @@ WaitKeyUp (void)
     ControlInfo ci;
     while (ReadAnyControl (&ci), ci.button0 |
            ci.button1 |
-           ci.button2 | ci.button3 | Keyboard[sc_Space] | Keyboard[sc_Enter] | Keyboard[sc_Escape])
+           ci.button2 | ci.button3 | Keyboard(sc_Space) | Keyboard(sc_Enter) | Keyboard(sc_Escape))
     {
         IN_WaitAndProcessEvents();
     }
@@ -3420,6 +3420,7 @@ WaitKeyUp (void)
 // READ KEYBOARD, JOYSTICK AND MOUSE FOR INPUT
 //
 ////////////////////////////////////////////////////////////////////
+static int totalMousex = 0, totalMousey = 0;
 void
 ReadAnyControl (ControlInfo * ci)
 {
@@ -3430,37 +3431,49 @@ ReadAnyControl (ControlInfo * ci)
     if (mouseenabled && IN_IsInputGrabbed())
     {
         int mousex, mousey, buttons;
+#if SDL_MAJOR_VERSION == 1
         buttons = SDL_GetMouseState(&mousex, &mousey);
+        mousex -= screenWidth / 2;
+        mousey -= screenHeight / 2;
+        IN_CenterMouse();
+#else
+        buttons = SDL_GetRelativeMouseState(&mousex, &mousey);
+#endif
         int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
         int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
         buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
         if(middlePressed) buttons |= 1 << 2;
         if(rightPressed) buttons |= 1 << 1;
 
-        if(mousey - CENTERY < -SENSITIVE)
+        totalMousex += mousex;
+        totalMousey += mousey;
+
+        if(totalMousey < -SENSITIVE)
         {
             ci->dir = dir_North;
             mouseactive = 1;
         }
-        else if(mousey - CENTERY > SENSITIVE)
+        else if(totalMousey > SENSITIVE)
         {
             ci->dir = dir_South;
             mouseactive = 1;
         }
 
-        if(mousex - CENTERX < -SENSITIVE)
+        if(totalMousex  < -SENSITIVE)
         {
             ci->dir = dir_West;
             mouseactive = 1;
         }
-        else if(mousex - CENTERX > SENSITIVE)
+        else if(totalMousex  > SENSITIVE)
         {
             ci->dir = dir_East;
             mouseactive = 1;
         }
 
-        if(mouseactive)
-            IN_CenterMouse();
+        if(mouseactive) {
+            totalMousex = 0;
+            totalMousey = 0;
+        }
 
         if (buttons)
         {
@@ -3546,20 +3559,20 @@ Confirm (const char *string)
 
 #ifdef SPANISH
     }
-    while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
+    while (!Keyboard(sc_S) && !Keyboard(sc_N) && !Keyboard(sc_Escape));
 #else
     }
-    while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape] && !ci.button0 && !ci.button1);
+    while (!Keyboard(sc_Y) && !Keyboard(sc_N) && !Keyboard(sc_Escape) && !ci.button0 && !ci.button1);
 #endif
 
 #ifdef SPANISH
-    if (Keyboard[sc_S] || ci.button0)
+    if (Keyboard(sc_S) || ci.button0)
     {
         xit = 1;
         ShootSnd ();
     }
 #else
-    if (Keyboard[sc_Y] || ci.button0)
+    if (Keyboard(sc_Y) || ci.button0)
     {
         xit = 1;
         ShootSnd ();
@@ -3595,30 +3608,30 @@ GetYorN (int x, int y, int pic)
         IN_WaitAndProcessEvents();
     }
 #ifdef SPANISH
-    while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
+    while (!Keyboard(sc_S) && !Keyboard(sc_N) && !Keyboard(sc_Escape));
 #else
-    while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
+    while (!Keyboard(sc_Y) && !Keyboard(sc_N) && !Keyboard(sc_Escape));
 #endif
 
 #ifdef SPANISH
-    if (Keyboard[sc_S])
+    if (Keyboard(sc_S))
     {
         xit = 1;
         ShootSnd ();
     }
 
-    while (Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape])
+    while (Keyboard(sc_S) || Keyboard(sc_N) || Keyboard(sc_Escape))
         IN_WaitAndProcessEvents();
 
 #else
 
-    if (Keyboard[sc_Y])
+    if (Keyboard(sc_Y))
     {
         xit = 1;
         ShootSnd ();
     }
 
-    while (Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
+    while (Keyboard(sc_Y) || Keyboard(sc_N) || Keyboard(sc_Escape))
         IN_WaitAndProcessEvents();
 #endif
 
@@ -3712,7 +3725,212 @@ IN_GetScanName (ScanCode scan)
         if (*s == scan)
             return (*p);*/
 
-    return (ScanNames[scan]);
+        switch(scan) {
+        case(SDLK_BACKSPACE):
+            return "BkSp";
+        case(SDLK_TAB):
+            return "Tab";
+        case(SDLK_RETURN):
+            return "Enter";
+        case(SDLK_PAUSE):
+            return "Pause";
+        case(SDLK_ESCAPE):
+            return "Esc";
+        case(SDLK_SPACE):
+            return "Space";
+        case(SDLK_EXCLAIM):
+            return "!";
+        case(SDLK_QUOTEDBL):
+            return "\"";
+        case(SDLK_HASH):
+            return "#";
+        case(SDLK_DOLLAR):
+            return "$";
+        case(SDLK_AMPERSAND):
+            return "&";
+        case(SDLK_QUOTE):
+            return "'";
+        case(SDLK_LEFTPAREN):
+            return "(";
+        case(SDLK_RIGHTPAREN):
+            return ")";
+        case(SDLK_ASTERISK):
+            return "*";
+        case(SDLK_PLUS):
+            return "+";
+        case(SDLK_COMMA):
+            return ",";
+        case(SDLK_MINUS):
+            return "-";
+        case(SDLK_PERIOD):
+            return ".";
+        case(SDLK_SLASH):
+            return "/";
+        case(SDLK_0):
+            return "0";
+        case(SDLK_1):
+            return "1";
+        case(SDLK_2):
+            return "2";
+        case(SDLK_3):
+            return "3";
+        case(SDLK_4):
+            return "4";
+        case(SDLK_5):
+            return "5";
+        case(SDLK_6):
+            return "6";
+        case(SDLK_7):
+            return "7";
+        case(SDLK_8):
+            return "8";
+        case(SDLK_9):
+            return "9";
+        case(SDLK_COLON):
+            return ":";
+        case(SDLK_SEMICOLON):
+            return ";";
+        case(SDLK_LESS):
+            return "<";
+        case(SDLK_EQUALS):
+            return "=";
+        case(SDLK_GREATER):
+            return ">";
+        case(SDLK_QUESTION):
+            return "?";
+        case(SDLK_AT):
+            return "@";
+        case(SDLK_a):
+            return "A";
+        case(SDLK_b):
+            return "B";
+        case(SDLK_c):
+            return "C";
+        case(SDLK_d):
+            return "D";
+        case(SDLK_e):
+            return "E";
+        case(SDLK_f):
+            return "F";
+        case(SDLK_g):
+            return "G";
+        case(SDLK_h):
+            return "H";
+        case(SDLK_i):
+            return "I";
+        case(SDLK_j):
+            return "J";
+        case(SDLK_k):
+            return "K";
+        case(SDLK_l):
+            return "L";
+        case(SDLK_m):
+            return "M";
+        case(SDLK_n):
+            return "N";
+        case(SDLK_o):
+            return "O";
+        case(SDLK_p):
+            return "P";
+        case(SDLK_q):
+            return "Q";
+        case(SDLK_r):
+            return "R";
+        case(SDLK_s):
+            return "S";
+        case(SDLK_t):
+            return "T";
+        case(SDLK_u):
+            return "U";
+        case(SDLK_v):
+            return "V";
+        case(SDLK_w):
+            return "W";
+        case(SDLK_x):
+            return "X";
+        case(SDLK_y):
+            return "Y";
+        case(SDLK_z):
+            return "Z";
+        case(SDLK_LEFTBRACKET):
+            return "[";
+        case(SDLK_BACKSLASH):
+            return "\\";
+        case(SDLK_RIGHTBRACKET):
+            return "]";
+        case(SDLK_CARET):
+            return "^";
+        case(SDLK_UNDERSCORE):
+            return "_";
+        case(SDLK_BACKQUOTE):
+            return "`";
+        case(SDLK_UP):
+            return "Up";
+        case(SDLK_DOWN):
+            return "Down";
+        case(SDLK_RIGHT):
+            return "Right";
+        case(SDLK_LEFT):
+            return "Left";
+        case(SDLK_INSERT):
+            return "Ins";
+        case(SDLK_HOME):
+            return "Home";
+        case(SDLK_END):
+            return "End";
+        case(SDLK_PAGEUP):
+            return "PgUp";
+        case(SDLK_PAGEDOWN):
+            return "PgDn";
+        case(SDLK_DELETE):
+            return "Del";
+        case(SDLK_F1):
+            return "F1";
+        case(SDLK_F2):
+            return "F2";
+        case(SDLK_F3):
+            return "F3";
+        case(SDLK_F4):
+            return "F4";
+        case(SDLK_F5):
+            return "F5";
+        case(SDLK_F6):
+            return "F6";
+        case(SDLK_F7):
+            return "F7";
+        case(SDLK_F8):
+            return "F8";
+        case(SDLK_F9):
+            return "F9";
+        case(SDLK_F10):
+            return "F10";
+        case(SDLK_F11):
+            return "F11";
+        case(SDLK_F12):
+            return "F12";
+        case(SDLK_NUMLOCKCLEAR):
+            return "NumLk";
+        case(SDLK_CAPSLOCK):
+            return "CapsLk";
+        case(SDLK_SCROLLLOCK):
+            return "ScrlLk";
+        case(SDLK_RSHIFT):
+            return "RShft";
+        case(SDLK_LSHIFT):
+            return "Shift";
+        case(SDLK_RCTRL):
+            return "RCtrl";
+        case(SDLK_LCTRL):
+            return "Ctrl";
+        case(SDLK_RALT):
+            return "RAlt";
+        case(SDLK_LALT):
+            return "Alt";
+        case(SDLK_PRINTSCREEN):
+            return "PrtSc";
+        default:
+            return "?";
+    }
 }
 
 
