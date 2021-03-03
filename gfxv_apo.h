@@ -182,11 +182,13 @@ typedef enum {
     T_DEMO3,                     // 154
 #ifndef APOGEE_1_0
     T_ENDART1,                   // 155
+#ifndef UPLOAD
     T_ENDART2,                   // 156
     T_ENDART3,                   // 157
     T_ENDART4,                   // 158
     T_ENDART5,                   // 159
     T_ENDART6,                   // 160
+#endif
 #endif
 
     ENUMEND
