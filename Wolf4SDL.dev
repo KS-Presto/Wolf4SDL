@@ -1,7 +1,7 @@
 [Project]
 FileName=Wolf4SDL.dev
 Name=Wolf4SDL
-UnitCount=53
+UnitCount=55
 Type=0
 Ver=1
 ObjFiles=
@@ -27,7 +27,7 @@ CustomMakefile=
 IncludeVersionInfo=1
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000000000000000000
+CompilerSettings=0000000000000001000000
 
 [Unit1]
 FileName=audiosod.h
@@ -594,4 +594,24 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+
+[Unit54]
+FileName=sdl_wrap.h
+CompileCpp=0
+Folder=Wolf4SDL
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit55]
+FileName=sdl_wrap.c
+CompileCpp=0
+Folder=Wolf4SDL
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 
