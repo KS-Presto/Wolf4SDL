@@ -1,4 +1,5 @@
 Wolf4SDL v2.0
+ - Added SDL2 support (thanks to zZeck)
  - TAB-T RESTORED! Yes!
  - Reimplemented a pseudo version of BossKey
  - MAPPLANES is now 3 by default (because the maptype struct assumes 3 planes minimum),
