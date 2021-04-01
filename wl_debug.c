@@ -256,7 +256,7 @@ void ShapeTest (void)
 
         US_Print ("\n Address: ");
         addr = PM_GetPage(i);
-        sprintf (str,"0x%08X",(int32_t)addr);
+        sprintf (str,"0x%010X",(intptr_t)addr);
         US_Print (str);
 
         if (addr)
