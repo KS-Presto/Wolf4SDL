@@ -22,21 +22,21 @@ boolean fullscreen = true;
 boolean usedoublebuffering = false;
 unsigned screenWidth = 320;
 unsigned screenHeight = 200;
-int16_t  screenBits = 8;
+int      screenBits = 8;
 #elif defined(GP2X)
 boolean usedoublebuffering = true;
 unsigned screenWidth = 320;
 unsigned screenHeight = 240;
 #if defined(GP2X_940)
-int16_t  screenBits = 8;
+int      screenBits = 8;
 #else
-int16_t  screenBits = 16;
+int      screenBits = 16;
 #endif
 #else
 boolean usedoublebuffering = true;
 unsigned screenWidth = 640;
 unsigned screenHeight = 400;
-int16_t  screenBits = -1;      // use "best" color depth according to libSDL
+int      screenBits = -1;      // use "best" color depth according to libSDL
 #endif
 
 SDL_Surface *screen = NULL;
@@ -121,6 +121,7 @@ void VL_Shutdown (void)
 void VL_SetVGAPlaneMode (void)
 {
     int i;
+    uint32_t a,r,g,b;
 
 #ifdef SPEAR
     const char* title = "Spear of Destiny";
@@ -166,8 +167,10 @@ void VL_SetVGAPlaneMode (void)
     window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight,
         (fullscreen ? SDL_WINDOW_FULLSCREEN : 0) | SDL_WINDOW_OPENGL);
 
-    screen = SDL_GetWindowSurface(window);
-    
+    SDL_PixelFormatEnumToMasks (SDL_PIXELFORMAT_ARGB8888,&screenBits,&r,&g,&b,&a);
+
+    screen = SDL_CreateRGBSurface(0,screenWidth,screenHeight,screenBits,r,g,b,a);
+
     if(!screen)
     {
         printf("Unable to set %ix%ix%i video mode: %s\n", screenWidth, screenHeight, screenBits, SDL_GetError());

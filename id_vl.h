@@ -23,7 +23,7 @@ extern SDL_Texture *texture;
 
 extern  boolean  fullscreen, usedoublebuffering;
 extern  unsigned screenWidth, screenHeight, screenPitch, bufferPitch;
-extern  int16_t  screenBits;
+extern  int      screenBits;
 extern  int      scaleFactor;
 
 extern	boolean  screenfaded;
