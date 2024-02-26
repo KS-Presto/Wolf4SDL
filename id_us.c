@@ -490,7 +490,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				cursorvis,cursormoved,
 				done,result, checkkey;
 	ScanCode	sc;
-	char		c,*text;
+	char		*text;
 	char		s[MaxString],olds[MaxString];
 	int         cursor,len;
 	word		i,
@@ -498,7 +498,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				temp;
 	longword	curtime, lasttime, lastdirtime, lastbuttontime, lastdirmovetime;
 	ControlInfo ci;
-	Direction   lastdir = dir_None;
+	byte        lastdir = dir_None;
 
 	if (def)
 		strcpy(s,def);
@@ -511,7 +511,6 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 	cursorvis = done = false;
 	lasttime = lastdirtime = lastdirmovetime = GetTimeCount();
 	lastbuttontime = lasttime + TickBase / 4;	// 250 ms => first button press accepted after 500 ms
-	LastASCII = key_None;
 	LastScan = sc_None;
 
 	IN_ClearTextInput ();
@@ -525,8 +524,6 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 
 		sc = LastScan;
 		LastScan = sc_None;
-		c = LastASCII;
-		LastASCII = key_None;
 
 		checkkey = true;
 		curtime = GetTimeCount();
@@ -632,23 +629,19 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				case sc_LeftArrow:
 					if (cursor)
 						cursor--;
-					c = key_None;
 					cursormoved = true;
 					break;
 				case sc_RightArrow:
 					if (s[cursor])
 						cursor++;
-					c = key_None;
 					cursormoved = true;
 					break;
 				case sc_Home:
 					cursor = 0;
-					c = key_None;
 					cursormoved = true;
 					break;
 				case sc_End:
 					cursor = (int) strlen(s);
-					c = key_None;
 					cursormoved = true;
 					break;
 
@@ -656,7 +649,6 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					strcpy(buf,s);
 					done = true;
 					result = true;
-					c = key_None;
 					break;
 				case sc_Escape:
 					if (escok)
@@ -664,7 +656,6 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 						done = true;
 						result = false;
 					}
-					c = key_None;
 					break;
 
 				case sc_BackSpace:
@@ -674,7 +665,6 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 						cursor--;
 						redraw = true;
 					}
-					c = key_None;
 					cursormoved = true;
 					break;
 				case sc_Delete:
@@ -683,17 +673,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 						strcpy(s + cursor,s + cursor + 1);
 						redraw = true;
 					}
-					c = key_None;
 					cursormoved = true;
-					break;
-
-				case sc_KeyPad5:
-				case sc_UpArrow:
-				case sc_DownArrow:
-				case sc_PgUp:
-				case sc_PgDn:
-				case sc_Insert:
-					c = key_None;
 					break;
 			}
 

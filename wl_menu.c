@@ -728,8 +728,7 @@ CP_CheckQuick (ScanCode scancode)
                     playstate = ex_abort;
                 lasttimecount = GetTimeCount ();
 
-                if (MousePresent && IN_IsInputGrabbed())
-                    IN_CenterMouse();     // Clear accumulated mouse movement
+                IN_CenterMouse ();
             }
             return 1;
 
@@ -774,8 +773,7 @@ CP_CheckQuick (ScanCode scancode)
 
                 lasttimecount = GetTimeCount ();
 
-                if (MousePresent && IN_IsInputGrabbed())
-                    IN_CenterMouse();     // Clear accumulated mouse movement
+                IN_CenterMouse ();
             }
             return 1;
 
@@ -1673,8 +1671,7 @@ CP_Control (int blank)
         {
             case CTL_MOUSEENABLE:
                 mouseenabled ^= 1;
-                if(IN_IsInputGrabbed())
-                    IN_CenterMouse();
+                IN_CenterMouse ();
                 DrawCtlScreen ();
                 CusItems.curpos = -1;
                 ShootSnd ();
@@ -2044,7 +2041,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
         ReadAnyControl (&ci);
 
         if (type == MOUSE || type == JOYSTICK)
-            if (IN_KeyDown (sc_Enter) || IN_KeyDown (sc_Control) || IN_KeyDown (sc_Alt))
+            if (Keyboard[sc_Enter] || Keyboard[sc_Control] || Keyboard[sc_Alt])
             {
                 IN_ClearKeysDown ();
                 ci.button0 = ci.button1 = false;
@@ -2174,7 +2171,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
                 //
                 // EXIT INPUT?
                 //
-                if (IN_KeyDown (sc_Escape) || type != JOYSTICK && ci.button1)
+                if (Keyboard[sc_Escape] || type != JOYSTICK && ci.button1)
                 {
                     picked = 1;
                     SD_PlaySound (ESCPRESSEDSND);
@@ -2191,7 +2188,7 @@ EnterCtrlData (int index, CustomCtrls * cust, void (*DrawRtn) (int), void (*Prin
             continue;
         }
 
-        if (ci.button1 || IN_KeyDown (sc_Escape))
+        if (ci.button1 || Keyboard[sc_Escape])
             exit = 1;
 
         //
@@ -2933,11 +2930,7 @@ SetupControlPanel (void)
     else
         MainMenu[savegame].active = 1;
 
-    //
-    // CENTER MOUSE
-    //
-    if(IN_IsInputGrabbed())
-        IN_CenterMouse();
+    IN_CenterMouse ();
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -3395,9 +3388,9 @@ ReadAnyControl (ControlInfo * ci)
 {
     int mouseactive = 0;
 
-    IN_ReadControl (0, ci);
+    IN_ReadControl (ci);
 
-    if (mouseenabled && IN_IsInputGrabbed())
+    if (mouseenabled && GrabInput)
     {
         int mousex, mousey, buttons;
 

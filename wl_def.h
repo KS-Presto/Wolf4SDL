@@ -117,6 +117,8 @@ void Quit (const char *errorStr, ...);
 #define LABS(x)         ((int32_t)(x) > 0 ? (x) : -(x))
 
 #define abs(x)          ABS((x))
+#define MAX(a,b)        (((a) > (b)) ? (a) : (b))
+#define MIN(a,b)        (((a) < (b)) ? (a) : (b))
 
 #define lengthof(x)     (sizeof((x)) / sizeof(*(x)))
 #define endof(x)        ((x) + lengthof((x)))

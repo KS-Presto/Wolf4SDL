@@ -454,7 +454,7 @@ void PollControls (void)
 //
     PollKeyboardButtons ();
 
-    if (mouseenabled && IN_IsInputGrabbed())
+    if (mouseenabled && GrabInput)
         PollMouseButtons ();
 
     if (joystickenabled)
@@ -465,7 +465,7 @@ void PollControls (void)
 //
     PollKeyboardMove ();
 
-    if (mouseenabled && IN_IsInputGrabbed())
+    if (mouseenabled && GrabInput)
         PollMouseMove ();
 
     if (joystickenabled)
@@ -666,8 +666,7 @@ void CheckKeys (void)
         IN_Ack ();
         Paused = false;
         ContinueMusic(lastoffs);
-        if (MousePresent && IN_IsInputGrabbed())
-            IN_CenterMouse();     // Clear accumulated mouse movement
+        IN_CenterMouse ();
         lasttimecount = GetTimeCount();
         return;
     }
@@ -712,8 +711,7 @@ void CheckKeys (void)
         if (loadedgame)
             playstate = ex_abort;
         lasttimecount = GetTimeCount();
-        if (MousePresent && IN_IsInputGrabbed())
-            IN_CenterMouse();     // Clear accumulated mouse movement
+        IN_CenterMouse ();
         return;
     }
 
@@ -728,9 +726,7 @@ void CheckKeys (void)
         if (DebugKeys () && viewsize < 20)
         {
             DrawPlayBorder ();       // dont let the blue borders flash
-
-            if (MousePresent && IN_IsInputGrabbed())
-                IN_CenterMouse();     // Clear accumulated mouse movement
+            IN_CenterMouse ();
 
             lasttimecount = GetTimeCount();
         }
@@ -743,8 +739,7 @@ void CheckKeys (void)
     {
         ViewMap ();
 
-        if (MousePresent && IN_IsInputGrabbed())
-            IN_CenterMouse();     // Clear accumulated mouse movement
+        IN_CenterMouse ();
 
         lasttimecount = GetTimeCount();
     }
@@ -1285,8 +1280,7 @@ void PlayLoop (void)
     memset (buttonstate, 0, sizeof (buttonstate));
     ClearPaletteShifts ();
 
-    if (MousePresent && IN_IsInputGrabbed())
-        IN_CenterMouse();         // Clear accumulated mouse movement
+    IN_CenterMouse ();
 
     if (demoplayback)
         IN_StartAck ();

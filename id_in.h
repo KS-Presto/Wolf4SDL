@@ -106,95 +106,66 @@
 
 typedef	int32_t		ScanCode;
 
-typedef	enum		{
-						demo_Off,demo_Record,demo_Playback,demo_PlayDone
-					} Demo;
-typedef	enum		{
-						ctrl_Keyboard,
-						ctrl_Keyboard1 = ctrl_Keyboard,ctrl_Keyboard2,
-						ctrl_Joystick,
-						ctrl_Joystick1 = ctrl_Joystick,ctrl_Joystick2,
-						ctrl_Mouse
-					} ControlType;
-typedef	enum		{
-						motion_Left = -1,motion_Up = -1,
-						motion_None = 0,
-						motion_Right = 1,motion_Down = 1
-					} Motion;
-typedef	enum		{
-						dir_North,dir_NorthEast,
-						dir_East,dir_SouthEast,
-						dir_South,dir_SouthWest,
-						dir_West,dir_NorthWest,
-						dir_None
-					} Direction;
-typedef	struct		{
-						boolean		button0,button1,button2,button3;
-						short		x,y;
-						Motion		xaxis,yaxis;
-						Direction	dir;
-					} CursorInfo;
-typedef	CursorInfo	ControlInfo;
-typedef	struct		{
-						ScanCode	button0,button1,
-									upleft,		up,		upright,
-									left,				right,
-									downleft,	down,	downright;
-					} KeyboardDef;
-typedef	struct		{
-						word		joyMinX,joyMinY,
-									threshMinX,threshMinY,
-									threshMaxX,threshMaxY,
-									joyMaxX,joyMaxY,
-									joyMultXL,joyMultYL,
-									joyMultXH,joyMultYH;
-					} JoystickDef;
+enum Direction
+{
+    dir_North,dir_NorthEast,
+    dir_East,dir_SouthEast,
+    dir_South,dir_SouthWest,
+    dir_West,dir_NorthWest,
+    dir_None
+};
+
+typedef	struct
+{
+    boolean     button0,button1,button2,button3;
+    int16_t     x,y;
+    int16_t     xaxis,yaxis;
+    byte        dir;
+} ControlInfo;
+
+
 // Global variables
 extern  bool       Keyboard[sc_Last];
 extern  char       textinput[TEXTINPUTSIZE];
 extern  boolean    MousePresent;
 extern  boolean    Paused;
-extern  char       LastASCII;
 extern  ScanCode   LastScan;
 extern  int        JoyNumButtons;
 extern  boolean    forcegrabmouse;
-
+extern  bool       GrabInput;
 
 // Function prototypes
-#define	IN_KeyDown(code)	(Keyboard[(code)])
 #define	IN_ClearKey(code)	{Keyboard[code] = false;\
 							if (code == LastScan) LastScan = sc_None;}
 
-// DEBUG - put names in prototypes
-extern	void		IN_Startup(void),IN_Shutdown(void);
-extern	void		IN_ClearKeysDown(void);
-extern	void		IN_ReadControl(int,ControlInfo *);
-extern	void		IN_GetJoyAbs(word joy,word *xp,word *yp);
-extern	void		IN_SetupJoy(word joy,word minx,word maxx,
-								word miny,word maxy);
-extern	void		IN_StopDemo(void),IN_FreeDemoBuffer(void),
-					IN_Ack(void);
-extern	boolean		IN_UserInput(longword delay);
-extern	char		IN_WaitForASCII(void);
-extern	ScanCode	IN_WaitForKey(void);
-extern	word		IN_GetJoyButtonsDB(word joy);
-extern	const char *IN_GetScanName(ScanCode);
+void		IN_Startup (void);
+void        IN_Shutdown (void);
+void		IN_ClearKeysDown (void);
+void        IN_ClearTextInput (void);
+void		IN_ReadControl (ControlInfo *info);
+void		IN_GetJoyAbs (word joy, word *xp, word *yp);
+void		IN_SetupJoy (word joy, word minx, word maxx, word miny, word maxy);
+void		IN_Ack (void);
+boolean		IN_UserInput (longword delay);
+ScanCode	IN_WaitForKey (void);
+word		IN_GetJoyButtonsDB (word joy);
+const char *IN_GetScanName (ScanCode);
 
 
-void    IN_WaitAndProcessEvents();
-void    IN_ProcessEvents();
+void    IN_WaitAndProcessEvents (void);
+void    IN_ProcessEvents (void);
 
 int     IN_MouseButtons (void);
 
-boolean IN_JoyPresent();
-void    IN_SetJoyCurrent(int joyIndex);
+boolean IN_JoyPresent (void);
+void    IN_SetJoyCurrent (int joyIndex);
 int     IN_JoyButtons (void);
-void    IN_GetJoyDelta(int *dx,int *dy);
-void    IN_GetJoyFineDelta(int *dx, int *dy);
+void    IN_GetJoyDelta (int *dx, int *dy);
+void    IN_GetJoyFineDelta (int *dx, int *dy);
 
-void    IN_StartAck(void);
+void    IN_StartAck (void);
 boolean IN_CheckAck (void);
-bool    IN_IsInputGrabbed();
-void    IN_CenterMouse();
+bool    IN_IsInputGrabbed (void);
+void    IN_CenterMouse (void);
 
 #endif

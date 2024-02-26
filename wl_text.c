@@ -661,7 +661,7 @@ void ShowArticle (char *article)
 
         LastScan = 0;
         ReadAnyControl(&ci);
-        Direction dir = ci.dir;
+        byte dir = ci.dir;
         switch(dir)
         {
             case dir_North:
@@ -801,8 +801,7 @@ void EndText (void)
 
     SETFONTCOLOR(0,15);
     IN_ClearKeysDown();
-    if (MousePresent && IN_IsInputGrabbed())
-        IN_CenterMouse();  // Clear accumulated mouse movement
+    IN_CenterMouse ();
 
     FreeMusic ();
 #else
@@ -828,8 +827,7 @@ void EndText (void)
     VW_FadeOut();
     SETFONTCOLOR(0,15);
     IN_ClearKeysDown();
-    if (MousePresent && IN_IsInputGrabbed())
-        IN_CenterMouse();  // Clear accumulated mouse movement
+    IN_CenterMouse ();
 
     FreeMusic ();
 #endif
