@@ -45,6 +45,8 @@ Thumbs.db
 ###############################
 *.layout
 *.depend
+*.cbp
+*.dev
 
 # Dev-CPP Files & Folders #
 ##############
