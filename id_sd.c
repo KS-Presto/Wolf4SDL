@@ -70,9 +70,9 @@ globalsoundpos channelSoundPos[MIX_CHANNELS];
         boolean         AdLibPresent,
                         SoundBlasterPresent,SBProPresent,
                         SoundPositioned;
-        SDMode          SoundMode;
-        SMMode          MusicMode;
-        SDSMode         DigiMode;
+        byte            SoundMode;
+        byte            MusicMode;
+        byte            DigiMode;
 static  byte          **SoundTable;
         int             DigiMap[LASTSOUND];
         int             DigiChannel[STARTMUSIC - STARTDIGISOUNDS];
@@ -80,8 +80,8 @@ static  byte          **SoundTable;
 //      Internal variables
 static  boolean                 SD_Started;
 static  boolean                 nextsoundpos;
-static  soundnames              SoundNumber;
-static  soundnames              DigiNumber;
+static  int                     SoundNumber;
+static  int                     DigiNumber;
 static  word                    SoundPriority;
 static  word                    DigiPriority;
 static  int                     LeftPosition;
@@ -184,7 +184,7 @@ void Delay (int32_t wolfticks)
 
 static void SDL_SoundFinished(void)
 {
-	SoundNumber   = (soundnames)0;
+	SoundNumber = 0;
 	SoundPriority = 0;
 }
 
@@ -280,7 +280,7 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
                 if(!pcLengthLeft)
                 {
                     pcSound=0;
-                    SoundNumber=(soundnames)0;
+                    SoundNumber=0;
                     SoundPriority=0;
                 }
             }
@@ -337,7 +337,7 @@ void
 SD_StopDigitized(void)
 {
     DigiPlaying = false;
-    DigiNumber = (soundnames) 0;
+    DigiNumber = 0;
     DigiPriority = 0;
     SoundPositioned = false;
     if ((DigiMode == sds_PC) && (SoundMode == sdm_PC))
@@ -486,7 +486,7 @@ void SD_ChannelFinished(int channel)
 }
 
 void
-SD_SetDigiDevice(SDSMode mode)
+SD_SetDigiDevice(byte mode)
 {
     boolean devicenotpresent;
 
@@ -701,7 +701,7 @@ SDL_StartDevice(void)
         default:
             break;
     }
-    SoundNumber = (soundnames) 0;
+    SoundNumber = 0;
     SoundPriority = 0;
 }
 
@@ -713,7 +713,7 @@ SDL_StartDevice(void)
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean
-SD_SetSoundMode(SDMode mode)
+SD_SetSoundMode(byte mode)
 {
     boolean result = false;
     word    tableoffset;
@@ -760,7 +760,7 @@ SD_SetSoundMode(SDMode mode)
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean
-SD_SetMusicMode(SMMode mode)
+SD_SetMusicMode(byte mode)
 {
     boolean result = false;
 
@@ -837,7 +837,7 @@ void SDL_IMFMusicPlayer(void *udata, Uint8 *stream, int len)
                 if(!curAlLengthLeft)
                 {
                     curAlSound = alSound = 0;
-                    SoundNumber = (soundnames) 0;
+                    SoundNumber = 0;
                     SoundPriority = 0;
                     alOut(alFreqH, 0);
                 }
@@ -971,7 +971,7 @@ SD_PositionSound(int leftvol,int rightvol)
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean
-SD_PlaySound(soundnames sound)
+SD_PlaySound(int sound)
 {
     boolean         ispos;
     SoundCommon     *s;
@@ -985,7 +985,7 @@ SD_PlaySound(soundnames sound)
     ispos = nextsoundpos;
     nextsoundpos = false;
 
-    if (sound == (soundnames)-1 || (DigiMode == sds_Off && SoundMode == sdm_Off))
+    if (sound == -1 || (DigiMode == sds_Off && SoundMode == sdm_Off))
         return 0;
 
     s = (SoundCommon *) SoundTable[sound];

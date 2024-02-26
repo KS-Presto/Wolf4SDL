@@ -247,7 +247,7 @@ typedef uint8_t tiletype;
 
 // object flag values
 
-typedef enum
+enum objflags
 {
     FL_SHOOTABLE        = 0x00000001,
     FL_BONUS            = 0x00000002,
@@ -279,7 +279,7 @@ typedef enum
     FL_DIR_MASK         = 0x00000e00,
 #endif
     // next free bit is   0x00001000
-} objflag_t;
+};
 
 
 //
@@ -617,30 +617,34 @@ enum
 =============================================================================
 */
 
-typedef enum {
+enum controldirs
+{
     di_north,
     di_east,
     di_south,
-    di_west
-} controldir_t;
+    di_west,
+};
 
-typedef enum {
+enum doortypes
+{
     dr_normal,
     dr_lock1,
     dr_lock2,
     dr_lock3,
     dr_lock4,
-    dr_elevator
-} door_t;
+    dr_elevator,
+};
 
-typedef enum {
+enum activetypes
+{
     ac_badobject = -1,
     ac_no,
     ac_yes,
-    ac_allways
-} activetype;
+    ac_allways,
+};
 
-typedef enum {
+enum classtypes
+{
     nothing,
     playerobj,
     inertobj,
@@ -670,10 +674,11 @@ typedef enum {
     willobj,
     deathobj,
     hrocketobj,
-    sparkobj
-} classtype;
+    sparkobj,
+};
 
-typedef enum {
+enum wl_stat_types
+{
     none,
     block,
     bo_gibs,
@@ -694,10 +699,11 @@ typedef enum {
     bo_food,
     bo_fullheal,
     bo_25clip,
-    bo_spear
-} wl_stat_t;
+    bo_spear,
+};
 
-typedef enum {
+enum objdirtypes
+{
     east,
     northeast,
     north,
@@ -706,11 +712,12 @@ typedef enum {
     southwest,
     south,
     southeast,
-    nodir
-} dirtype;
+    nodir,
+};
 
 
-typedef enum {
+enum enemytypes
+{
     en_guard,
     en_officer,
     en_ss,
@@ -735,7 +742,7 @@ typedef enum {
     en_death,
 
     NUMENEMIES
-} enemy_t;
+};
 
 typedef void (* statefunc) (void *);
 
@@ -771,17 +778,17 @@ typedef struct statstruct
 //
 //---------------------
 
-typedef enum
+enum dooractiontypes
 {
-    dr_open,dr_closed,dr_opening,dr_closing
-} doortype;
+    dr_open,dr_closed,dr_opening,dr_closing,
+};
 
 typedef struct doorstruct
 {
     byte     tilex,tiley;
     boolean  vertical;
     byte     lock;
-    doortype action;
+    byte     action;
     short    ticcount;
 } doorobj_t;
 
@@ -794,15 +801,15 @@ typedef struct doorstruct
 
 typedef struct objstruct
 {
-    activetype  active;
+    int8_t      active;
     short       ticcount;
-    classtype   obclass;
+    byte        obclass;
     statetype   *state;
 
     uint32_t    flags;              // FL_SHOOTABLE, etc
 
     int32_t     distance;           // if negative, wait for that door to open
-    dirtype     dir;
+    byte        dir;
 
     fixed       x,y;
     word        tilex,tiley;
@@ -820,7 +827,7 @@ typedef struct objstruct
     struct objstruct *next,*prev;
 } objtype;
 
-enum
+enum buttontypes
 {
     bt_nobutton=-1,
     bt_attack=0,
@@ -846,7 +853,7 @@ enum
 };
 
 
-typedef enum
+enum weapontypes
 {
     wp_knife,
     wp_pistol,
@@ -854,15 +861,15 @@ typedef enum
     wp_chaingun,
 
     NUMWEAPONS
-} weapontype;
+};
 
 
-enum
+enum difficultytypes
 {
     gd_baby,
     gd_easy,
     gd_medium,
-    gd_hard
+    gd_hard,
 };
 
 //---------------
@@ -880,7 +887,7 @@ typedef struct
     short       health;
     short       ammo;
     short       keys;
-    weapontype  bestweapon,weapon,chosenweapon;
+    int16_t     bestweapon,weapon,chosenweapon;
 
     short       faceframe;
     short       attackframe,attackcount,weaponframe;
@@ -893,7 +900,7 @@ typedef struct
 } gametype;
 
 
-typedef enum
+enum playstatetypes
 {
     ex_stillplaying,
     ex_completed,
@@ -904,8 +911,8 @@ typedef enum
     ex_victorious,
     ex_abort,
     ex_demodone,
-    ex_secretlevel
-} exit_t;
+    ex_secretlevel,
+};
 
 
 /*
@@ -1001,7 +1008,7 @@ void    RecordDemo (void);
 // JAB
 #define PlaySoundLocTile(s,tx,ty) PlaySoundLocGlobal(s,(((fixed)(tx) << TILESHIFT) + (TILEGLOBAL/2)),(((fixed)ty << TILESHIFT) + (TILEGLOBAL/2)))
 #define PlaySoundLocActor(s,ob)   PlaySoundLocGlobal(s,(ob)->x,(ob)->y)
-void    PlaySoundLocGlobal (word s, fixed gx, fixed gy);
+void    PlaySoundLocGlobal (int s, fixed gx, fixed gy);
 void    UpdateSoundLoc (void);
 
 
@@ -1024,7 +1031,7 @@ void    UpdateSoundLoc (void);
 extern  int32_t     funnyticount;           // FOR FUNNY BJ FACE
 #endif
 
-extern  exit_t      playstate;
+extern  int8_t      playstate;
 
 extern  int         DebugOk;
 
@@ -1362,8 +1369,8 @@ extern  statetype s_hitlerdeathcam2;
 extern  statetype s_giftdeathcam2;
 extern  statetype s_fatdeathcam2;
 
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir);
-void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir);
+void SpawnStand (int which, int tilex, int tiley, int dir);
+void SpawnPatrol (int which, int tilex, int tiley, int dir);
 
 void SpawnDeadGuard (int tilex, int tiley);
 void SpawnBoss (int tilex, int tiley);

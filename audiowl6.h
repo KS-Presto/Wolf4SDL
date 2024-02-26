@@ -11,7 +11,8 @@
 //
 // Sound names & indexes
 //
-typedef enum {
+enum soundnames
+{
 	HITWALLSND,              // 0
 	SELECTWPNSND,            // 1
 	SELECTITEMSND,           // 2
@@ -102,7 +103,7 @@ typedef enum {
 	MISSILEHITSND,           // 86
 #endif
 	LASTSOUND
-} soundnames;
+};
 
 //
 // Base offsets
@@ -115,7 +116,8 @@ typedef enum {
 //
 // Music names & indexes
 //
-typedef enum {
+enum musicnames
+{
 	CORNER_MUS,              // 0
 	DUNGEON_MUS,             // 1
 	WARMARCH_MUS,            // 2
@@ -144,7 +146,7 @@ typedef enum {
 	VICMARCH_MUS,            // 25
 	PACMAN_MUS,              // 26
 	LASTMUSIC
-} musicnames;
+};
 
 #define NUMSOUNDS		    LASTSOUND
 #define NUMSNDCHUNKS		(STARTMUSIC + LASTMUSIC)

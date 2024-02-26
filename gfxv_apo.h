@@ -8,7 +8,8 @@
 #ifndef __GFXV_APO_H_
 #define __GFXV_APO_H_
 
-typedef enum {
+enum graphicnums
+{
     // Lump Start
     H_BJPIC=3,
     H_CASTLEPIC,                 // 4
@@ -192,7 +193,7 @@ typedef enum {
 #endif
 
     ENUMEND
-} graphicnums;
+};
 
 //
 // Data LUMPs

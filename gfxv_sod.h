@@ -8,7 +8,8 @@
 #ifndef __GFXV_SOD_H_
 #define __GFXV_SOD_H_
 
-typedef enum {
+enum graphicnums
+{
     // Lump Start
     C_BACKDROPPIC=3,
     C_MOUSELBACKPIC,                     // 4
@@ -203,7 +204,7 @@ typedef enum {
     T_ENDART1,                           // 168
 #endif
     ENUMEND
-} graphicnums;
+};
 
 //
 // Data LUMPs

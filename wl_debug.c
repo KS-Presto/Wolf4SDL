@@ -228,7 +228,7 @@ void ShapeTest (void)
     longword   l;
     byte       v;
     byte       *addr;
-    soundnames sound;
+    int        sound;
 
     CenterWindow (20,16);
     VW_UpdateScreen();
@@ -239,7 +239,7 @@ void ShapeTest (void)
     while (!done)
     {
         US_ClearWindow ();
-        sound = (soundnames)-1;
+        sound = -1;
 
         US_Print (" Page #");
         US_PrintSigned (i);
@@ -351,7 +351,7 @@ void ShapeTest (void)
 
                 if (j < NumDigi)
                 {
-                    sound = (soundnames)j;
+                    sound = j;
 
                     US_Print ("\n Sound #");
                     US_PrintSigned (j);

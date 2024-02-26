@@ -3534,7 +3534,7 @@ Confirm (const char *string)
     IN_ClearKeysDown ();
     WaitKeyUp ();
 
-    SD_PlaySound ((soundnames) whichsnd[xit]);
+    SD_PlaySound (whichsnd[xit]);
 
     return xit;
 }

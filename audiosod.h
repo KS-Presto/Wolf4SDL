@@ -14,7 +14,8 @@
 //
 // Sound names & indexes
 //
-typedef enum {
+enum soundnames
+{
 	HITWALLSND,              // 0
 	MISSILEHITSND,           // 1
 	SELECTITEMSND,           // 2
@@ -97,7 +98,7 @@ typedef enum {
 	GETSPEARSND,             // 79
 	ANGELTIREDSND,           // 80
 	LASTSOUND
-} soundnames;
+};
 
 //
 // Base offsets
@@ -110,7 +111,8 @@ typedef enum {
 //
 // Music names & indexes
 //
-typedef enum {
+enum musicnames
+{
 	XFUNKIE_MUS,             // 0
 	DUNGEON_MUS,             // 1
 	XDEATH_MUS,              // 2
@@ -136,7 +138,7 @@ typedef enum {
 	XGETYOU_MUS,             // 22
 	XTOWER2_MUS,             // 23
 	LASTMUSIC
-} musicnames;
+};
 
 /////////////////////////////////////////////////
 //

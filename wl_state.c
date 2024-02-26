@@ -20,10 +20,10 @@
 */
 
 
-static const dirtype opposite[9] =
+static const byte opposite[9] =
     {west,southwest,south,southeast,east,northeast,north,northwest,nodir};
 
-static const dirtype diagonal[9][9] =
+static const byte diagonal[9][9] =
 {
     /* east */  {nodir,nodir,northeast,nodir,nodir,nodir,southeast,nodir,nodir},
                 {nodir,nodir,nodir,nodir,nodir,nodir,nodir,nodir,nodir},
@@ -375,8 +375,8 @@ void SelectDodgeDir (objtype *ob)
 {
     int         deltax,deltay,i;
     unsigned    absdx,absdy;
-    dirtype     dirtry[5];
-    dirtype     turnaround,tdir;
+    byte        dirtry[5];
+    byte        turnaround,tdir;
 
     if (ob->flags & FL_FIRSTATTACK)
     {
@@ -490,8 +490,8 @@ void SelectDodgeDir (objtype *ob)
 void SelectChaseDir (objtype *ob)
 {
     int     deltax,deltay;
-    dirtype d[3];
-    dirtype tdir, olddir, turnaround;
+    byte d[3];
+    byte tdir, olddir, turnaround;
 
 
     olddir=ob->dir;
@@ -550,7 +550,7 @@ void SelectChaseDir (objtype *ob)
 
     if (US_RndT()>128)      /*randomly determine direction of search*/
     {
-        for (tdir=north; tdir<=west; tdir=(dirtype)(tdir+1))
+        for (tdir=north; tdir<=west; tdir++)
         {
             if (tdir!=turnaround)
             {
@@ -562,7 +562,7 @@ void SelectChaseDir (objtype *ob)
     }
     else
     {
-        for (tdir=west; tdir>=north; tdir=(dirtype)(tdir-1))
+        for (tdir=west; tdir>=north; tdir--)
         {
             if (tdir!=turnaround)
             {
@@ -600,8 +600,8 @@ void SelectChaseDir (objtype *ob)
 void SelectRunDir (objtype *ob)
 {
     int deltax,deltay;
-    dirtype d[3];
-    dirtype tdir;
+    byte d[3];
+    byte tdir;
 
 
     deltax=player->tilex - ob->tilex;
@@ -635,7 +635,7 @@ void SelectRunDir (objtype *ob)
 
     if (US_RndT()>128)      /*randomly determine direction of search*/
     {
-        for (tdir=north; tdir<=west; tdir=(dirtype)(tdir+1))
+        for (tdir=north; tdir<=west; tdir++)
         {
             ob->dir=tdir;
             if ( TryWalk(ob) )
@@ -644,7 +644,7 @@ void SelectRunDir (objtype *ob)
     }
     else
     {
-        for (tdir=west; tdir>=north; tdir=(dirtype)(tdir-1))
+        for (tdir=west; tdir>=north; tdir--)
         {
             ob->dir=tdir;
             if ( TryWalk(ob) )
@@ -793,7 +793,7 @@ moveok:
 ===============
 */
 
-void DropItem (wl_stat_t itemtype, int tilex, int tiley)
+void DropItem (int itemtype, int tilex, int tiley)
 {
     int     x,y,xl,xh,yl,yh;
 

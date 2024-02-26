@@ -139,7 +139,7 @@ void CheckWeaponChange (void)
 
     if(newWeapon != -1)
     {
-        gamestate.weapon = gamestate.chosenweapon = (weapontype) newWeapon;
+        gamestate.weapon = gamestate.chosenweapon = newWeapon;
         DrawWeapon();
     }
 }
@@ -613,7 +613,7 @@ void GiveWeapon (int weapon)
 
     if (gamestate.bestweapon<weapon)
         gamestate.bestweapon = gamestate.weapon
-        = gamestate.chosenweapon = (weapontype) weapon;
+        = gamestate.chosenweapon = weapon;
 
     DrawWeapon ();
 }

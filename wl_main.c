@@ -119,9 +119,9 @@ boolean param_ignorenumchunks = false;
 
 void ReadConfig(void)
 {
-    SDMode  sd;
-    SMMode  sm;
-    SDSMode sds;
+    byte  sd;
+    byte  sm;
+    byte sds;
 
     char configpath[300];
 

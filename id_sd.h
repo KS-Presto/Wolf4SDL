@@ -12,21 +12,21 @@
 
 #define TickBase        70      // 70Hz per tick - used as a base for timer 0
 
-typedef enum
+enum SDMode
 {
     sdm_Off,
     sdm_PC,sdm_AdLib,
-} SDMode;
+};
 
-typedef enum
+enum SMMode
 {
     smm_Off,smm_AdLib
-} SMMode;
+};
 
-typedef enum
+enum SDSMode
 {
     sds_Off,sds_PC,sds_SoundBlaster
-} SDSMode;
+};
 
 typedef struct
 {
@@ -119,9 +119,9 @@ extern globalsoundpos channelSoundPos[];
 extern  boolean         AdLibPresent,
                         SoundBlasterPresent,
                         SoundPositioned;
-extern  SDMode          SoundMode;
-extern  SDSMode         DigiMode;
-extern  SMMode          MusicMode;
+extern  byte            SoundMode;
+extern  byte            DigiMode;
+extern  byte            MusicMode;
 extern  word            NumDigi;
 extern  digiinfo        *DigiList;
 extern  int             DigiMap[];
@@ -137,7 +137,7 @@ extern  void    SD_Startup(void),
 
 extern  int     SD_GetChannelForDigi(int which);
 extern  void    SD_PositionSound(int leftvol,int rightvol);
-extern  boolean SD_PlaySound(soundnames sound);
+extern  boolean SD_PlaySound (int sound);
 extern  void    SD_SetPosition(int channel, int leftvol,int rightvol);
 extern  void    SD_StopSound(void),
                 SD_WaitSoundDone(void);
@@ -149,11 +149,11 @@ extern  void    SD_MusicOn(void),
 extern  int     SD_MusicOff(void);
 
 extern  boolean SD_MusicPlaying(void);
-extern  boolean SD_SetSoundMode(SDMode mode);
-extern  boolean SD_SetMusicMode(SMMode mode);
+extern  boolean SD_SetSoundMode(byte mode);
+extern  boolean SD_SetMusicMode(byte mode);
 extern  word    SD_SoundPlaying(void);
 
-extern  void    SD_SetDigiDevice(SDSMode);
+extern  void    SD_SetDigiDevice(byte);
 extern  void	SD_PrepareSound(int which);
 extern  int     SD_PlayDigitized(word which,int leftpos,int rightpos);
 extern  void    SD_StopDigitized(void);

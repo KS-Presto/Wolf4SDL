@@ -103,7 +103,7 @@ int    audiohandle = -1;            // handle to AUDIOT / AUDIO
 
 int32_t   chunkcomplen,chunkexplen;
 
-SDMode oldsoundmode;
+byte   oldsoundmode;
 
 
 static int32_t GRFILEPOS(const size_t idx)

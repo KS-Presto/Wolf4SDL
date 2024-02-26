@@ -162,12 +162,12 @@ SetSoundLoc(fixed gx,fixed gy)
 =
 ==========================
 */
-void PlaySoundLocGlobal(word s,fixed gx,fixed gy)
+void PlaySoundLocGlobal(int s,fixed gx,fixed gy)
 {
     SetSoundLoc(gx, gy);
     SD_PositionSound(leftchannel, rightchannel);
 
-    int channel = SD_PlaySound((soundnames) s);
+    int channel = SD_PlaySound(s);
     if(channel)
     {
         channelSoundPos[channel - 1].globalsoundx = gx;
@@ -1205,7 +1205,7 @@ void Died (void)
         VW_FadeIn ();
     }
 
-    gamestate.weapon = (weapontype) -1;                     // take away weapon
+    gamestate.weapon = -1;                     // take away weapon
     SD_PlaySound (PLAYERDEATHSND);
 
     //

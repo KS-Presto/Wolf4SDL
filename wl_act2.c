@@ -34,10 +34,6 @@
 =============================================================================
 */
 
-
-dirtype dirtable[9] = {northwest,north,northeast,west,nodir,east,
-    southwest,south,southeast};
-
 short starthitpoints[4][NUMENEMIES] =
 //
 // BABY MODE
@@ -843,7 +839,7 @@ statetype s_gretelshoot8        = {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_grete
 ===============
 */
 
-void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
+void SpawnStand (int which, int tilex, int tiley, int dir)
 {
     word *map;
     word tile;
@@ -901,9 +897,9 @@ void SpawnStand (enemy_t which, int tilex, int tiley, int dir)
         newobj->flags |= FL_AMBUSH;
     }
 
-    newobj->obclass = (classtype)(guardobj + which);
+    newobj->obclass = guardobj + which;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][which];
-    newobj->dir = (dirtype)(dir * 2);
+    newobj->dir = dir * 2;
     newobj->flags |= FL_SHOOTABLE;
 }
 
@@ -981,7 +977,7 @@ void SpawnGretel (int tilex, int tiley)
 ===============
 */
 
-void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
+void SpawnPatrol (int which, int tilex, int tiley, int dir)
 {
     switch (which)
     {
@@ -1021,8 +1017,8 @@ void SpawnPatrol (enemy_t which, int tilex, int tiley, int dir)
             break;
     }
 
-    newobj->obclass = (classtype)(guardobj+which);
-    newobj->dir = (dirtype)(dir*2);
+    newobj->obclass = guardobj+which;
+    newobj->dir = dir*2;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][which];
     newobj->distance = TILEGLOBAL;
     newobj->flags |= FL_SHOOTABLE;
@@ -3364,7 +3360,7 @@ void SelectPathDir (objtype *ob)
     if (spot<8)
     {
         // new direction
-        ob->dir = (dirtype)(spot);
+        ob->dir = spot;
     }
 
     ob->distance = TILEGLOBAL;
