@@ -469,7 +469,7 @@ void HitVertWall (void)
         }
         else
             wallpic = vertwall[tilehit];
-    
+
         postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
         postsourcesky = postsource - texture;
@@ -535,7 +535,7 @@ void HitHorizWall (void)
         }
         else
             wallpic = horizwall[tilehit];
-    
+
         postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
         postsourcesky = postsource - texture;
@@ -662,7 +662,7 @@ void HitVertDoor (void)
                 doorpage = DOORWALL + 5;
                 break;
         }
-    
+
         postsource = PM_GetPage(doorpage) + texture;
     }
 
@@ -1667,7 +1667,7 @@ void ThreeDRefresh (void)
 
     DrawPlayerWeapon ();    // draw player's hands
 
-    if(Keyboard(sc_Tab) && viewsize == 21 && gamestate.weapon != -1)
+    if(Keyboard[sc_Tab] && viewsize == 21 && gamestate.weapon != -1)
         ShowActStatus();
 
     VL_UnlockSurface(screenBuffer);

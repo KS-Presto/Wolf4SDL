@@ -267,7 +267,7 @@ void ShapeTest (void)
                 // draw the wall
                 //
                 vbuf = VL_LockSurface(screenBuffer);
-               
+
                 if (!vbuf)
                     Quit ("ShapeTest: Unable to create surface for walls!");
 
@@ -445,7 +445,7 @@ int DebugKeys (void)
     boolean esc;
     int level;
 
-    if (Keyboard(sc_B))             // B = border color
+    if (Keyboard[sc_B])             // B = border color
     {
         CenterWindow(20,3);
         PrintY+=6;
@@ -474,12 +474,12 @@ int DebugKeys (void)
         }
         return 1;
     }
-    if (Keyboard(sc_C))             // C = count objects
+    if (Keyboard[sc_C])             // C = count objects
     {
         CountObjects();
         return 1;
     }
-    if (Keyboard(sc_D))             // D = Darkone's FPS counter
+    if (Keyboard[sc_D])             // D = Darkone's FPS counter
     {
         CenterWindow (22,2);
         if (fpscounter)
@@ -491,10 +491,10 @@ int DebugKeys (void)
         fpscounter ^= 1;
         return 1;
     }
-    if (Keyboard(sc_E))             // E = quit level
+    if (Keyboard[sc_E])             // E = quit level
         playstate = ex_completed;
 
-    if (Keyboard(sc_F))             // F = facing spot
+    if (Keyboard[sc_F])             // F = facing spot
     {
         char str[60];
         CenterWindow (14,6);
@@ -519,7 +519,7 @@ int DebugKeys (void)
         return 1;
     }
 
-    if (Keyboard(sc_G))             // G = god mode
+    if (Keyboard[sc_G])             // G = god mode
     {
         CenterWindow (12,2);
         if (godmode == 0)
@@ -537,12 +537,12 @@ int DebugKeys (void)
             godmode = 0;
         return 1;
     }
-    if (Keyboard(sc_H))             // H = hurt self
+    if (Keyboard[sc_H])             // H = hurt self
     {
         IN_ClearKeysDown ();
         TakeDamage (16,NULL);
     }
-    else if (Keyboard(sc_I))        // I = item cheat
+    else if (Keyboard[sc_I])        // I = item cheat
     {
         CenterWindow (12,3);
         US_PrintCentered ("Free items!");
@@ -558,7 +558,7 @@ int DebugKeys (void)
         IN_Ack ();
         return 1;
     }
-    else if (Keyboard(sc_K))        // K = give keys
+    else if (Keyboard[sc_K])        // K = give keys
     {
         CenterWindow(16,3);
         PrintY+=6;
@@ -573,7 +573,7 @@ int DebugKeys (void)
         }
         return 1;
     }
-    else if (Keyboard(sc_L))        // L = level ratios
+    else if (Keyboard[sc_L])        // L = level ratios
     {
         byte x,start,end=LRpack;
 
@@ -617,7 +617,7 @@ again:
         return 1;
     }
 #ifdef REVEALMAP
-    else if (Keyboard(sc_M))        // M = Map reveal
+    else if (Keyboard[sc_M])        // M = Map reveal
     {
         mapreveal ^= true;
         CenterWindow (18,3);
@@ -630,7 +630,7 @@ again:
         return 1;
     }
 #endif
-    else if (Keyboard(sc_N))        // N = no clip
+    else if (Keyboard[sc_N])        // N = no clip
     {
         noclip^=1;
         CenterWindow (18,3);
@@ -643,20 +643,20 @@ again:
         return 1;
     }
 #ifndef VIEWMAP
-    else if (Keyboard(sc_O))        // O = basic overhead
+    else if (Keyboard[sc_O])        // O = basic overhead
     {
         BasicOverhead();
         return 1;
     }
 #endif
-    else if(Keyboard(sc_P))         // P = Ripper's picture grabber
+    else if(Keyboard[sc_P])         // P = Ripper's picture grabber
     {
         PictureGrabber();
         return 1;
     }
-    else if (Keyboard(sc_Q))        // Q = fast quit
+    else if (Keyboard[sc_Q])        // Q = fast quit
         Quit (NULL);
-    else if (Keyboard(sc_S))        // S = slow motion
+    else if (Keyboard[sc_S])        // S = slow motion
     {
         CenterWindow(30,3);
         PrintY+=6;
@@ -671,12 +671,12 @@ again:
         }
         return 1;
     }
-    else if (Keyboard(sc_T))        // T = shape test
+    else if (Keyboard[sc_T])        // T = shape test
     {
         ShapeTest ();
         return 1;
     }
-    else if (Keyboard(sc_V))        // V = extra VBLs
+    else if (Keyboard[sc_V])        // V = extra VBLs
     {
         CenterWindow(30,3);
         PrintY+=6;
@@ -691,7 +691,7 @@ again:
         }
         return 1;
     }
-    else if (Keyboard(sc_W))        // W = warp to level
+    else if (Keyboard[sc_W])        // W = warp to level
     {
         CenterWindow(26,3);
         PrintY+=6;
@@ -717,7 +717,7 @@ again:
         }
         return 1;
     }
-    else if (Keyboard(sc_X))        // X = item cheat
+    else if (Keyboard[sc_X])        // X = item cheat
     {
         CenterWindow (12,3);
         US_PrintCentered ("Extra stuff!");
@@ -727,7 +727,7 @@ again:
         return 1;
     }
 #ifdef USE_CLOUDSKY
-    else if(Keyboard(sc_Z) && curSky)
+    else if(Keyboard[sc_Z] && curSky)
     {
         char defstr[15];
 
@@ -867,7 +867,7 @@ void DrawMapDoor (int16_t sx, int16_t sy, int16_t doornum)
             doorpage = DOORWALL + 4;
             break;
     }
-    
+
     DrawMapWall (sx,sy,doorpage);
 }
 
@@ -934,7 +934,7 @@ void DrawMapBorder (void)
     while (height--)
     {
         memset (vbuf,BLACK,screenWidth);
-    
+
         vbuf -= bufferPitch;
     }
 }
@@ -988,7 +988,7 @@ void OverheadRefresh (void)
                 //
                 if (tile < BIT_DOOR && tile != BIT_WALL)
                 {
-                    if (DebugOk && Keyboard(sc_P) && MAPSPOT(x,y,1) == PUSHABLETILE)
+                    if (DebugOk && Keyboard[sc_P] && MAPSPOT(x,y,1) == PUSHABLETILE)
                         DrawMapFloor (sx,sy,COL_SECRET);
                     else
                         DrawMapWall (sx,sy,horizwall[tile]);
@@ -1128,7 +1128,7 @@ void ViewMap (void)
 
         OverheadRefresh ();
 
-    } while (!Keyboard(sc_Escape));
+    } while (!Keyboard[sc_Escape]);
 
     IN_ClearKeysDown ();
 

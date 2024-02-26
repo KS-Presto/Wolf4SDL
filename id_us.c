@@ -490,7 +490,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				cursorvis,cursormoved,
 				done,result, checkkey;
 	ScanCode	sc;
-	char		c;
+	char		c,*text;
 	char		s[MaxString],olds[MaxString];
 	int         cursor,len;
 	word		i,
@@ -513,6 +513,8 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 	lastbuttontime = lasttime + TickBase / 4;	// 250 ms => first button press accepted after 500 ms
 	LastASCII = key_None;
 	LastScan = sc_None;
+
+	IN_ClearTextInput ();
 
 	while (!done)
 	{
@@ -685,7 +687,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					cursormoved = true;
 					break;
 
-				case SDLK_KP_5: //0x4c:	// Keypad 5 // TODO: hmmm...
+				case sc_KeyPad5:
 				case sc_UpArrow:
 				case sc_DownArrow:
 				case sc_PgUp:
@@ -695,20 +697,22 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					break;
 			}
 
-			if (c)
+			for (text = textinput; *text; text++)
 			{
 				len = (int) strlen(s);
 				USL_MeasureString(s,&w,&h);
 
-				if(isprint(c) && (len < MaxString - 1) && ((!maxchars) || (len < maxchars))
+				if(isprint(*text) && (len < MaxString - 1) && ((!maxchars) || (len < maxchars))
 					&& ((!maxwidth) || (w < maxwidth)))
 				{
 					for (i = len + 1;i > cursor;i--)
 						s[i] = s[i - 1];
-					s[cursor++] = c;
+					s[cursor++] = *text;
 					redraw = true;
 				}
 			}
+
+			IN_ClearTextInput ();
 		}
 
 		if (redraw)

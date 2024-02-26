@@ -1237,7 +1237,7 @@ static void InitGame()
 	IN_ProcessEvents();
 
 #ifndef SPEARDEMO
-    if (Keyboard(sc_M))
+    if (Keyboard[sc_M])
     {
         DoJukebox();
         didjukebox=true;
@@ -1578,7 +1578,7 @@ static void DemoLoop()
         VW_FadeOut ();
 
 #ifdef DEBUGKEYS
-        if (Keyboard(sc_Tab) && param_debugmode)
+        if (Keyboard[sc_Tab] && param_debugmode)
             RecordDemo ();
         else
             US_ControlPanel (0);

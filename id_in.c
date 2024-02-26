@@ -30,20 +30,19 @@
 */
 
 
-#define UNKNOWN_KEY KEYCOUNT
-
 //
 // configuration variables
 //
 boolean MousePresent;
 boolean forcegrabmouse;
 
-volatile boolean KeyboardState[129];
 
 // 	Global variables
-volatile boolean	Paused;
-volatile char		LastASCII;
-volatile ScanCode	LastScan;
+bool        Keyboard[sc_Last];
+char        textinput[TEXTINPUTSIZE];
+boolean	    Paused;
+char		LastASCII;
+ScanCode	LastScan;
 
 //KeyboardDef	KbdDefs = {0x1d,0x38,0x47,0x48,0x49,0x4b,0x4d,0x4f,0x50,0x51};
 static KeyboardDef KbdDefs = {
@@ -118,158 +117,6 @@ static	Direction	DirTable[] =		// Quick lookup for total direction
     dir_West,		dir_None,	dir_East,
     dir_SouthWest,	dir_South,	dir_SouthEast
 };
-
-boolean Keyboard(int key)
-{
-    int keyIndex = KeyboardLookup(key);
-    return keyIndex != UNKNOWN_KEY ? KeyboardState[keyIndex] : false;
-}
-
-void KeyboardSet(int key, boolean state)
-{
-    int keyIndex = KeyboardLookup(key);
-    if(keyIndex != UNKNOWN_KEY)
-    {
-        KeyboardState[keyIndex] = state;
-    }
-}
-
-int KeyboardLookup(int key)
-{
-    switch(key)
-    {
-        case SDLK_UNKNOWN		:  return 0;
-	    case SDLK_BACKSPACE		: return 1;
-	    case SDLK_TAB		: return 2;
-	    case SDLK_CLEAR		: return 3;
-	    case SDLK_RETURN		: return 4;
-	    case SDLK_PAUSE		: return 5;
-	    case SDLK_ESCAPE		: return 6;
-	    case SDLK_SPACE		: return 7;
-	    case SDLK_EXCLAIM		: return 8;
-	    case SDLK_QUOTEDBL		: return 9;
-	    case SDLK_HASH		: return 10;
-	    case SDLK_DOLLAR		: return 11;
-	    case SDLK_AMPERSAND		: return 12;
-	    case SDLK_QUOTE		: return 13;
-	    case SDLK_LEFTPAREN		: return 14;
-	    case SDLK_RIGHTPAREN		: return 15;
-	    case SDLK_ASTERISK		: return 16;
-	    case SDLK_PLUS		: return 17;
-	    case SDLK_COMMA		: return 18;
-	    case SDLK_MINUS		: return 19;
-	    case SDLK_PERIOD		: return 20;
-	    case SDLK_SLASH		: return 21;
-	    case SDLK_0			: return 22;
-	    case SDLK_1			: return 23;
-	    case SDLK_2			: return 24;
-	    case SDLK_3			: return 25;
-	    case SDLK_4			: return 26;
-	    case SDLK_5			: return 27;
-	    case SDLK_6			: return 28;
-	    case SDLK_7			: return 29;
-	    case SDLK_8			: return 30;
-	    case SDLK_9			: return 31;
-	    case SDLK_COLON		: return 32;
-	    case SDLK_SEMICOLON		: return 33;
-	    case SDLK_LESS		: return 34;
-	    case SDLK_EQUALS		: return 35;
-	    case SDLK_GREATER		: return 36;
-	    case SDLK_QUESTION		: return 37;
-	    case SDLK_AT			: return 38;
-	    case SDLK_LEFTBRACKET	: return 39;
-	    case SDLK_BACKSLASH		: return 40;
-	    case SDLK_RIGHTBRACKET	: return 41;
-	    case SDLK_CARET		: return 42;
-	    case SDLK_UNDERSCORE		: return 43;
-	    case SDLK_BACKQUOTE		: return 44;
-	    case SDLK_a			: return 45;
-	    case SDLK_b			: return 46;
-	    case SDLK_c			: return 47;
-	    case SDLK_d			: return 48;
-	    case SDLK_e			: return 49;
-	    case SDLK_f			: return 50;
-	    case SDLK_g			: return 51;
-	    case SDLK_h			: return 52;
-	    case SDLK_i			: return 53;
-	    case SDLK_j			: return 54;
-	    case SDLK_k			: return 55;
-	    case SDLK_l			: return 56;
-	    case SDLK_m			: return 57;
-	    case SDLK_n			: return 58;
-	    case SDLK_o			: return 59;
-	    case SDLK_p			: return 60;
-	    case SDLK_q			: return 61;
-	    case SDLK_r			: return 62;
-	    case SDLK_s			: return 63;
-	    case SDLK_t			: return 64;
-	    case SDLK_u			: return 65;
-	    case SDLK_v			: return 66;
-	    case SDLK_w			: return 67;
-	    case SDLK_x			: return 68;
-	    case SDLK_y			: return 69;
-	    case SDLK_z			: return 70;
-	    case SDLK_DELETE		: return 71;
-        case SDLK_KP_PERIOD		: return 72;
-	    case SDLK_KP_DIVIDE		: return 73;
-	    case SDLK_KP_MULTIPLY	: return 74;
-	    case SDLK_KP_MINUS		: return 75;
-	    case SDLK_KP_PLUS		: return 76;
-	    case SDLK_KP_ENTER		: return 77;
-	    case SDLK_KP_EQUALS		: return 78;
-	    case SDLK_UP			: return 79;
-	    case SDLK_DOWN		: return 80;
-	    case SDLK_RIGHT		: return 81;
-	    case SDLK_LEFT		: return 82;
-	    case SDLK_INSERT		: return 83;
-	    case SDLK_HOME		: return 84;
-	    case SDLK_END		: return 85;
-	    case SDLK_PAGEUP		: return 86;
-	    case SDLK_PAGEDOWN		: return 87;
-	    case SDLK_F1			: return 88;
-	    case SDLK_F2			: return 89;
-	    case SDLK_F3			: return 90;
-	    case SDLK_F4			: return 91;
-	    case SDLK_F5			: return 92;
-	    case SDLK_F6			: return 93;
-	    case SDLK_F7			: return 94;
-	    case SDLK_F8			: return 95;
-	    case SDLK_F9			: return 96;
-	    case SDLK_F10		: return 97;
-	    case SDLK_F11		: return 98;
-	    case SDLK_F12		: return 99;
-	    case SDLK_F13		: return 100;
-	    case SDLK_F14		: return 101;
-	    case SDLK_F15		: return 102;
-	    case SDLK_CAPSLOCK		: return 103;
-	    case SDLK_RSHIFT		: return 104;
-	    case SDLK_LSHIFT		: return 105;
-	    case SDLK_RCTRL		: return 106;
-	    case SDLK_LCTRL		: return 107;
-	    case SDLK_RALT		: return 108;
-	    case SDLK_LALT		: return 109;
-	    case SDLK_MODE		: return 110;		
-	    case SDLK_HELP		: return 111;
-	    case SDLK_SYSREQ		: return 112;
-	    case SDLK_MENU		: return 113;
-	    case SDLK_POWER		: return 114;
-	    case SDLK_UNDO		: return 115;
-        case SDLK_KP_0		: return 116;
-	    case SDLK_KP_1		: return 117;
-	    case SDLK_KP_2		: return 118;
-	    case SDLK_KP_3		: return 119;
-	    case SDLK_KP_4		: return 120;
-	    case SDLK_KP_5		: return 121;
-	    case SDLK_KP_6		: return 122;
-	    case SDLK_KP_7		: return 123;
-	    case SDLK_KP_8		: return 124;
-	    case SDLK_KP_9		: return 125;
-        case SDLK_PRINTSCREEN		: return 126;
-        case SDLK_NUMLOCKCLEAR		: return 127;
-        case SDLK_SCROLLLOCK		: return 128;
-        default : return UNKNOWN_KEY;
-    }
-}
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -395,6 +242,10 @@ boolean IN_JoyPresent()
 
 static void processEvent(SDL_Event *event)
 {
+    int key;
+
+    key = event->key.keysym.scancode;
+
     switch (event->type)
     {
         // exit if the window is closed
@@ -404,7 +255,7 @@ static void processEvent(SDL_Event *event)
         // check for keypresses
         case SDL_KEYDOWN:
         {
-            if(event->key.keysym.sym==SDLK_SCROLLLOCK || event->key.keysym.sym==SDLK_F12)
+            if (key == sc_ScrollLock || key == sc_F12)
             {
                 GrabInput = !GrabInput;
 #if SDL_MAJOR_VERSION == 1
@@ -415,77 +266,64 @@ static void processEvent(SDL_Event *event)
                 return;
             }
 
-            LastScan = event->key.keysym.sym;
+            LastScan = key;
             SDL_Keymod mod = SDL_GetModState();
-            if(Keyboard(sc_Alt))
+            if(Keyboard[sc_Alt])
             {
-                if(LastScan==SDLK_F4)
+                if(LastScan==sc_F4)
                     Quit(NULL);
             }
 
-            if(LastScan == SDLK_KP_ENTER) LastScan = SDLK_RETURN;
-            else if(LastScan == SDLK_RSHIFT) LastScan = SDLK_LSHIFT;
-            else if(LastScan == SDLK_RALT) LastScan = SDLK_LALT;
-            else if(LastScan == SDLK_RCTRL) LastScan = SDLK_LCTRL;
+            if(LastScan == sc_KeyPadEnter) LastScan = sc_Enter;
+            else if(LastScan == sc_RShift) LastScan = sc_LShift;
+            else if(LastScan == sc_RAlt) LastScan = sc_LAlt;
+            else if(LastScan == sc_RControl) LastScan = sc_LControl;
             else
             {
                 if((mod & KMOD_NUM) == 0)
                 {
                     switch(LastScan)
                     {
-                        case SDLK_KP_2: LastScan = SDLK_DOWN; break;
-                        case SDLK_KP_4: LastScan = SDLK_LEFT; break;
-                        case SDLK_KP_6: LastScan = SDLK_RIGHT; break;
-                        case SDLK_KP_8: LastScan = SDLK_UP; break;
+                        case sc_KeyPad2: LastScan = sc_DownArrow; break;
+                        case sc_KeyPad4: LastScan = sc_LeftArrow; break;
+                        case sc_KeyPad6: LastScan = sc_RightArrow; break;
+                        case sc_KeyPad8: LastScan = sc_UpArrow; break;
                     }
                 }
             }
 
-            int sym = LastScan;
-            if(sym >= 'a' && sym <= 'z')
-                sym -= 32;  // convert to uppercase
+            if (LastScan < sc_Last)
+                Keyboard[LastScan] = true;
 
-            if(mod & (KMOD_SHIFT | KMOD_CAPS))
-            {
-                if(sym < lengthof(ShiftNames) && ShiftNames[sym])
-                    LastASCII = ShiftNames[sym];
-            }
-            else
-            {
-                if(sym < lengthof(ASCIINames) && ASCIINames[sym])
-                    LastASCII = ASCIINames[sym];
-            }
-
-            int intLastScan = LastScan;
-            KeyboardSet(intLastScan, 1);
-
-            if(LastScan == SDLK_PAUSE)
+            if(LastScan == sc_Pause)
                 Paused = true;
             break;
 		}
 
         case SDL_KEYUP:
         {
-            int key = event->key.keysym.sym;
-            if(key == SDLK_KP_ENTER) key = SDLK_RETURN;
-            else if(key == SDLK_RSHIFT) key = SDLK_LSHIFT;
-            else if(key == SDLK_RALT) key = SDLK_LALT;
-            else if(key == SDLK_RCTRL) key = SDLK_LCTRL;
+            if(key == sc_KeyPadEnter) key = sc_Enter;
+            else if(key == sc_RShift) key = sc_LShift;
+            else if(key == sc_RAlt) key = sc_LAlt;
+            else if(key == sc_RControl) key = sc_LControl;
             else
             {
                 if((SDL_GetModState() & KMOD_NUM) == 0)
                 {
                     switch(key)
                     {
-                        case SDLK_KP_2: key = SDLK_DOWN; break;
-                        case SDLK_KP_4: key = SDLK_LEFT; break;
-                        case SDLK_KP_6: key = SDLK_RIGHT; break;
-                        case SDLK_KP_8: key = SDLK_UP; break;
+                        case sc_KeyPad2: key = sc_DownArrow; break;
+                        case sc_KeyPad4: key = sc_LeftArrow; break;
+                        case sc_KeyPad6: key = sc_RightArrow; break;
+                        case sc_KeyPad8: key = sc_UpArrow; break;
                     }
                 }
             }
 
-            KeyboardSet(key, 0);
+            if (key < sc_Last)
+                Keyboard[key] = false;
+
+            break;
         }
 
 #if defined(GP2X)
@@ -497,6 +335,9 @@ static void processEvent(SDL_Event *event)
             GP2X_ButtonUp(event->jbutton.button);
             break;
 #endif
+        case SDL_TEXTINPUT:
+            snprintf (textinput,sizeof(textinput),"%s",event->text.text);
+            break;
     }
 }
 
@@ -599,7 +440,13 @@ IN_ClearKeysDown(void)
 {
 	LastScan = sc_None;
 	LastASCII = key_None;
-	memset ((void *) KeyboardState,0,sizeof(KeyboardState));
+	memset (Keyboard,0,sizeof(Keyboard));
+}
+
+
+void IN_ClearTextInput (void)
+{
+    memset (textinput,0,sizeof(textinput));
 }
 
 
@@ -622,28 +469,28 @@ IN_ReadControl(int player,ControlInfo *info)
 
 	IN_ProcessEvents();
 
-    if (Keyboard(KbdDefs.upleft))
+    if (Keyboard[KbdDefs.upleft])
         mx = motion_Left,my = motion_Up;
-    else if (Keyboard(KbdDefs.upright))
+    else if (Keyboard[KbdDefs.upright])
         mx = motion_Right,my = motion_Up;
-    else if (Keyboard(KbdDefs.downleft))
+    else if (Keyboard[KbdDefs.downleft])
         mx = motion_Left,my = motion_Down;
-    else if (Keyboard(KbdDefs.downright))
+    else if (Keyboard[KbdDefs.downright])
         mx = motion_Right,my = motion_Down;
 
-    if (Keyboard(KbdDefs.up))
+    if (Keyboard[KbdDefs.up])
         my = motion_Up;
-    else if (Keyboard(KbdDefs.down))
+    else if (Keyboard[KbdDefs.down])
         my = motion_Down;
 
-    if (Keyboard(KbdDefs.left))
+    if (Keyboard[KbdDefs.left])
         mx = motion_Left;
-    else if (Keyboard(KbdDefs.right))
+    else if (Keyboard[KbdDefs.right])
         mx = motion_Right;
 
-    if (Keyboard(KbdDefs.button0))
+    if (Keyboard[KbdDefs.button0])
         buttons += 1 << 0;
-    if (Keyboard(KbdDefs.button1))
+    if (Keyboard[KbdDefs.button1])
         buttons += 1 << 1;
 
 	dx = mx * 127;
