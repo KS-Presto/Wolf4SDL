@@ -22,7 +22,6 @@
 
 #include "wl_def.h"
 
-#pragma	hdrstop
 
 #if _MSC_VER == 1200            // Visual C++ 6
 	#define vsnprintf _vsnprintf
@@ -177,7 +176,7 @@ void
 US_PrintUnsigned(longword n)
 {
 	char	buffer[32];
-	sprintf(buffer, "%lu", n);
+	sprintf(buffer, "%u", n);
 
 	US_Print(buffer);
 }
@@ -529,7 +528,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 		curtime = GetTimeCount();
 
 		// After each direction change accept the next change after 250 ms and then everz 125 ms
-		if(ci.dir != lastdir || curtime - lastdirtime > TickBase / 4 && curtime - lastdirmovetime > TickBase / 8)
+		if(ci.dir != lastdir || (curtime - lastdirtime > TickBase / 4 && curtime - lastdirmovetime > TickBase / 8))
 		{
 			if(ci.dir != lastdir)
 			{
@@ -557,7 +556,8 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					if(!s[cursor])
 					{
 						USL_MeasureString(s,&w,&h);
-						if(len >= maxchars || maxwidth && w >= maxwidth) break;
+						if (len >= maxchars || (maxwidth && w >= maxwidth))
+                            break;
 
 						s[cursor] = ' ';
 						s[cursor + 1] = 0;
@@ -571,7 +571,8 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					if(!s[cursor])
 					{
 						USL_MeasureString(s,&w,&h);
-						if(len >= maxchars || maxwidth && w >= maxwidth) break;
+						if (len >= maxchars || (maxwidth && w >= maxwidth))
+                            break;
 						s[cursor + 1] = 0;
 					}
 					s[cursor] = USL_RotateChar(s[cursor], 1);
@@ -583,7 +584,8 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					if(!s[cursor])
 					{
 						USL_MeasureString(s,&w,&h);
-						if(len >= maxchars || maxwidth && w >= maxwidth) break;
+						if (len >= maxchars || (maxwidth && w >= maxwidth))
+                            break;
 						s[cursor + 1] = 0;
 					}
 					s[cursor] = USL_RotateChar(s[cursor], -1);

@@ -7,7 +7,6 @@
 #endif
 
 #include "wl_def.h"
-#pragma hdrstop
 #include "wl_atmos.h"
 #include <SDL_syswm.h>
 
@@ -66,8 +65,6 @@ int      shootdelta;           // pixels away from centerx a target can be
 fixed    scale;
 int32_t  heightnumerator;
 
-
-void    Quit (const char *error,...);
 
 boolean startgame;
 boolean loadedgame;
@@ -1294,7 +1291,7 @@ boolean SetViewSize (unsigned width, unsigned height)
     centerx = viewwidth/2-1;
     centery = viewheight / 2;
     shootdelta = viewwidth/10;
-    if((unsigned) viewheight == screenHeight)
+    if (viewheight == screenHeight)
         viewscreenx = viewscreeny = screenofs = 0;
     else
     {
@@ -1570,7 +1567,7 @@ void CheckParameters(int argc, char *argv[])
     };
 
     bool   sampleRateGiven = false, audioBufferGiven = false;
-    int    i,defaultSampleRate = param_samplerate;
+    int    i;
     size_t len;
     char   error[256],*helpstr;
 
@@ -1617,8 +1614,8 @@ void CheckParameters(int argc, char *argv[])
             {
                 screenWidth = atoi(argv[++i]);
                 screenHeight = atoi(argv[++i]);
-                unsigned factor = screenWidth / 320;
-                if (screenWidth % 320 || screenHeight != 200 * factor && screenHeight != 240 * factor)
+                int factor = screenWidth / 320;
+                if ((screenWidth % 320) || (screenHeight != 200 * factor && screenHeight != 240 * factor))
                     snprintf (error,sizeof(error),"Screen size must be a multiple of 320x200 or 320x240!");
             }
         }

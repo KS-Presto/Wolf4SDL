@@ -1,8 +1,6 @@
 // WL_DRAW.C
 
 #include "wl_def.h"
-#pragma hdrstop
-
 #include "wl_cloudsky.h"
 #include "wl_atmos.h"
 #include "wl_shade.h"
@@ -59,8 +57,6 @@ void    BuildTables (void);
 void    ClearScreen (void);
 int     CalcRotate (objtype *ob);
 void    DrawScaleds (void);
-void    CalcTics (void);
-void    ThreeDRefresh (void);
 
 #ifdef USE_SKYWALLPARALLAX
 void    ScaleSkyPost();
@@ -259,7 +255,7 @@ boolean TransformTile (int tx, int ty, short *dispx, short *dispheight)
 int16_t CalcHeight (void)
 {
     int16_t height;
-    fixed   gx,gy,gxt,gyt,nx,ny;
+    fixed   gx,gy,gxt,gyt,nx;
 
 //
 // translate point to view centered coordinates
@@ -787,8 +783,6 @@ void DrawScaleds (void)
 {
     int      i,least,numvisable,height;
     byte     *visspot;
-    tiletype *tilespot;
-    unsigned spotloc;
 
     statobj_t *statptr;
     objtype   *obj;
@@ -839,21 +833,20 @@ void DrawScaleds (void)
         if ((visptr->shapenum = obj->state->shapenum)==0)
             continue;                                               // no shape
 
-        visspot = &spotvis[obj->tilex][obj->tiley];
-        tilespot = &tilemap[obj->tilex][obj->tiley];
+        visspot = (byte *)&spotvis[obj->tilex][obj->tiley];
 
         //
         // could be in any of the nine surrounding tiles
         //
         if (*visspot
-            || ( *(visspot-1) && !*(tilespot-1) )
-            || ( *(visspot+1) && !*(tilespot+1) )
-            || ( *(visspot-(MAPSIZE+1)) && !*(tilespot-(MAPSIZE+1)) )
-            || ( *(visspot-(MAPSIZE)) && !*(tilespot-(MAPSIZE)) )
-            || ( *(visspot-(MAPSIZE-1)) && !*(tilespot-(MAPSIZE-1)) )
-            || ( *(visspot+(MAPSIZE+1)) && !*(tilespot+(MAPSIZE+1)) )
-            || ( *(visspot+(MAPSIZE)) && !*(tilespot+(MAPSIZE)) )
-            || ( *(visspot+(MAPSIZE-1)) && !*(tilespot+(MAPSIZE-1)) ) )
+            || ( *(visspot-1) )
+            || ( *(visspot+1) )
+            || ( *(visspot-(MAPSIZE+1)) )
+            || ( *(visspot-(MAPSIZE)) )
+            || ( *(visspot-(MAPSIZE-1)) )
+            || ( *(visspot+(MAPSIZE+1)) )
+            || ( *(visspot+(MAPSIZE)) )
+            || ( *(visspot+(MAPSIZE-1)) ) )
         {
             obj->active = ac_yes;
             TransformActor (obj);
@@ -1090,7 +1083,7 @@ void WallRefresh (void)
         //
         if (tilemap[focaltx][focalty] == BIT_WALL)
         {
-            if (pwalldir == di_east && xtilestep == 1 || pwalldir == di_west && xtilestep == -1)
+            if ((pwalldir == di_east && xtilestep == 1) || (pwalldir == di_west && xtilestep == -1))
             {
                 yinttemp = yintercept - ((ystep * (64 - pwallpos)) >> 6);
 
@@ -1111,7 +1104,7 @@ void WallRefresh (void)
                     continue;
                 }
             }
-            else if (pwalldir == di_south && ytilestep == 1 || pwalldir == di_north && ytilestep == -1)
+            else if ((pwalldir == di_south && ytilestep == 1) || (pwalldir == di_north && ytilestep == -1))
             {
                 xinttemp = xintercept - ((xstep * (64 - pwallpos)) >> 6);
 
@@ -1225,8 +1218,8 @@ vertentry:
                             pwallposinv = 64 - pwallpos;
                         }
 
-                        if (pwalldir == di_east && xtile == pwallx && yinttile == pwally
-                         || pwalldir == di_west && !(xtile == pwallx && yinttile == pwally))
+                        if ((pwalldir == di_east && xtile == pwallx && yinttile == pwally)
+                         || (pwalldir == di_west && !(xtile == pwallx && yinttile == pwally)))
                         {
                             yinttemp = yintercept + ((ystep * pwallposnorm) >> 6);
 
@@ -1262,13 +1255,13 @@ vertentry:
                         else
                             pwallposi = pwallpos;
 
-                        if (pwalldir == di_south && (word)yintercept < (pwallposi << 10)
-                         || pwalldir == di_north && (word)yintercept > (pwallposi << 10))
+                        if ((pwalldir == di_south && (word)yintercept < (pwallposi << 10))
+                         || (pwalldir == di_north && (word)yintercept > (pwallposi << 10)))
                         {
                             if (xtile == pwallx && yinttile == pwally)
                             {
-                                if (pwalldir == di_south && (int32_t)((word)yintercept) + ystep < (pwallposi << 10)
-                                 || pwalldir == di_north && (int32_t)((word)yintercept) + ystep > (pwallposi << 10))
+                                if ((pwalldir == di_south && (int32_t)((word)yintercept) + ystep < (pwallposi << 10))
+                                 || (pwalldir == di_north && (int32_t)((word)yintercept) + ystep > (pwallposi << 10)))
                                     goto passvert;
 
                                 //
@@ -1306,8 +1299,8 @@ vertentry:
                             }
                             else
                             {
-                                if (pwalldir == di_south && (int32_t)((word)yintercept) + ystep > (pwallposi << 10)
-                                 || pwalldir == di_north && (int32_t)((word)yintercept) + ystep < (pwallposi << 10))
+                                if ((pwalldir == di_south && (int32_t)((word)yintercept) + ystep > (pwallposi << 10))
+                                 || (pwalldir == di_north && (int32_t)((word)yintercept) + ystep < (pwallposi << 10)))
                                     goto passvert;
 
                                 //
@@ -1436,8 +1429,8 @@ horizentry:
                             pwallposinv = 64 - pwallpos;
                         }
 
-                        if (pwalldir == di_south && xinttile == pwallx && ytile == pwally
-                         || pwalldir == di_north && !(xinttile == pwallx && ytile == pwally))
+                        if ((pwalldir == di_south && xinttile == pwallx && ytile == pwally)
+                         || (pwalldir == di_north && !(xinttile == pwallx && ytile == pwally)))
                         {
                             xinttemp = xintercept + ((xstep * pwallposnorm) >> 6);
 
@@ -1473,13 +1466,13 @@ horizentry:
                         else
                             pwallposi = pwallpos;
 
-                        if (pwalldir == di_east && (word)xintercept < (pwallposi << 10)
-                         || pwalldir == di_west && (word)xintercept > (pwallposi << 10))
+                        if ((pwalldir == di_east && (word)xintercept < (pwallposi << 10))
+                         || (pwalldir == di_west && (word)xintercept > (pwallposi << 10)))
                         {
                             if (xinttile == pwallx && ytile == pwally)
                             {
-                                if (pwalldir == di_east && (int32_t)((word)xintercept) + xstep < (pwallposi << 10)
-                                 || pwalldir == di_west && (int32_t)((word)xintercept) + xstep > (pwallposi << 10))
+                                if ((pwalldir == di_east && (int32_t)((word)xintercept) + xstep < (pwallposi << 10))
+                                 || (pwalldir == di_west && (int32_t)((word)xintercept) + xstep > (pwallposi << 10)))
                                     goto passhoriz;
 
                                 //
@@ -1518,8 +1511,8 @@ horizentry:
                             }
                             else
                             {
-                                if (pwalldir == di_east && (int32_t)((word)xintercept) + xstep > (pwallposi << 10)
-                                 || pwalldir == di_west && (int32_t)((word)xintercept) + xstep < (pwallposi << 10))
+                                if ((pwalldir == di_east && (int32_t)((word)xintercept) + xstep > (pwallposi << 10))
+                                 || (pwalldir == di_west && (int32_t)((word)xintercept) + xstep < (pwallposi << 10)))
                                     goto passhoriz;
 
                                 //

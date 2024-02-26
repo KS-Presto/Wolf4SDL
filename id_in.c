@@ -287,6 +287,7 @@ static void IN_HandleEvent (SDL_Event *event)
     {
         case SDL_QUIT:
             Quit (NULL);
+            break;
 
         case SDL_KEYDOWN:
             if (key == sc_ScrollLock || key == sc_F12)

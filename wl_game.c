@@ -1,14 +1,7 @@
 // WL_GAME.C
 
-#include <math.h>
 #include "wl_def.h"
-#include <SDL_mixer.h>
-#pragma hdrstop
-
-#ifdef MYPROFILE
-#include <TIME.H>
-#endif
-
+#include <SDL_Mixer.h>
 
 /*
 =============================================================================
@@ -46,9 +39,6 @@ int ffDataTopLeft, ffDataTopRight, ffDataBottomLeft, ffDataBottomRight;
 //
 int ElevatorBackTo[]={1,1,7,3,5,3};
 
-void SetupGameLevel (void);
-void DrawPlayScreen (void);
-void GameLoop (void);
 
 /*
 =============================================================================
@@ -907,7 +897,7 @@ void DrawPlayBorder (void)
             statusborderw+px*8, px*STATUSLINES, bordercol);
     }
 
-    if((unsigned) viewheight == screenHeight) return;
+    if(viewheight == screenHeight) return;
 
     VWB_BarScaledCoord (0,0,screenWidth,screenHeight-px*STATUSLINES,bordercol);
 
@@ -964,7 +954,7 @@ void ShowActStatus()
     int height = pictable[picnum].height;
     int destx = (screenWidth-scaleFactor*320)/2 + 9 * scaleFactor;
     int desty = screenHeight - (height - 4) * scaleFactor;
-    VL_MemToScreenScaledCoord2(source, width, height, 9, 4, destx, desty, width - 18, height - 7);
+    VL_MemToScreenScaledCoord2(source, width, 9, 4, destx, desty, width - 18, height - 7);
 
     ingame = false;
     DrawFace ();

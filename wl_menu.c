@@ -15,9 +15,6 @@
 #endif
 
 #include "wl_def.h"
-#pragma hdrstop
-
-extern int lastgamemusicoffset;
 
 //
 // PRIVATE PROTOTYPES
@@ -610,11 +607,9 @@ CP_ReadThis (int blank)
 // BOSS KEY
 //
 ////////////////////////////////////////////////////////////////////
-void
-BossKey (void)
+void BossKey (void)
 {
     int i,lastBlinkTime;
-    ControlInfo ci;
 
     SD_MusicOff ();
 
@@ -790,7 +785,7 @@ CP_CheckQuick (ScanCode scancode)
 #ifdef SPANISH
             if (Confirm (ENDGAMESTR))
 #else
-            if (Confirm (endStrings[US_RndT () & 0x7 + (US_RndT () & 1)]))
+            if (Confirm (endStrings[(US_RndT() & 0x7) + (US_RndT () & 1)]))
 #endif
 #endif
             {
@@ -3623,7 +3618,7 @@ Message (const char *string)
             h += font->height;
         }
         else
-            w += font->width[string[i]];
+            w += font->width[(byte)string[i]];
     }
 
     if (w + 10 > mw)

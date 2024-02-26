@@ -14,22 +14,22 @@
 #define assert_ret(x) assert(x)
 #endif
 
-boolean fullscreen = true;
+boolean  fullscreen = true;
 #if defined(_arch_dreamcast)
-unsigned screenWidth = 320;
-unsigned screenHeight = 200;
+int16_t  screenWidth = 320;
+int16_t  screenHeight = 200;
 int      screenBits = 8;
 #elif defined(GP2X)
-unsigned screenWidth = 320;
-unsigned screenHeight = 240;
+int16_t  screenWidth = 320;
+int16_t  screenHeight = 240;
 #if defined(GP2X_940)
 int      screenBits = 8;
 #else
 int      screenBits = 16;
 #endif
 #else
-unsigned screenWidth = 640;
-unsigned screenHeight = 400;
+int16_t  screenWidth = 640;
+int16_t  screenHeight = 400;
 int      screenBits = -1;      // use "best" color depth according to libSDL
 #endif
 
@@ -424,8 +424,8 @@ void VL_Plot (int x, int y, int color)
 {
     byte *dest;
 
-    assert(x >= 0 && (unsigned) x < screenWidth
-            && y >= 0 && (unsigned) y < screenHeight
+    assert(x >= 0 && x < screenWidth
+            && y >= 0 && y < screenHeight
             && "VL_Plot: Pixel out of bounds!");
 
     dest = VL_LockSurface(screenBuffer);
@@ -448,8 +448,8 @@ byte VL_GetPixel (int x, int y)
 {
     byte col;
 
-    assert_ret(x >= 0 && (unsigned) x < screenWidth
-            && y >= 0 && (unsigned) y < screenHeight
+    assert_ret(x >= 0 && x < screenWidth
+            && y >= 0 && y < screenHeight
             && "VL_GetPixel: Pixel out of bounds!");
 
     if (!VL_LockSurface(screenBuffer))
@@ -471,7 +471,7 @@ byte VL_GetPixel (int x, int y)
 =================
 */
 
-void VL_Hlin (unsigned x, unsigned y, unsigned width, int color)
+void VL_Hlin (int x, int y, int width, int color)
 {
     byte *dest;
 
@@ -500,8 +500,8 @@ void VL_Vlin (int x, int y, int height, int color)
 {
 	byte *dest;
 
-	assert(x >= 0 && (unsigned) x < screenWidth
-			&& y >= 0 && (unsigned) y + height <= screenHeight
+	assert(x >= 0 && x < screenWidth
+			&& y >= 0 && y + height <= screenHeight
 			&& "VL_Vlin: Destination rectangle out of bounds!");
 
 	dest = VL_LockSurface(screenBuffer);
@@ -536,8 +536,8 @@ void VL_BarScaledCoord (int scx, int scy, int scwidth, int scheight, int color)
 {
 	byte *dest;
 
-	assert(scx >= 0 && (unsigned) scx + scwidth <= screenWidth
-			&& scy >= 0 && (unsigned) scy + scheight <= screenHeight
+	assert(scx >= 0 && scx + scwidth <= screenWidth
+			&& scy >= 0 && scy + scheight <= screenHeight
 			&& "VL_BarScaledCoord: Destination rectangle out of bounds!");
 
 	dest = VL_LockSurface(screenBuffer);
@@ -632,7 +632,7 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, 
 {
     byte *dest;
     int i, j, sci, scj;
-    unsigned m, n;
+    int m, n;
 
     assert(destx >= 0 && destx + width * scaleFactor <= screenWidth
             && desty >= 0 && desty + height * scaleFactor <= screenHeight
@@ -671,12 +671,12 @@ void VL_MemToScreenScaledCoord (byte *source, int width, int height, int destx, 
 =================
 */
 
-void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int origheight, int srcx, int srcy,
+void VL_MemToScreenScaledCoord2 (byte *source, int origwidth, int srcx, int srcy,
                                 int destx, int desty, int width, int height)
 {
     byte *dest;
     int i, j, sci, scj;
-    unsigned m, n;
+    int m, n;
 
     assert(destx >= 0 && destx + width * scaleFactor <= screenWidth
             && desty >= 0 && desty + height * scaleFactor <= screenHeight

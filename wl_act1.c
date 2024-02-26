@@ -1,7 +1,6 @@
 // WL_ACT1.C
 
 #include "wl_def.h"
-#pragma hdrstop
 
 /*
 =============================================================================
@@ -19,7 +18,7 @@ statobj_t       *laststatobj;
 typedef struct
 {
     short      picnum;
-    wl_stat_t  type;
+    int16_t    type;
     uint32_t   specialFlags;    // they are ORed to the statobj_t flags
 } statinfo_t;
 
@@ -151,7 +150,7 @@ void SpawnStatic (int tilex, int tiley, int type)
     laststatobj->shapenum = statinfo[type].picnum;
     laststatobj->tilex = tilex;
     laststatobj->tiley = tiley;
-    laststatobj->visspot = &spotvis[tilex][tiley];
+    laststatobj->visspot = (byte *)&spotvis[tilex][tiley];
     laststatobj->itemnumber = statinfo[type].type;
 
     switch (statinfo[type].type)
@@ -176,6 +175,7 @@ void SpawnStatic (int tilex, int tiley, int type)
         case    bo_key3:
         case    bo_key4:
         case    bo_clip:
+        case    bo_clip2:
         case    bo_25clip:
         case    bo_machinegun:
         case    bo_chaingun:
@@ -246,7 +246,7 @@ void PlaceItemType (int itemtype, int tilex, int tiley)
     spot->shapenum = statinfo[type].picnum;
     spot->tilex = tilex;
     spot->tiley = tiley;
-    spot->visspot = &spotvis[tilex][tiley];
+    spot->visspot = (byte *)&spotvis[tilex][tiley];
     spot->flags = FL_BONUS | statinfo[type].specialFlags;
     spot->itemnumber = statinfo[type].type;
 }
@@ -846,7 +846,7 @@ void MovePWalls (void)
             pwally += dy;
 
             if (actorat[pwallx+dx][pwally+dy]
-                || xl<=pwallx+dx && pwallx+dx<=xh && yl<=pwally+dy && pwally+dy<=yh)
+                || (xl<=pwallx+dx && pwallx+dx<=xh && yl<=pwally+dy && pwally+dy<=yh))
             {
                 pwallstate = 0;
                 tilemap[pwallx][pwally] = oldtile;

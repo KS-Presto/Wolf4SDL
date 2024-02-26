@@ -1,9 +1,6 @@
 // WL_ACT2.C
 
-#include <stdio.h>
-#include <math.h>
 #include "wl_def.h"
-#pragma hdrstop
 
 /*
 =============================================================================
@@ -171,8 +168,6 @@ void    T_DogChase (objtype *ob);
 void    T_Chase (objtype *ob);
 void    T_Projectile (objtype *ob);
 void    T_Stand (objtype *ob);
-
-void A_DeathScream (objtype *ob);
 
 extern  statetype s_rocket;
 extern  statetype s_smoke1;

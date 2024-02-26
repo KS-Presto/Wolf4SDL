@@ -5,8 +5,6 @@
 
 // wolf compatability
 
-void Quit (const char *error,...);
-
 //===========================================================================
 
 #define CHARWIDTH		2
@@ -20,7 +18,8 @@ extern SDL_Renderer *renderer;
 extern SDL_Texture *texture;
 
 extern  boolean  fullscreen;
-extern  unsigned screenWidth, screenHeight, screenPitch, bufferPitch;
+extern  int16_t  screenWidth, screenHeight;
+extern  unsigned screenPitch, bufferPitch;
 extern  int      screenBits;
 extern  int      scaleFactor;
 
@@ -58,7 +57,7 @@ void VL_UnlockSurface(SDL_Surface *surface);
 
 byte VL_GetPixel        (int x, int y);
 void VL_Plot            (int x, int y, int color);
-void VL_Hlin            (unsigned x, unsigned y, unsigned width, int color);
+void VL_Hlin            (int x, int y, int width, int color);
 void VL_Vlin            (int x, int y, int height, int color);
 void VL_BarScaledCoord  (int scx, int scy, int scwidth, int scheight, int color);
 void VL_Bar             (int x, int y, int width, int height, int color);
@@ -66,7 +65,7 @@ void VL_Bar             (int x, int y, int width, int height, int color);
 void VL_DrawPicBare             (int x, int y, byte *pic, int width, int height);
 void VL_ScreenToScreen          (SDL_Surface *source, SDL_Surface *dest);
 void VL_MemToScreenScaledCoord  (byte *source, int width, int height, int scx, int scy);
-void VL_MemToScreenScaledCoord2  (byte *source, int origwidth, int origheight, int srcx, int srcy,
+void VL_MemToScreenScaledCoord2  (byte *source, int origwidth, int srcx, int srcy,
                                     int destx, int desty, int width, int height);
 
 void VL_MemToScreen (byte *source, int width, int height, int x, int y);

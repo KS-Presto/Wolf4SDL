@@ -1,7 +1,6 @@
 // WL_STATE.C
 
 #include "wl_def.h"
-#pragma hdrstop
 
 /*
 =============================================================================
@@ -38,19 +37,7 @@ static const dirtype diagonal[9][9] =
 };
 
 
-
-void    SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
-void    NewState (objtype *ob, statetype *state);
-
-boolean TryWalk (objtype *ob);
-void    MoveObj (objtype *ob, int32_t move);
-
-void    KillActor (objtype *ob);
-void    DamageActor (objtype *ob, unsigned damage);
-
-boolean CheckLine (objtype *ob);
 void    FirstSighting (objtype *ob);
-boolean CheckSight (objtype *ob);
 
 /*
 =============================================================================

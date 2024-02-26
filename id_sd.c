@@ -235,7 +235,6 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
     Sint16 *leftptr;
     Sint16 *rightptr;
     Sint16 this_value;
-    int oldfreq;
     int i;
     int nsamples;
 
@@ -252,9 +251,8 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
     {
         // Has this sound expired? If so, retrieve the next frequency
 
-        while (current_remaining == 0) 
+        while (current_remaining == 0)
         {
-            oldfreq = current_freq;
             phase_offset = 0;
 
             // Get the next frequency to play
@@ -267,7 +265,7 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
                 if(*pcSound!=pcLastSample)
                 {
                     pcLastSample=*pcSound;
-					
+
                     if(pcLastSample)
                         // The PC PIC counts down at 1.193180MHz
                         // So pwm_freq = counter_freq / reload_value
@@ -275,7 +273,7 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
                         current_freq = 1193180 / (pcLastSample * 60);
                     else
                         current_freq = 0;
-						
+
                 }
                 pcSound++;
                 pcLengthLeft--;
@@ -287,7 +285,7 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
                 }
             }
             else
-            {	
+            {
                 current_freq = 0;
                 current_remaining = 1;
             }
@@ -301,17 +299,17 @@ static void SDL_PCMixCallback(void *udata, Uint8 *stream, int len)
 
             this_value = 0;
         }
-        else 
+        else
         {
             int frac;
 
             // Determine whether we are at a peak or trough in the current
-            // sound.  Multiply by 2 so that frac % 2 will give 0 or 1 
+            // sound.  Multiply by 2 so that frac % 2 will give 0 or 1
             // depending on whether we are at a peak or trough.
 
             frac = (phase_offset * current_freq * 2) / param_samplerate;
 
-            if ((frac % 2) == 0) 
+            if ((frac % 2) == 0)
             {
                 this_value = SQUARE_WAVE_AMP;
             }
@@ -353,6 +351,9 @@ SD_StopDigitized(void)
         case sds_SoundBlaster:
             Mix_HaltChannel(-1);
             break;
+
+        default:
+            break;
     }
 }
 
@@ -379,6 +380,9 @@ void SD_SetPosition(int channel, int leftpos, int rightpos)
 //            SDL_PositionSBP(leftpos,rightpos);
             Mix_SetPanning(channel, ((15 - leftpos) << 4) + 15,
                 ((15 - rightpos) << 4) + 15);
+            break;
+
+        default:
             break;
     }
 }
@@ -497,6 +501,9 @@ SD_SetDigiDevice(SDSMode mode)
         case sds_SoundBlaster:
             if (!SoundBlasterPresent)
                 devicenotpresent = true;
+            break;
+
+        default:
             break;
     }
 
@@ -639,20 +646,6 @@ SDL_ShutAL(void)
     SDL_AlSetFXInst(&alZeroInst);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-//      SDL_CleanAL() - Totally shuts down the AdLib card
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-SDL_CleanAL(void)
-{
-    int     i;
-
-    alOut(alEffects,0);
-    for (i = 1; i < 0xf5; i++)
-        alOut(i, 0);
-}
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -666,25 +659,6 @@ SDL_StartAL(void)
     SDL_AlSetFXInst(&alZeroInst);
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-//      SDL_DetectAdLib() - Determines if there's an AdLib (or SoundBlaster
-//              emulating an AdLib) present
-//
-///////////////////////////////////////////////////////////////////////////
-static boolean
-SDL_DetectAdLib(void)
-{
-    int i;
-
-    for (i = 1; i <= 0xf5; i++)       // Zero all the registers
-        alOut(i, 0);
-
-    alOut(1, 0x20);             // Set WSE=1
-//    alOut(8, 0);                // Set CSM=0 & SEL=0
-
-    return true;
-}
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -702,21 +676,13 @@ SDL_ShutDevice(void)
         case sdm_AdLib:
             SDL_ShutAL();
             break;
+
+        default:
+            break;
     }
     SoundMode = sdm_Off;
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-//      SDL_CleanDevice() - totally shuts down all sound devices
-//
-///////////////////////////////////////////////////////////////////////////
-static void
-SDL_CleanDevice(void)
-{
-    if ((SoundMode == sdm_AdLib) || (MusicMode == smm_AdLib))
-        SDL_CleanAL();
-}
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -730,6 +696,9 @@ SDL_StartDevice(void)
     {
         case sdm_AdLib:
             SDL_StartAL();
+            break;
+
+        default:
             break;
     }
     SoundNumber = (soundnames) 0;
@@ -942,7 +911,7 @@ SD_Startup(void)
     SoundBlasterPresent = true;
 
     alTimeCount = 0;
-	
+
     // Add PC speaker sound mixer
     Mix_SetPostMix(SDL_PCMixCallback, NULL);
 
@@ -1016,7 +985,7 @@ SD_PlaySound(soundnames sound)
     ispos = nextsoundpos;
     nextsoundpos = false;
 
-    if (sound == -1 || (DigiMode == sds_Off && SoundMode == sdm_Off))
+    if (sound == (soundnames)-1 || (DigiMode == sds_Off && SoundMode == sdm_Off))
         return 0;
 
     s = (SoundCommon *) SoundTable[sound];
@@ -1075,6 +1044,9 @@ SD_PlaySound(soundnames sound)
 #endif
             SDL_ALPlaySound((AdLibSound *)s);
             break;
+
+        default:
+            break;
     }
 
     SoundNumber = sound;
@@ -1102,6 +1074,9 @@ SD_SoundPlaying(void)
         case sdm_AdLib:
             result = alSound? true : false;
             break;
+
+        default:
+            break;
     }
 
     if (result)
@@ -1128,6 +1103,9 @@ SD_StopSound(void)
             break;
         case sdm_AdLib:
             SDL_ALStopSound();
+            break;
+
+        default:
             break;
     }
 
@@ -1177,6 +1155,9 @@ SD_MusicOff(void)
             alOut(alEffects, 0);
             for (i = 0;i < sqMaxTracks;i++)
                 alOut(alFreqH + i + 1, 0);
+            break;
+
+        default:
             break;
     }
 
@@ -1265,6 +1246,9 @@ SD_FadeOutMusic(void)
         case smm_AdLib:
             // DEBUG - quick hack to turn the music off
             SD_MusicOff();
+            break;
+
+        default:
             break;
     }
 }

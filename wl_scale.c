@@ -105,7 +105,7 @@ void ScaleShape (int xcenter, int shapenum, int height, uint32_t flags)
     int         i;
     compshape_t *shape;
     byte        *linesrc,*linecmds;
-    byte        *curshades;
+    byte        *curshades = NULL;
     int16_t     scale,toppix;
     int16_t     x1,x2,actx;
     fixed       frac,fracstep;
@@ -396,7 +396,7 @@ void Transform3DShape (statobj_t *statptr)
     }
     else
     {
-        
+
         //
         // translate point to view centered coordinates
         //

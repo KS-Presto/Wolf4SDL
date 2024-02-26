@@ -25,7 +25,6 @@ loaded into the data segment
 #endif
 
 #include "wl_def.h"
-#pragma hdrstop
 
 #define THREEBYTEGRSTARTS
 
@@ -83,11 +82,11 @@ static const char gheadname[] = "vgahead.";
 static const char gfilename[] = "vgagraph.";
 static const char gdictname[] = "vgadict.";
 static const char mheadname[] = "maphead.";
+#ifndef CARMACIZED
 static const char mfilename[] = "maptemp.";
+#endif
 static const char aheadname[] = "audiohed.";
 static const char afilename[] = "audiot.";
-
-void CA_CannotOpen(const char *string);
 
 static int32_t  grstarts[NUMCHUNKS + 1];
 static int32_t* audiostarts; // array of offsets in audio / audiot

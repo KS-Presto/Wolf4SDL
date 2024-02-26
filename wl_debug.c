@@ -7,7 +7,6 @@
 #endif
 
 #include "wl_def.h"
-#pragma hdrstop
 
 #ifdef USE_CLOUDSKY
 #include "wl_cloudsky.h"

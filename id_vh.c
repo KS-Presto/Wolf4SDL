@@ -16,7 +16,7 @@ void VWB_DrawPropString(const char* string)
 	byte	    *source, *dest;
 	byte	    ch;
 	int i;
-	unsigned sx, sy;
+	int sx, sy;
 
 	dest = VL_LockSurface(screenBuffer);
 	if(dest == NULL) return;
@@ -215,7 +215,6 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 {
     unsigned x, y, p, frame, pixperframe;
     int32_t  rndval;
-    int      i,first = 1;
 
     rndval = 1;
     pixperframe = width * height / frames;

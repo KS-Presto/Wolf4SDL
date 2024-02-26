@@ -1,12 +1,10 @@
 // WL_INTER.C
 
 #include "wl_def.h"
-#pragma hdrstop
 
 LRstruct LevelRatios[LRpack];
 int32_t lastBreathTime = 0;
 
-void Write (int x, int y, const char *string);
 
 //==========================================================================
 
@@ -314,7 +312,7 @@ Write (int x, int y, const char *string)
     };
 
     int i, ox, nx, ny, len = (int) strlen(string);
-    char ch;
+    byte ch;
 
     ox = nx = x * 8;
     ny = y * 8;
@@ -327,9 +325,11 @@ Write (int x, int y, const char *string)
         }
         else
         {
-            ch = string[i];
-            if (ch >= 'a')
-                ch -= ('a' - 'A');
+            ch = (byte)string[i];
+
+            if (!isupper(ch))
+                ch = toupper(ch);
+
             ch -= '0';
 
             switch (string[i])
@@ -349,7 +349,7 @@ Write (int x, int y, const char *string)
                 case ' ':
                     break;
 
-                case 0x3a:     // ':'
+                case ':':
                     VWB_DrawPic (nx, ny, L_COLONPIC);
                     nx += 8;
                     continue;

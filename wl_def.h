@@ -1441,11 +1441,7 @@ void GP2X_ButtonUp (int button);
 
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
 
-#ifdef _WIN32
-    #define strcasecmp stricmp
-    #define strncasecmp strnicmp
-    #define snprintf _snprintf
-#else
+#ifndef _WIN32
     static inline char* itoa(int value, char* string, int radix)
     {
 	    sprintf(string, "%d", value);

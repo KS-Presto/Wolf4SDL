@@ -1,8 +1,6 @@
 // WL_PLAY.C
 
 #include "wl_def.h"
-#pragma hdrstop
-
 #include "wl_cloudsky.h"
 #include "wl_shade.h"
 
@@ -90,14 +88,7 @@ int lastgamemusicoffset = 0;
 //===========================================================================
 
 
-void CenterWindow (word w, word h);
 void InitObjList (void);
-void RemoveObj (objtype * gone);
-void PollControls (void);
-int StopMusic (void);
-void StartMusic (void);
-void ContinueMusic (int offs);
-void PlayLoop (void);
 
 /*
 =============================================================================
@@ -680,8 +671,6 @@ void CheckKeys (void)
 #endif
            scan == sc_F9 || scan == sc_F7 || scan == sc_F8)     // pop up quit dialog
     {
-        short oldmapon = gamestate.mapon;
-        short oldepisode = gamestate.episode;
         ClearMemory ();
         ClearSplitVWB ();
         US_ControlPanel (scan);
