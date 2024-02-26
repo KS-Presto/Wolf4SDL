@@ -1,6 +1,8 @@
 #ifndef __WL_DEF_H_
 #define __WL_DEF_H_
 
+#define SDL_MAIN_HANDLED
+
 // Defines which version shall be built and configures supported extra features
 #include "version.h"
 

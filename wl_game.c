@@ -1110,7 +1110,6 @@ void RecordDemo (void)
     SetupGameLevel ();
     StartMusic ();
 
-    if(usedoublebuffering) VW_UpdateScreen();
     fizzlein = true;
 
     PlayLoop ();
@@ -1301,8 +1300,6 @@ void Died (void)
     // fade to red
     //
     FinishPaletteShifts ();
-
-    if(usedoublebuffering) VW_UpdateScreen();
 
     VL_BarScaledCoord (viewscreenx,viewscreeny,viewwidth,viewheight,4);
 

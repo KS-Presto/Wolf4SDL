@@ -333,7 +333,7 @@ void DiskFlopAnim(int x,int y)
     if (!x && !y)
         return;
     VWB_DrawPic(x,y,C_DISKLOADING1PIC+which);
-    if (!usedoublebuffering) VW_UpdateScreen();    // ADDEDFIX 4 - Chris
+    VW_UpdateScreen();
     which^=1;
 }
 
@@ -1368,75 +1368,30 @@ void NewViewSize (int width)
 
 void Quit (const char *errorStr, ...)
 {
-#ifdef NOTYET
-    byte *screen;
-#endif
+    int  ret;
     char error[256];
-    if(errorStr != NULL)
+
+    if (errorStr != NULL)
     {
         va_list vlist;
         va_start(vlist, errorStr);
         vsprintf(error, errorStr, vlist);
         va_end(vlist);
     }
-    else error[0] = 0;
-
-    if (!pictable)  // don't try to display the red box before it's loaded
-    {
-        ShutdownId();
-        if (error && *error)
-        {
-#ifdef NOTYET
-            SetTextCursor(0,0);
-#endif
-            puts(error);
-#ifdef NOTYET
-            SetTextCursor(0,2);
-#endif
-        }
-        exit(1);
-    }
-
-    if (!error || !*error)
-    {
-#ifdef NOTYET
-        #ifndef JAPAN
-        screen = grsegs[ORDERSCREEN];
-        #endif
-#endif
-        WriteConfig ();
-    }
-#ifdef NOTYET
     else
-        screen = grsegs[ERRORSCREEN];
-#endif
+        error[0] = '\0';
+
+    ret = *error != '\0';
+
+    if (!ret)
+        WriteConfig ();
 
     ShutdownId ();
 
-    if (error && *error)
-    {
-#ifdef NOTYET
-        memcpy((byte *)0xb8000,screen+7,7*160);
-        SetTextCursor(9,3);
-#endif
-        puts(error);
-#ifdef NOTYET
-        SetTextCursor(0,7);
-#endif
-        exit(1);
-    }
-    else
-    if (!error || !(*error))
-    {
-#ifdef NOTYET
-        #ifndef JAPAN
-        memcpy((byte *)0xb8000,screen+7,24*160); // 24 for SPEAR/UPLOAD compatibility
-        #endif
-        SetTextCursor(0,23);
-#endif
-    }
+    if (ret)
+        Error (error);
 
-    exit(0);
+    exit(ret);
 }
 
 //===========================================================================
@@ -1605,9 +1560,21 @@ static void DemoLoop()
 
 void CheckParameters(int argc, char *argv[])
 {
-    bool hasError = false, showHelp = false;
-    bool sampleRateGiven = false, audioBufferGiven = false;
-    int i,defaultSampleRate = param_samplerate;
+    const char *header =
+    {
+        "Wolf4SDL v2.0\n"
+        "Ported by Chaos-Software, additions by the community\n"
+        "Original Wolfenstein 3D by id Software\n"
+        "Usage: Wolf4SDL [options]\n"
+        "See Options.txt for help\n\n"
+    };
+
+    bool   sampleRateGiven = false, audioBufferGiven = false;
+    int    i,defaultSampleRate = param_samplerate;
+    size_t len;
+    char   error[256],*helpstr;
+
+    error[0] = '\0';
 
     for(i = 1; i < argc; i++)
     {
@@ -1630,12 +1597,10 @@ void CheckParameters(int argc, char *argv[])
             param_nowait = true;
         else IFARG("--tedlevel")
         {
-            if(++i >= argc)
-            {
-                printf("The tedlevel option is missing the level argument!\n");
-                hasError = true;
-            }
-            else param_tedlevel = atoi(argv[i]);
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The tedlevel option is missing the level argument!");
+            else
+                param_tedlevel = atoi(argv[i]);
         }
         else IFARG("--windowed")
             fullscreen = false;
@@ -1646,151 +1611,108 @@ void CheckParameters(int argc, char *argv[])
         }
         else IFARG("--res")
         {
-            if(i + 2 >= argc)
-            {
-                printf("The res option needs the width and/or the height argument!\n");
-                hasError = true;
-            }
+            if (i + 2 >= argc)
+                snprintf (error,sizeof(error),"The res option needs the width and/or the height argument!");
             else
             {
                 screenWidth = atoi(argv[++i]);
                 screenHeight = atoi(argv[++i]);
                 unsigned factor = screenWidth / 320;
-                if(screenWidth % 320 || screenHeight != 200 * factor && screenHeight != 240 * factor)
-                    printf("Screen size must be a multiple of 320x200 or 320x240!\n"), hasError = true;
+                if (screenWidth % 320 || screenHeight != 200 * factor && screenHeight != 240 * factor)
+                    snprintf (error,sizeof(error),"Screen size must be a multiple of 320x200 or 320x240!");
             }
         }
         else IFARG("--resf")
         {
-            if(i + 2 >= argc)
-            {
-                printf("The resf option needs the width and/or the height argument!\n");
-                hasError = true;
-            }
+            if (i + 2 >= argc)
+                snprintf (error,sizeof(error),"The resf option needs the width and/or the height argument!");
             else
             {
                 screenWidth = atoi(argv[++i]);
                 screenHeight = atoi(argv[++i]);
-                if(screenWidth < 320)
-                    printf("Screen width must be at least 320!\n"), hasError = true;
-                if(screenHeight < 200)
-                    printf("Screen height must be at least 200!\n"), hasError = true;
+                if (screenWidth < 320)
+                    snprintf (error,sizeof(error),"Screen width must be at least 320!");
+                if (screenHeight < 200)
+                    snprintf (error,sizeof(error),"Screen height must be at least 200!");
             }
         }
         else IFARG("--bits")
         {
-            if(++i >= argc)
-            {
-                printf("The bits option is missing the color depth argument!\n");
-                hasError = true;
-            }
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The bits option is missing the color depth argument!");
             else
             {
                 screenBits = atoi(argv[i]);
-                switch(screenBits)
-                {
-                    case 8:
-                    case 16:
-                    case 24:
-                    case 32:
-                        break;
 
-                    default:
-                        printf("Screen color depth must be 8, 16, 24, or 32!\n");
-                        hasError = true;
-                        break;
-                }
+                if (screenBits > 32 || (screenBits & 7))
+                    snprintf (error,sizeof(error),"Screen color depth must be 8, 16, 24, or 32!");
             }
         }
-        else IFARG("--nodblbuf")
-            usedoublebuffering = false;
         else IFARG("--extravbls")
         {
-            if(++i >= argc)
-            {
-                printf("The extravbls option is missing the vbls argument!\n");
-                hasError = true;
-            }
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The extravbls option is missing the vbls argument!");
             else
             {
                 extravbls = atoi(argv[i]);
                 if(extravbls < 0)
-                {
-                    printf("Extravbls must be positive!\n");
-                    hasError = true;
-                }
+                    snprintf (error,sizeof(error),"Extravbls must be positive!");
             }
         }
         else IFARG("--joystick")
         {
-            if(++i >= argc)
-            {
-                printf("The joystick option is missing the index argument!\n");
-                hasError = true;
-            }
-            else param_joystickindex = atoi(argv[i]);   // index is checked in InitGame
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The joystick option is missing the index argument!");
+            else
+                param_joystickindex = atoi(argv[i]);   // index is checked in InitGame
         }
         else IFARG("--joystickhat")
         {
-            if(++i >= argc)
-            {
-                printf("The joystickhat option is missing the index argument!\n");
-                hasError = true;
-            }
-            else param_joystickhat = atoi(argv[i]);
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The joystickhat option is missing the index argument!");
+            else
+                param_joystickhat = atoi(argv[i]);
         }
         else IFARG("--samplerate")
         {
-            if(++i >= argc)
-            {
-                printf("The samplerate option is missing the rate argument!\n");
-                hasError = true;
-            }
-            else param_samplerate = atoi(argv[i]);
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The samplerate option is missing the rate argument!");
+            else
+                param_samplerate = atoi(argv[i]);
+
             sampleRateGiven = true;
         }
         else IFARG("--audiobuffer")
         {
-            if(++i >= argc)
-            {
-                printf("The audiobuffer option is missing the size argument!\n");
-                hasError = true;
-            }
-            else param_audiobuffer = atoi(argv[i]);
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The audiobuffer option is missing the size argument!");
+            else
+                param_audiobuffer = atoi(argv[i]);
+
             audioBufferGiven = true;
         }
         else IFARG("--mission")
         {
-            if(++i >= argc)
-            {
-                printf("The mission option is missing the mission argument!\n");
-                hasError = true;
-            }
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The mission option is missing the mission argument!");
             else
             {
                 param_mission = atoi(argv[i]);
-                if(param_mission < 0 || param_mission > 3)
-                {
-                    printf("The mission option must be between 0 and 3!\n");
-                    hasError = true;
-                }
+
+                if (param_mission < 0 || param_mission > 3)
+                    snprintf (error,sizeof(error),"The mission option must be between 0 and 3!");
             }
         }
         else IFARG("--configdir")
         {
-            if(++i >= argc)
-            {
-                printf("The configdir option is missing the dir argument!\n");
-                hasError = true;
-            }
+            if (++i >= argc)
+                snprintf (error,sizeof(error),"The configdir option is missing the dir argument!");
             else
             {
-                size_t len = strlen(argv[i]);
-                if(len + 2 > sizeof(configdir))
-                {
-                    printf("The config directory is too long!\n");
-                    hasError = true;
-                }
+                len = strlen(argv[i]);
+
+                if (len + 2 > sizeof(configdir))
+                    snprintf (error,sizeof(error),"The config directory is too long!");
                 else
                 {
                     strcpy(configdir, argv[i]);
@@ -1803,58 +1725,21 @@ void CheckParameters(int argc, char *argv[])
             param_goodtimes = true;
         else IFARG("--ignorenumchunks")
             param_ignorenumchunks = true;
-        else IFARG("--help")
-            showHelp = true;
-        else hasError = true;
+        else
+            snprintf (error,sizeof(error),"Invalid parameter(s)!");
     }
-    if(hasError || showHelp)
+
+    if (*error)
     {
-        if(hasError) printf("\n");
-        printf(
-            "Wolf4SDL v2.0\n"
-            "Ported by Chaos-Software, additions by the community\n"
-            "Original Wolfenstein 3D by id Software\n\n"
-            "Usage: Wolf4SDL [options]\n"
-            "Options:\n"
-            " --help                 This help page\n"
-            " --tedlevel <level>     Starts the game in the given level\n"
-            " --baby                 Sets the difficulty to baby for tedlevel\n"
-            " --easy                 Sets the difficulty to easy for tedlevel\n"
-            " --normal               Sets the difficulty to normal for tedlevel\n"
-            " --hard                 Sets the difficulty to hard for tedlevel\n"
-            " --nowait               Skips intro screens\n"
-            " --windowed[-mouse]     Starts the game in a window [and grabs mouse]\n"
-            " --res <width> <height> Sets the screen resolution\n"
-            "                        (must be multiple of 320x200 or 320x240)\n"
-            " --resf <w> <h>         Sets any screen resolution >= 320x200\n"
-            "                        (which may result in graphic errors)\n"
-            " --bits <b>             Sets the screen color depth\n"
-            "                        (use this when you have palette/fading problems\n"
-            "                        allowed: 8, 16, 24, 32, default: \"best\" depth)\n"
-            " --nodblbuf             Don't use SDL's double buffering\n"
-            " --extravbls <vbls>     Sets a delay after each frame, which may help to\n"
-            "                        reduce flickering (unit is currently 8 ms, default: 0)\n"
-            " --joystick <index>     Use the index-th joystick if available\n"
-            "                        (-1 to disable joystick, default: 0)\n"
-            " --joystickhat <index>  Enables movement with the given coolie hat\n"
-            " --samplerate <rate>    Sets the sound sample rate (given in Hz, default: %i)\n"
-            " --audiobuffer <size>   Sets the size of the audio buffer (-> sound latency)\n"
-            "                        (given in bytes, default: 2048 / (44100 / samplerate))\n"
-            " --ignorenumchunks      Ignores the number of chunks in VGAHEAD.*\n"
-            "                        (may be useful for some broken mods)\n"
-            " --configdir <dir>      Directory where config file and save games are stored\n"
-#if defined(_arch_dreamcast) || defined(_WIN32)
-            "                        (default: current directory)\n"
-#else
-            "                        (default: $HOME/.wolf4sdl)\n"
-#endif
-#if defined(SPEAR) && !defined(SPEARDEMO)
-            " --mission <mission>    Mission number to play (0-3)\n"
-            "                        (default: 0 -> .sod, 1-3 -> .sd*)\n"
-            " --goodtimes            Disable copy protection quiz\n"
-#endif
-            , defaultSampleRate
-        );
+        len = strlen(header) + strlen(error) + 1;
+        helpstr = SafeMalloc(len);
+
+        snprintf (helpstr,len,"%s%s",header,error);
+
+        Error (helpstr);
+
+        free (helpstr);
+
         exit(1);
     }
 

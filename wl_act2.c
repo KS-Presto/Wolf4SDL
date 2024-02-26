@@ -2890,8 +2890,8 @@ void A_HitlerMorph (objtype *ob)
     newobj->obclass = realhitlerobj;
     newobj->hitpoints = hitpoints[gamestate.difficulty];
 #ifdef ADDEDFIX // 29
-    if (!loadedgame)               // Count real hitler for correct kill ratios 
-        gamestate.killtotal++; 
+    if (!loadedgame)               // Count real hitler for correct kill ratios
+        gamestate.killtotal++;
 #endif
 }
 
@@ -3799,8 +3799,6 @@ void    A_StartDeathCam (objtype *ob)
         return;
     }
 
-    if(usedoublebuffering) VW_UpdateScreen();
-
     gamestate.victoryflag = true;
     unsigned fadeheight = viewsize != 21 ? screenHeight-scaleFactor*STATUSLINES : screenHeight;
     VL_BarScaledCoord (0, 0, screenWidth, fadeheight, bordercol);
@@ -3825,7 +3823,6 @@ void    A_StartDeathCam (objtype *ob)
     }
 
     VW_UpdateScreen ();
-    if(usedoublebuffering) VW_UpdateScreen();
 
     IN_UserInput(300);
 

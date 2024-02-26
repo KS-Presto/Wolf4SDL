@@ -1,0 +1,25 @@
+Launch Parameters for Wolf4SDL 2.0
+
+--tedlevel <level>     Starts the game in the given level
+--baby                 Sets the difficulty to baby for tedlevel
+--easy                 Sets the difficulty to easy for tedlevel
+--normal               Sets the difficulty to normal for tedlevel
+--hard                 Sets the difficulty to hard for tedlevel
+--nowait               Skips intro screens
+--windowed[-mouse]     Starts the game in a window [and grabs mouse]
+--res <width> <height> Sets the screen resolution (must be multiple of 320x200 or 320x240)
+--resf <w> <h>         Sets any screen resolution >= 320x200 (may result in graphic errors)
+--bits <b>             Sets the screen color depth (must be divisible by 8; use this if you have palette/fading problems)
+--extravbls <vbls>     Sets a delay after each frame, which may help to reduce flickering (unit is currently 8 ms, default: 0)
+--joystick <index>     Use the index-th joystick if available (-1 to disable joystick, default: 0)
+--joystickhat <index>  Enables movement with the given coolie hat
+--samplerate <rate>    Sets the sound sample rate given in Hz
+--audiobuffer <size>   Sets the size of the audio buffer (-> sound latency) given in bytes
+--ignorenumchunks      Ignores the number of chunks in VGAHEAD.* (may be useful for some broken mods)
+--configdir <dir>      Directory where config file and save games are stored
+
+Spear of Destiny Parameters
+
+--mission <mission>    Mission number to play (0-3) (default: 0 -> .sod, 1-3 -> .sd*)
+--goodtimes            Disable copy protection quiz
+

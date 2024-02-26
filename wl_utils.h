@@ -15,4 +15,7 @@ fixed    FixedDiv (fixed a, fixed b);
 word     READWORD (byte *ptr);
 longword READLONGWORD (byte *ptr);
 
+void     Error (const char *string);
+void     Help (const char *string);
+
 #endif

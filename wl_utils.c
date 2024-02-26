@@ -51,3 +51,14 @@ longword READLONGWORD (byte *ptr)
 
     return val;
 }
+
+
+void Error (const char *string)
+{
+    SDL_ShowSimpleMessageBox (SDL_MESSAGEBOX_ERROR,"Wolf4SDL",string,NULL);
+}
+
+void Help (const char *string)
+{
+    SDL_ShowSimpleMessageBox (SDL_MESSAGEBOX_INFORMATION,"Wolf4SDL",string,NULL);
+}

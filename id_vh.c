@@ -1,5 +1,4 @@
 #include "wl_def.h"
-#include "sdl_wrap.h"
 
 
 pictabletype	*pictable;
@@ -75,11 +74,10 @@ void VW_MeasurePropString (const char *string, word *width, word *height)
 void VH_UpdateScreen (SDL_Surface *surface)
 {
 	SDL_BlitSurface (surface,NULL,screen,NULL);
-#if SDL_MAJOR_VERSION == 1
-	SDL_Flip (screen);
-#else
-    Present(screen);
-#endif
+
+    SDL_UpdateTexture(texture, NULL, screen->pixels, screenPitch);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 }
 
 void VWB_DrawTile8 (int x, int y, int tile)
@@ -216,10 +214,10 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
     unsigned width, unsigned height, unsigned frames, boolean abortable)
 {
     unsigned x, y, p, frame, pixperframe;
-    int32_t  rndval, lastrndval;
+    int32_t  rndval;
     int      i,first = 1;
 
-    lastrndval = 0;
+    rndval = 1;
     pixperframe = width * height / frames;
 
     IN_StartAck ();
@@ -228,7 +226,7 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
     byte *srcptr = VL_LockSurface(source);
     if(srcptr == NULL) return false;
 
-    do
+    while (1)
     {
         IN_ProcessEvents();
 
@@ -241,92 +239,65 @@ boolean FizzleFade (SDL_Surface *source, int x1, int y1,
 
         byte *destptr = VL_LockSurface(screen);
 
-        if(destptr != NULL)
+        if (!destptr)
+            Quit ("Unable to lock dest surface: %s\n",SDL_GetError());
+
+        for (p = 0; p < pixperframe; p++)
         {
-            rndval = lastrndval;
+            //
+            // seperate random value into x/y pair
+            //
+            x = rndval >> rndbits_y;
+            y = rndval & ((1 << rndbits_y) - 1);
 
-            // When using double buffering, we have to copy the pixels of the last AND the current frame.
-            // Only for the first frame, there is no "last frame"
-            for(i = first; i < 2; i++)
+            //
+            // advance to next random element
+            //
+            rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
+
+            if (x >= width || y >= height)
+                p--;                         // not into the view area; get a new pair
+            else
             {
-                for(p = 0; p < pixperframe; p++)
+                //
+                // copy one pixel
+                //
+                if(screenBits == 8)
                 {
-                    //
-                    // seperate random value into x/y pair
-                    //
-
-                    x = rndval >> rndbits_y;
-                    y = rndval & ((1 << rndbits_y) - 1);
-
-                    //
-                    // advance to next random element
-                    //
-
-                    rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
-
-                    if(x >= width || y >= height)
-                    {
-                        if(rndval == 0)     // entire sequence has been completed
-                            goto finished;
-                        p--;
-                        continue;
-                    }
-
-                    //
-                    // copy one pixel
-                    //
-
-                    if(screenBits == 8)
-                    {
-                        *(destptr + (y1 + y) * screen->pitch + x1 + x)
-                            = *(srcptr + (y1 + y) * source->pitch + x1 + x);
-                    }
-                    else
-                    {
-                        byte col = *(srcptr + (y1 + y) * source->pitch + x1 + x);
-                        uint32_t fullcol = SDL_MapRGB(screen->format, curpal[col].r, curpal[col].g, curpal[col].b);
-                        memcpy(destptr + (y1 + y) * screen->pitch + (x1 + x) * screen->format->BytesPerPixel,
-                            &fullcol, screen->format->BytesPerPixel);
-                    }
-
-                    if(rndval == 0)		// entire sequence has been completed
-                        goto finished;
+                    *(destptr + (y1 + y) * screen->pitch + x1 + x)
+                        = *(srcptr + (y1 + y) * source->pitch + x1 + x);
                 }
-
-                if(!i || first) lastrndval = rndval;
-            }
-
-            // If there is no double buffering, we always use the "first frame" case
-            if(usedoublebuffering) first = 0;
-
-            VL_UnlockSurface(screen);
-#if SDL_MAJOR_VERSION == 1
-	        SDL_Flip (screen);
-#else
-            Present(screen);
-#endif
-        }
-        else
-        {
-            // No surface, so only enhance rndval
-            for(i = first; i < 2; i++)
-            {
-                for(p = 0; p < pixperframe; p++)
+                else
                 {
-                    rndval = (rndval >> 1) ^ (rndval & 1 ? 0 : rndmask);
-                    if(rndval == 0)
-                        goto finished;
+                    byte col = *(srcptr + (y1 + y) * source->pitch + x1 + x);
+                    uint32_t fullcol = SDL_MapRGB(screen->format, curpal[col].r, curpal[col].g, curpal[col].b);
+                    memcpy(destptr + (y1 + y) * screen->pitch + (x1 + x) * screen->format->BytesPerPixel,
+                        &fullcol, screen->format->BytesPerPixel);
                 }
             }
+
+            if (rndval == 1)
+            {
+                //
+                // entire sequence has been completed
+                //
+                VL_UnlockSurface (screenBuffer);
+                VL_UnlockSurface (screen);
+                VH_UpdateScreen (screenBuffer);
+
+                return false;
+            }
         }
+
+        VL_UnlockSurface(screen);
+
+        SDL_UpdateTexture(texture, NULL, screen->pixels, screenPitch);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
 
         frame++;
         Delay(frame - GetTimeCount());        // don't go too fast
-    } while (1);
+    }
 
-finished:
-    VL_UnlockSurface(source);
-    VL_UnlockSurface(screen);
-    VH_UpdateScreen (source);
     return false;
 }

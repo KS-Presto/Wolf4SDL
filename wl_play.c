@@ -344,16 +344,7 @@ void PollMouseMove (void)
 {
     int mousexmove, mouseymove;
 
-#if SDL_MAJOR_VERSION == 1
-    SDL_GetMouseState(&mousexmove, &mouseymove);
-    if(IN_IsInputGrabbed())
-        IN_CenterMouse();
-
-    mousexmove -= screenWidth / 2;
-    mouseymove -= screenHeight / 2;
-#else
     SDL_GetRelativeMouseState(&mousexmove, &mouseymove);
-#endif
 
     controlx += mousexmove * 10 / (13 - mouseadjustment);
     controly += mouseymove * 20 / (13 - mouseadjustment);
