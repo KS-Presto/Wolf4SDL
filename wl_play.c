@@ -1159,7 +1159,7 @@ void DoActor (objtype * ob)
 
     if (!ob->ticcount)
     {
-        think = (void (*)(objtype *)) ob->state->think;
+        think = ob->state->think;
         if (think)
         {
             think (ob);
@@ -1186,7 +1186,7 @@ void DoActor (objtype * ob)
     ob->ticcount -= (short) tics;
     while (ob->ticcount <= 0)
     {
-        think = (void (*)(objtype *)) ob->state->action;        // end of state action
+        think = ob->state->action;        // end of state action
         if (think)
         {
             think (ob);
@@ -1217,7 +1217,7 @@ void DoActor (objtype * ob)
     //
     // think
     //
-    think = (void (*)(objtype *)) ob->state->think;
+    think = ob->state->think;
     if (think)
     {
         think (ob);

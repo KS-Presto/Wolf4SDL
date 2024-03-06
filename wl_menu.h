@@ -226,18 +226,4 @@ enum menuitems
         quit
 };
 
-//
-// WL_INTER
-//
-typedef struct {
-                int kill,secret,treasure;
-                int32_t time;
-                } LRstruct;
-
-extern LRstruct LevelRatios[];
-
-void Write (int x,int y,const char *string);
-void NonShareware(void);
-int GetYorN(int x,int y,int pic);
-
 #endif

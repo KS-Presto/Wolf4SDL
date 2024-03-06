@@ -115,6 +115,7 @@ void Quit (const char *errorStr, ...);
 */
 
 #define MAPSPOT(x,y,plane) (mapsegs[(plane)][((y) << MAPSHIFT) + (x)])
+#define VALIDAREA(x)    ((x) >= AREATILE && (x) < (AREATILE + NUMAREAS))
 
 #define SIGN(x)         ((x) > 0 ? 1 : -1)
 #define ABS(x)          ((int)(x) > 0 ? (x) : -(x))
@@ -1110,6 +1111,18 @@ void    StartBonusFlash (void);
 =============================================================================
 */
 
+
+typedef struct
+{
+    int16_t kill,secret,treasure;
+    int32_t time;
+} LRstruct;
+
+extern LRstruct LevelRatios[LRpack];
+
+void Write (int x, int y, const char *string);
+void NonShareware (void);
+int  GetYorN (int x, int y, int pic);
 void IntroScreen (void);
 void PG13 (void);
 void DrawHighScores (void);

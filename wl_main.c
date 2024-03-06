@@ -335,12 +335,15 @@ void DiskFlopAnim(int x,int y)
 }
 
 
-int32_t DoChecksum(byte *source,unsigned size,int32_t checksum)
+int32_t DoChecksum (void *source, unsigned size, int32_t checksum)
 {
     unsigned i;
+    byte     *src;
 
-    for (i=0;i<size-1;i++)
-    checksum += source[i]^source[i+1];
+    src = source;
+
+    for (i = 0; i < size - 1; i++)
+        checksum += src[i] ^ src[i + 1];
 
     return checksum;
 }
@@ -357,115 +360,118 @@ int32_t DoChecksum(byte *source,unsigned size,int32_t checksum)
 extern statetype s_grdstand;
 extern statetype s_player;
 
-boolean SaveTheGame(FILE *file,int x,int y)
+boolean SaveTheGame (FILE *file, int x, int y)
 {
-    int i,j;
-    int checksum;
-    word actnum,laststatobjnum;
-    objtype *ob;
-    objtype nullobj;
+    int       i,j;
+    int       checksum;
+    word      actnum,laststatobjnum;
+    objtype   *ob;
+    objtype   nullobj;
     statobj_t nullstat;
 
     checksum = 0;
 
-    DiskFlopAnim(x,y);
-    fwrite(&gamestate,sizeof(gamestate),1,file);
-    checksum = DoChecksum((byte *)&gamestate,sizeof(gamestate),checksum);
+    DiskFlopAnim (x,y);
+    fwrite (&gamestate,sizeof(gamestate),1,file);
+    checksum = DoChecksum(&gamestate,sizeof(gamestate),checksum);
 
-    DiskFlopAnim(x,y);
-    fwrite(&LevelRatios[0],sizeof(LRstruct)*LRpack,1,file);
-    checksum = DoChecksum((byte *)&LevelRatios[0],sizeof(LRstruct)*LRpack,checksum);
+    DiskFlopAnim (x,y);
+    fwrite (LevelRatios,sizeof(LevelRatios),1,file);
+    checksum = DoChecksum(LevelRatios,sizeof(LevelRatios),checksum);
 
-    DiskFlopAnim(x,y);
-    fwrite(tilemap,sizeof(tilemap),1,file);
-    checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
+    DiskFlopAnim (x,y);
+    fwrite (tilemap,sizeof(tilemap),1,file);
+    checksum = DoChecksum(tilemap,sizeof(tilemap),checksum);
 #ifdef REVEALMAP
-    DiskFlopAnim(x,y);
-    fwrite(mapseen,sizeof(mapseen),1,file);
-    checksum = DoChecksum((byte *)mapseen,sizeof(mapseen),checksum);
+    DiskFlopAnim (x,y);
+    fwrite (mapseen,sizeof(mapseen),1,file);
+    checksum = DoChecksum(mapseen,sizeof(mapseen),checksum);
 #endif
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
 
-    for(i=0;i<mapwidth;i++)
+    for (i = 0; i < mapwidth; i++)
     {
-        for(j=0;j<mapheight;j++)
+        for (j = 0; j < mapheight; j++)
         {
-            ob=actorat[i][j];
-            if(ISPOINTER(ob))
-                actnum=0x8000 | (word)(ob-objlist);
+            ob = actorat[i][j];
+
+            if (ISPOINTER(ob))
+                actnum = 0x8000 | (word)(ob - objlist);
             else
-                actnum=(word)(uintptr_t)ob;
-            fwrite(&actnum,sizeof(actnum),1,file);
-            checksum = DoChecksum((byte *)&actnum,sizeof(actnum),checksum);
+                actnum = (word)(uintptr_t)ob;
+
+            fwrite (&actnum,sizeof(actnum),1,file);
+            checksum = DoChecksum(&actnum,sizeof(actnum),checksum);
         }
     }
 
     fwrite (areaconnect,sizeof(areaconnect),1,file);
     fwrite (areabyplayer,sizeof(areabyplayer),1,file);
 
-    // player object needs special treatment as it's in WL_AGENT.CPP and not in
-    // WL_ACT2.CPP which could cause problems for the relative addressing
-
-    ob = player;
-    DiskFlopAnim(x,y);
-    memcpy(&nullobj,ob,sizeof(nullobj));
-    nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_player);
-    fwrite(&nullobj,sizeof(nullobj),1,file);
-
-    DiskFlopAnim(x,y);
-    for (ob = ob->next; ob; ob=ob->next)
+    DiskFlopAnim (x,y);
+    for (ob = player; ob; ob = ob->next)
     {
-        memcpy(&nullobj,ob,sizeof(nullobj));
-        nullobj.state=(statetype *) ((uintptr_t)nullobj.state-(uintptr_t)&s_grdstand);
-        fwrite(&nullobj,sizeof(nullobj),1,file);
+        memcpy (&nullobj,ob,sizeof(nullobj));
+
+        //
+        // player object needs special treatment as it's in WL_AGENT.C and not in
+        // WL_ACT2.C which could cause problems for the relative addressing
+        //
+        if (ob == player)
+            nullobj.state = (statetype *)((uintptr_t)nullobj.state - (uintptr_t)&s_player);
+        else
+            nullobj.state = (statetype *)((uintptr_t)nullobj.state - (uintptr_t)&s_grdstand);
+
+        fwrite (&nullobj,sizeof(nullobj),1,file);
     }
+
     nullobj.active = ac_badobject;          // end of file marker
-    DiskFlopAnim(x,y);
-    fwrite(&nullobj,sizeof(nullobj),1,file);
+    DiskFlopAnim (x,y);
+    fwrite (&nullobj,sizeof(nullobj),1,file);
 
-    DiskFlopAnim(x,y);
-    laststatobjnum=(word) (laststatobj-statobjlist);
-    fwrite(&laststatobjnum,sizeof(laststatobjnum),1,file);
-    checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
+    DiskFlopAnim (x,y);
+    laststatobjnum = (word)(laststatobj - statobjlist);
+    fwrite (&laststatobjnum,sizeof(laststatobjnum),1,file);
+    checksum = DoChecksum(&laststatobjnum,sizeof(laststatobjnum),checksum);
 
-    DiskFlopAnim(x,y);
-    for(i=0;i<MAXSTATS;i++)
+    DiskFlopAnim (x,y);
+    for (i = 0; i < MAXSTATS; i++)
     {
-        memcpy(&nullstat,statobjlist+i,sizeof(nullstat));
-        nullstat.visspot=(byte *) ((uintptr_t) nullstat.visspot-(uintptr_t)spotvis);
-        fwrite(&nullstat,sizeof(nullstat),1,file);
-        checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
+        memcpy (&nullstat,&statobjlist[i],sizeof(nullstat));
+        nullstat.visspot = (byte *)((uintptr_t)nullstat.visspot - (uintptr_t)spotvis);
+        fwrite (&nullstat,sizeof(nullstat),1,file);
+        checksum = DoChecksum(&nullstat,sizeof(nullstat),checksum);
     }
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fwrite (doorposition,sizeof(doorposition),1,file);
-    checksum = DoChecksum((byte *)doorposition,sizeof(doorposition),checksum);
-    DiskFlopAnim(x,y);
+    checksum = DoChecksum(doorposition,sizeof(doorposition),checksum);
+    DiskFlopAnim (x,y);
     fwrite (doorobjlist,sizeof(doorobjlist),1,file);
-    checksum = DoChecksum((byte *)doorobjlist,sizeof(doorobjlist),checksum);
+    checksum = DoChecksum(doorobjlist,sizeof(doorobjlist),checksum);
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fwrite (&pwallstate,sizeof(pwallstate),1,file);
-    checksum = DoChecksum((byte *)&pwallstate,sizeof(pwallstate),checksum);
+    checksum = DoChecksum(&pwallstate,sizeof(pwallstate),checksum);
     fwrite (&pwalltile,sizeof(pwalltile),1,file);
-    checksum = DoChecksum((byte *)&pwalltile,sizeof(pwalltile),checksum);
+    checksum = DoChecksum(&pwalltile,sizeof(pwalltile),checksum);
     fwrite (&pwallx,sizeof(pwallx),1,file);
-    checksum = DoChecksum((byte *)&pwallx,sizeof(pwallx),checksum);
+    checksum = DoChecksum(&pwallx,sizeof(pwallx),checksum);
     fwrite (&pwally,sizeof(pwally),1,file);
-    checksum = DoChecksum((byte *)&pwally,sizeof(pwally),checksum);
+    checksum = DoChecksum(&pwally,sizeof(pwally),checksum);
     fwrite (&pwalldir,sizeof(pwalldir),1,file);
-    checksum = DoChecksum((byte *)&pwalldir,sizeof(pwalldir),checksum);
+    checksum = DoChecksum(&pwalldir,sizeof(pwalldir),checksum);
     fwrite (&pwallpos,sizeof(pwallpos),1,file);
-    checksum = DoChecksum((byte *)&pwallpos,sizeof(pwallpos),checksum);
+    checksum = DoChecksum(&pwallpos,sizeof(pwallpos),checksum);
 
     //
-    // WRITE OUT CHECKSUM
+    // write out checksum
     //
     fwrite (&checksum,sizeof(checksum),1,file);
 
     fwrite (&lastgamemusicoffset,sizeof(lastgamemusicoffset),1,file);
 
-    return(true);
+    return true;
 }
 
 //===========================================================================
@@ -478,48 +484,51 @@ boolean SaveTheGame(FILE *file,int x,int y)
 ==================
 */
 
-boolean LoadTheGame(FILE *file,int x,int y)
+boolean LoadTheGame (FILE *file, int x, int y)
 {
-    int i,j;
-    int actnum = 0;
-    word laststatobjnum;
-    int32_t checksum,oldchecksum;
-    objtype *newobj = NULL,nullobj;
+    int       i,j;
+    int       actnum = 0;
+    word      laststatobjnum;
+    word      *map,tile;
+    int32_t   checksum,oldchecksum;
+    objtype   *newobj = NULL;
+    objtype   nullobj;
     statobj_t nullstat;
 
     checksum = 0;
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fread (&gamestate,sizeof(gamestate),1,file);
-    checksum = DoChecksum((byte *)&gamestate,sizeof(gamestate),checksum);
+    checksum = DoChecksum(&gamestate,sizeof(gamestate),checksum);
 
-    DiskFlopAnim(x,y);
-    fread (&LevelRatios[0],sizeof(LRstruct)*LRpack,1,file);
-    checksum = DoChecksum((byte *)&LevelRatios[0],sizeof(LRstruct)*LRpack,checksum);
+    DiskFlopAnim (x,y);
+    fread (LevelRatios,sizeof(LevelRatios),1,file);
+    checksum = DoChecksum(LevelRatios,sizeof(LevelRatios),checksum);
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     SetupGameLevel ();
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fread (tilemap,sizeof(tilemap),1,file);
-    checksum = DoChecksum((byte *)tilemap,sizeof(tilemap),checksum);
+    checksum = DoChecksum(tilemap,sizeof(tilemap),checksum);
 #ifdef REVEALMAP
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fread (mapseen,sizeof(mapseen),1,file);
-    checksum = DoChecksum((byte *)mapseen,sizeof(mapseen),checksum);
+    checksum = DoChecksum(mapseen,sizeof(mapseen),checksum);
 #endif
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
 
-    for(i=0;i<mapwidth;i++)
+    for (i = 0; i < mapwidth; i++)
     {
-        for(j=0;j<mapheight;j++)
+        for (j = 0; j < mapheight; j++)
         {
             fread (&actnum,sizeof(word),1,file);
-            checksum = DoChecksum((byte *) &actnum,sizeof(word),checksum);
-            if(actnum&0x8000)
-                actorat[i][j]=objlist+(actnum&0x7fff);
+            checksum = DoChecksum(&actnum,sizeof(word),checksum);
+
+            if (actnum & 0x8000)
+                actorat[i][j] = &objlist[actnum & 0x7fff];
             else
-                actorat[i][j]=(objtype *)(uintptr_t) actnum;
+                actorat[i][j] = (objtype *)(uintptr_t)actnum;
         }
     }
 
@@ -527,18 +536,26 @@ boolean LoadTheGame(FILE *file,int x,int y)
     fread (areabyplayer,sizeof(areabyplayer),1,file);
 
     InitActorList ();
-    DiskFlopAnim(x,y);
-    fread (player,sizeof(*player),1,file);
-    player->state=(statetype *) ((uintptr_t)player->state+(uintptr_t)&s_player);
 
     while (1)
     {
-        DiskFlopAnim(x,y);
+        DiskFlopAnim (x,y);
+
         fread (&nullobj,sizeof(nullobj),1,file);
+
         if (nullobj.active == ac_badobject)
             break;
-        newobj = GetNewActor();
-        nullobj.state=(statetype *) ((uintptr_t)nullobj.state+(uintptr_t)&s_grdstand);
+
+        if (nullobj.obclass == playerobj)
+        {
+            newobj = player;
+            nullobj.state = (statetype *)((uintptr_t)nullobj.state + (uintptr_t)&s_player);
+        }
+        else
+        {
+            newobj = GetNewActor();
+            nullobj.state = (statetype *)((uintptr_t)nullobj.state + (uintptr_t)&s_grdstand);
+        }
 
         //
         // skip the last 2 members so we don't copy over the links
@@ -546,73 +563,82 @@ boolean LoadTheGame(FILE *file,int x,int y)
         memcpy (newobj,&nullobj,sizeof(nullobj) - (sizeof(nullobj.next) + sizeof(nullobj.prev)));
     }
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fread (&laststatobjnum,sizeof(laststatobjnum),1,file);
-    laststatobj=statobjlist+laststatobjnum;
-    checksum = DoChecksum((byte *)&laststatobjnum,sizeof(laststatobjnum),checksum);
+    laststatobj = &statobjlist[laststatobjnum];
+    checksum = DoChecksum(&laststatobjnum,sizeof(laststatobjnum),checksum);
 
-    DiskFlopAnim(x,y);
-    for(i=0;i<MAXSTATS;i++)
+    DiskFlopAnim (x,y);
+    for (i = 0; i < MAXSTATS; i++)
     {
-        fread(&nullstat,sizeof(nullstat),1,file);
-        checksum = DoChecksum((byte *)&nullstat,sizeof(nullstat),checksum);
-        nullstat.visspot=(byte *) ((uintptr_t)nullstat.visspot+(uintptr_t)spotvis);
-        memcpy(statobjlist+i,&nullstat,sizeof(nullstat));
+        fread (&nullstat,sizeof(nullstat),1,file);
+        checksum = DoChecksum(&nullstat,sizeof(nullstat),checksum);
+        nullstat.visspot = (byte *)((uintptr_t)nullstat.visspot + (uintptr_t)spotvis);
+        memcpy (&statobjlist[i],&nullstat,sizeof(nullstat));
     }
 
-    DiskFlopAnim(x,y);
+    DiskFlopAnim (x,y);
     fread (doorposition,sizeof(doorposition),1,file);
-    checksum = DoChecksum((byte *)doorposition,sizeof(doorposition),checksum);
-    DiskFlopAnim(x,y);
+    checksum = DoChecksum(doorposition,sizeof(doorposition),checksum);
+    DiskFlopAnim (x,y);
     fread (doorobjlist,sizeof(doorobjlist),1,file);
-    checksum = DoChecksum((byte *)doorobjlist,sizeof(doorobjlist),checksum);
+    checksum = DoChecksum(doorobjlist,sizeof(doorobjlist),checksum);
 
     DiskFlopAnim(x,y);
     fread (&pwallstate,sizeof(pwallstate),1,file);
-    checksum = DoChecksum((byte *)&pwallstate,sizeof(pwallstate),checksum);
+    checksum = DoChecksum(&pwallstate,sizeof(pwallstate),checksum);
     fread (&pwalltile,sizeof(pwalltile),1,file);
-    checksum = DoChecksum((byte *)&pwalltile,sizeof(pwalltile),checksum);
+    checksum = DoChecksum(&pwalltile,sizeof(pwalltile),checksum);
     fread (&pwallx,sizeof(pwallx),1,file);
-    checksum = DoChecksum((byte *)&pwallx,sizeof(pwallx),checksum);
+    checksum = DoChecksum(&pwallx,sizeof(pwallx),checksum);
     fread (&pwally,sizeof(pwally),1,file);
-    checksum = DoChecksum((byte *)&pwally,sizeof(pwally),checksum);
+    checksum = DoChecksum(&pwally,sizeof(pwally),checksum);
     fread (&pwalldir,sizeof(pwalldir),1,file);
-    checksum = DoChecksum((byte *)&pwalldir,sizeof(pwalldir),checksum);
+    checksum = DoChecksum(&pwalldir,sizeof(pwalldir),checksum);
     fread (&pwallpos,sizeof(pwallpos),1,file);
-    checksum = DoChecksum((byte *)&pwallpos,sizeof(pwallpos),checksum);
+    checksum = DoChecksum(&pwallpos,sizeof(pwallpos),checksum);
 
-    if (gamestate.secretcount)      // assign valid floorcodes under moved pushwalls
+    if (gamestate.secretcount)
     {
-        word *map, *obj; word tile, sprite;
-        map = mapsegs[0]; obj = mapsegs[1];
-        for (y=0;y<mapheight;y++)
-            for (x=0;x<mapwidth;x++)
-            {
-                tile = *map++; sprite = *obj++;
-                if (sprite == PUSHABLETILE && !tilemap[x][y]
-                    && (tile < AREATILE || tile >= (AREATILE+NUMAREAS)))
-                {
-                    if (*map >= AREATILE)
-                        tile = *map;
-                    if (*(map-1-mapwidth) >= AREATILE)
-                        tile = *(map-1-mapwidth);
-                    if (*(map-1+mapwidth) >= AREATILE)
-                        tile = *(map-1+mapwidth);
-                    if ( *(map-2) >= AREATILE)
-                        tile = *(map-2);
+        //
+        // assign valid floorcodes under moved pushwalls
+        //
+        map = mapsegs[0];
 
-                    *(map-1) = tile; *(obj-1) = 0;
+        for (y = 0; y < mapheight; y++)
+        {
+            for (x = 0; x < mapwidth; x++)
+            {
+                tile = *map;
+
+                if (MAPSPOT(x,y,1) == PUSHABLETILE && !tilemap[x][y] && !VALIDAREA(tile))
+                {
+                    if (VALIDAREA(*(map + 1)))
+                        tile = *(map + 1);
+                    if (VALIDAREA(*(map - mapwidth)))
+                        tile = *(map - mapwidth);
+                    if (VALIDAREA(*(map + mapwidth)))
+                        tile = *(map + mapwidth);
+                    if (VALIDAREA(*(map - 1)))
+                        tile = *(map - 1);
+
+                    *map = tile;
+                    MAPSPOT(x,y,1) = 0;
                 }
+
+                map++;
             }
+        }
     }
 
-    Thrust(0,0);    // set player->areanumber to the floortile you're standing on
+    Thrust (0,0);    // set player->areanumber to the floortile you're standing on
 
     fread (&oldchecksum,sizeof(oldchecksum),1,file);
 
     fread (&lastgamemusicoffset,sizeof(lastgamemusicoffset),1,file);
-    if(lastgamemusicoffset<0) lastgamemusicoffset=0;
 
+    if (lastgamemusicoffset < 0)
+        lastgamemusicoffset = 0;
 
     if (oldchecksum != checksum)
     {
@@ -621,14 +647,14 @@ boolean LoadTheGame(FILE *file,int x,int y)
                 STR_SAVECHT3"\n"
                 STR_SAVECHT4);
 
-        IN_ClearKeysDown();
-        IN_Ack();
+        IN_ClearKeysDown ();
+        IN_Ack ();
 
         gamestate.oldscore = gamestate.score = 0;
         gamestate.lives = 1;
         gamestate.weapon =
-            gamestate.chosenweapon =
-            gamestate.bestweapon = wp_pistol;
+        gamestate.chosenweapon =
+        gamestate.bestweapon = wp_pistol;
         gamestate.ammo = 8;
     }
 
