@@ -539,8 +539,11 @@ boolean LoadTheGame(FILE *file,int x,int y)
             break;
         newobj = GetNewActor();
         nullobj.state=(statetype *) ((uintptr_t)nullobj.state+(uintptr_t)&s_grdstand);
-        // don't copy over the links
-        memcpy (newobj,&nullobj,sizeof(nullobj)-8);
+
+        //
+        // skip the last 2 members so we don't copy over the links
+        //
+        memcpy (newobj,&nullobj,sizeof(nullobj) - (sizeof(nullobj.next) + sizeof(nullobj.prev)));
     }
 
     DiskFlopAnim(x,y);

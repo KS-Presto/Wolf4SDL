@@ -744,17 +744,6 @@ enum enemytypes
     NUMENEMIES
 };
 
-typedef void (* statefunc) (void *);
-
-typedef struct statestruct
-{
-    boolean rotate;
-    short   shapenum;           // a shapenum of -1 means get from ob->temp1
-    short   tictime;
-    void    (*think) (void *),(*action) (void *);
-    struct  statestruct *next;
-} statetype;
-
 
 //---------------------
 //
@@ -804,7 +793,7 @@ typedef struct objstruct
     int8_t      active;
     short       ticcount;
     byte        obclass;
-    statetype   *state;
+    struct statestruct *state;
 
     uint32_t    flags;              // FL_SHOOTABLE, etc
 
@@ -824,8 +813,24 @@ typedef struct objstruct
     int32_t     speed;
 
     short       temp1,temp2,hidden;
+
+    /**
+    //
+    // WARNING: DO NOT ADD ANY MEMBERS AFTER THESE!!!
+    */
     struct objstruct *next,*prev;
 } objtype;
+
+
+typedef struct statestruct
+{
+    boolean rotate;
+    short   shapenum;           // a shapenum of -1 means get from ob->temp1
+    short   tictime;
+    void    (*think)(objtype *),(*action)(objtype *);
+    struct  statestruct *next;
+} statetype;
+
 
 enum buttontypes
 {

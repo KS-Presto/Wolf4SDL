@@ -50,8 +50,8 @@ objtype        *LastAttacker;
 void    T_Player (objtype *ob);
 void    T_Attack (objtype *ob);
 
-statetype   s_player = {false,0,0,(statefunc) T_Player,NULL,NULL};
-statetype   s_attack = {false,0,0,(statefunc) T_Attack,NULL,NULL};
+statetype   s_player = {false,0,0,T_Player,NULL,NULL};
+statetype   s_attack = {false,0,0,T_Attack,NULL,NULL};
 
 struct atkinf
 {
