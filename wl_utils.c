@@ -38,18 +38,26 @@ fixed FixedDiv (fixed a, fixed b)
 	return (fixed)c;
 }
 
-word READWORD (byte *ptr)
+uint16_t ReadShort (void *ptr)
 {
-    word val = ptr[0] | ptr[1] << 8;
+    unsigned value;
+    byte     *work;
 
-    return val;
+    work = ptr;
+    value = work[0] | (work[1] << 8);
+
+    return value;
 }
 
-longword READLONGWORD (byte *ptr)
+uint32_t ReadLong (void *ptr)
 {
-    longword val = ptr[0] | ptr[1] << 8 | ptr[2] << 16 | ptr[3] << 24;
+    uint32_t value;
+    byte     *work;
 
-    return val;
+    work = ptr;
+    value = work[0] | (work[1] << 8) | (work[2] << 16) | (work[3] << 24);
+
+    return value;
 }
 
 

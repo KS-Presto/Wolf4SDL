@@ -12,8 +12,8 @@ void     *safe_malloc (size_t size, const char *fname, uint32_t line);
 fixed    FixedMul (fixed a, fixed b);
 fixed    FixedDiv (fixed a, fixed b);
 
-word     READWORD (byte *ptr);
-longword READLONGWORD (byte *ptr);
+uint16_t ReadShort (void *ptr);
+uint32_t ReadLong (void *ptr);
 
 void     Error (const char *string);
 void     Help (const char *string);

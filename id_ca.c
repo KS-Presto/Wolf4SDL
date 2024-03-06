@@ -281,7 +281,7 @@ void CAL_CarmackExpand (byte *source, word *dest, int length)
 
     while (length>0)
     {
-        ch = READWORD(inptr);
+        ch = ReadShort(inptr);
         inptr += 2;
         chhigh = ch>>8;
         if (chhigh == NEARTAG)
@@ -314,7 +314,7 @@ void CAL_CarmackExpand (byte *source, word *dest, int length)
             }
             else
             {
-                offset = READWORD(inptr);
+                offset = ReadShort(inptr);
                 inptr += 2;
                 copyptr = dest + offset;
                 length -= count;
@@ -483,11 +483,11 @@ void CAL_SetupGrFile (void)
     read(handle, data, sizeof(data));
     close(handle);
 
-    const byte* d = data;
+    byte *d = data;
     int32_t* i;
     for (i = grstarts; i != endof(grstarts); ++i)
     {
-        const int32_t val = d[0] | d[1] << 8 | d[2] << 16;
+        int32_t val = ReadLong(d) & 0x00ffffff;
         *i = (val == 0x00FFFFFF ? -1 : val);
         d += 3;
     }
@@ -748,10 +748,10 @@ void CA_CacheAdlibSoundChunk (int chunk)
 
     AdLibSound *sound = SafeMalloc(size + sizeof(*sound) - ORIG_ADLIBSOUND_SIZE);
 
-    sound->common.length = READLONGWORD(ptr);
+    sound->common.length = ReadLong(ptr);
     ptr += 4;
 
-    sound->common.priority = READWORD(ptr);
+    sound->common.priority = ReadShort(ptr);
     ptr += 2;
 
     sound->inst.mChar = *ptr++;

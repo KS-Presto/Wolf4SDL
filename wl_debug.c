@@ -907,10 +907,10 @@ void DrawMapSprite (int16_t sx, int16_t sy, int16_t shapenum)
         //
         linecmds = &linesrc[shape->dataofs[x - shape->leftpix]];
 
-        for (end = READWORD(linecmds) >> 1; end; end = READWORD(linecmds) >> 1)
+        for (end = ReadShort(linecmds) >> 1; end; end = ReadShort(linecmds) >> 1)
         {
-            top = READWORD(linecmds + 2);
-            start = READWORD(linecmds + 4) >> 1;
+            top = ReadShort(linecmds + 2);
+            start = ReadShort(linecmds + 4) >> 1;
 
             for (src = &linesrc[top + start]; start != end; start++, src++)
             {
