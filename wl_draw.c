@@ -156,7 +156,6 @@ void TransformActor (objtype *ob)
 // calculate perspective ratio
 //
     ob->transx = nx;
-    ob->transy = ny;
 
     if (nx<MINDIST)                 // too close, don't overflow the divide
     {
@@ -558,7 +557,7 @@ void HitHorizDoor (void)
     int texture;
 
     doornum = tilehit & ~BIT_DOOR;
-    texture = ((xintercept - doorposition[doornum]) >> FIXED2TEXSHIFT) & TEXTUREMASK;
+    texture = ((xintercept - doorobjlist[doornum].position) >> FIXED2TEXSHIFT) & TEXTUREMASK;
 
     wallheight[pixx] = CalcHeight();
     postx = pixx;
@@ -620,7 +619,7 @@ void HitVertDoor (void)
     int texture;
 
     doornum = tilehit & ~BIT_DOOR;
-    texture = ((yintercept - doorposition[doornum]) >> FIXED2TEXSHIFT) & TEXTUREMASK;
+    texture = ((yintercept - doorobjlist[doornum].position) >> FIXED2TEXSHIFT) & TEXTUREMASK;
 
     wallheight[pixx] = CalcHeight();
     postx = pixx;
@@ -797,7 +796,7 @@ void DrawScaleds (void)
         if ((visptr->shapenum = statptr->shapenum) == -1)
             continue;                                               // object has been deleted
 
-        if (!*statptr->visspot)
+        if (!spotvis[statptr->tilex][statptr->tiley])
             continue;                                               // not visable
 
         if (TransformTile (statptr->tilex,statptr->tiley,
@@ -1191,7 +1190,7 @@ vertentry:
                         // the trace hit the door plane at pixel position yintercept, see if the door is
                         // closed that much
                         //
-                        if ((word)yinttemp < doorposition[tilehit & ~BIT_DOOR])
+                        if ((word)yinttemp < door->position)
                             goto passvert;
                     }
 
@@ -1402,7 +1401,7 @@ horizentry:
                         // the trace hit the door plane at pixel position xintercept, see if the door is
                         // closed that much
                         //
-                        if ((word)xinttemp < doorposition[tilehit & ~BIT_DOOR])
+                        if ((word)xinttemp < door->position)
                             goto passhoriz;
                     }
 

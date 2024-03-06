@@ -150,7 +150,6 @@ void SpawnStatic (int tilex, int tiley, int type)
     laststatobj->shapenum = statinfo[type].picnum;
     laststatobj->tilex = tilex;
     laststatobj->tiley = tiley;
-    laststatobj->visspot = (byte *)&spotvis[tilex][tiley];
     laststatobj->itemnumber = statinfo[type].type;
 
     switch (statinfo[type].type)
@@ -246,7 +245,6 @@ void PlaceItemType (int itemtype, int tilex, int tiley)
     spot->shapenum = statinfo[type].picnum;
     spot->tilex = tilex;
     spot->tiley = tiley;
-    spot->visspot = (byte *)&spotvis[tilex][tiley];
     spot->flags = FL_BONUS | statinfo[type].specialFlags;
     spot->itemnumber = statinfo[type].type;
 }
@@ -260,7 +258,7 @@ void PlaceItemType (int itemtype, int tilex, int tiley)
 
 doorobjlist[] holds most of the information for the doors
 
-doorposition[] holds the amount the door is open, ranging from 0 to 0xffff
+door->position holds the amount the door is open, ranging from 0 to 0xffff
         this is directly accessed by AsmRefresh during rendering
 
 The number of doors is limited to 64 because a spot in tilemap holds the
@@ -283,9 +281,6 @@ Every time a door opens or closes the areabyplayer matrix gets recalculated.
 
 doorobj_t       doorobjlist[MAXDOORS],*lastdoorobj;
 short           doornum;
-
-word            doorposition[MAXDOORS];             // leading edge of door 0=closed
-                                                    // 0xffff = fully open
 
 byte            areaconnect[NUMAREAS][NUMAREAS];
 
@@ -367,7 +362,7 @@ void SpawnDoor (int tilex, int tiley, boolean vertical, int lock)
     if (doornum==MAXDOORS)
         Quit ("64+ doors on level!");
 
-    doorposition[doornum] = 0;              // doors start out fully closed
+    lastdoorobj->position = 0;              // doors start out fully closed
     lastdoorobj->tilex = tilex;
     lastdoorobj->tiley = tiley;
     lastdoorobj->vertical = vertical;
@@ -515,7 +510,8 @@ void OperateDoor (int door)
     {
         if ( ! (gamestate.keys & (1 << (lock-dr_lock1) ) ) )
         {
-            if(doorposition[door]==0)SD_PlaySound (NOWAYSND);  // ADDEDFIX 9       // locked
+            if (!doorobjlist[door].position)
+                SD_PlaySound (NOWAYSND);  // ADDEDFIX 9       // locked
             return;
         }
     }
@@ -568,7 +564,7 @@ void DoorOpening (int door)
     word *map;
     int32_t position;
 
-    position = doorposition[door];
+    position = doorobjlist[door].position;
     if (!position)
     {
         //
@@ -617,7 +613,7 @@ void DoorOpening (int door)
         actorat[doorobjlist[door].tilex][doorobjlist[door].tiley] = 0;
     }
 
-    doorposition[door] = (word) position;
+    doorobjlist[door].position = (word) position;
 }
 
 
@@ -646,7 +642,7 @@ void DoorClosing (int door)
         return;
     };
 
-    position = doorposition[door];
+    position = doorobjlist[door].position;
 
     //
     // slide the door by an adaptive amount
@@ -686,7 +682,7 @@ void DoorClosing (int door)
         }
     }
 
-    doorposition[door] = (word) position;
+    doorobjlist[door].position = (word) position;
 }
 
 

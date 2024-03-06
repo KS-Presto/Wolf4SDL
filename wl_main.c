@@ -367,7 +367,7 @@ boolean SaveTheGame (FILE *file, int x, int y)
     word      actnum,laststatobjnum;
     objtype   *ob;
     objtype   nullobj;
-    statobj_t nullstat;
+    statobj_t *statobj;
 
     checksum = 0;
 
@@ -435,17 +435,12 @@ boolean SaveTheGame (FILE *file, int x, int y)
     checksum = DoChecksum(&laststatobjnum,sizeof(laststatobjnum),checksum);
 
     DiskFlopAnim (x,y);
-    for (i = 0; i < MAXSTATS; i++)
+    for (statobj = &statobjlist[0]; statobj < laststatobj; statobj++)
     {
-        memcpy (&nullstat,&statobjlist[i],sizeof(nullstat));
-        nullstat.visspot = (byte *)((uintptr_t)nullstat.visspot - (uintptr_t)spotvis);
-        fwrite (&nullstat,sizeof(nullstat),1,file);
-        checksum = DoChecksum(&nullstat,sizeof(nullstat),checksum);
+        fwrite (statobj,sizeof(*statobj),1,file);
+        checksum = DoChecksum(statobj,sizeof(*statobj),checksum);
     }
 
-    DiskFlopAnim (x,y);
-    fwrite (doorposition,sizeof(doorposition),1,file);
-    checksum = DoChecksum(doorposition,sizeof(doorposition),checksum);
     DiskFlopAnim (x,y);
     fwrite (doorobjlist,sizeof(doorobjlist),1,file);
     checksum = DoChecksum(doorobjlist,sizeof(doorobjlist),checksum);
@@ -493,7 +488,7 @@ boolean LoadTheGame (FILE *file, int x, int y)
     int32_t   checksum,oldchecksum;
     objtype   *newobj = NULL;
     objtype   nullobj;
-    statobj_t nullstat;
+    statobj_t *statobj;
 
     checksum = 0;
 
@@ -569,17 +564,12 @@ boolean LoadTheGame (FILE *file, int x, int y)
     checksum = DoChecksum(&laststatobjnum,sizeof(laststatobjnum),checksum);
 
     DiskFlopAnim (x,y);
-    for (i = 0; i < MAXSTATS; i++)
+    for (statobj = &statobjlist[0]; statobj < laststatobj; statobj++)
     {
-        fread (&nullstat,sizeof(nullstat),1,file);
-        checksum = DoChecksum(&nullstat,sizeof(nullstat),checksum);
-        nullstat.visspot = (byte *)((uintptr_t)nullstat.visspot + (uintptr_t)spotvis);
-        memcpy (&statobjlist[i],&nullstat,sizeof(nullstat));
+        fread (statobj,sizeof(*statobj),1,file);
+        checksum = DoChecksum(statobj,sizeof(*statobj),checksum);
     }
 
-    DiskFlopAnim (x,y);
-    fread (doorposition,sizeof(doorposition),1,file);
-    checksum = DoChecksum(doorposition,sizeof(doorposition),checksum);
     DiskFlopAnim (x,y);
     fread (doorobjlist,sizeof(doorobjlist),1,file);
     checksum = DoChecksum(doorobjlist,sizeof(doorobjlist),checksum);

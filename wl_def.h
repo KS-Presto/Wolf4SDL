@@ -760,7 +760,6 @@ typedef struct statstruct
 {
     byte      tilex,tiley;
     short     shapenum;           // if shapenum == -1 the obj has been removed
-    byte      *visspot;
     uint32_t  flags;
     byte      itemnumber;
 } statobj_t;
@@ -784,6 +783,7 @@ typedef struct doorstruct
     byte     lock;
     byte     action;
     short    ticcount;
+    uint16_t position;            // leading edge of door (0 = closed, 0xffff = fully open)
 } doorobj_t;
 
 
@@ -806,18 +806,20 @@ typedef struct objstruct
     byte        dir;
 
     fixed       x,y;
-    word        tilex,tiley;
+
+    byte        tilex,tiley;
     byte        areanumber;
 
     short       viewx;
     word        viewheight;
-    fixed       transx,transy;      // in global coord
+    fixed       transx;             // in global coord
 
     short       angle;
     short       hitpoints;
     int32_t     speed;
 
-    short       temp1,temp2,hidden;
+    short       temp1,temp2;
+    bool        hidden;
 
     /**
     //
@@ -1295,8 +1297,6 @@ extern  statobj_t   *laststatobj;
 extern  doorobj_t   doorobjlist[MAXDOORS];
 extern  doorobj_t   *lastdoorobj;
 extern  short       doornum;
-
-extern  word      doorposition[MAXDOORS];
 
 extern  byte      areaconnect[NUMAREAS][NUMAREAS];
 
