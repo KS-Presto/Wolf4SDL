@@ -190,7 +190,7 @@ void SpawnStatic (int tilex, int tiley, int type)
 
     laststatobj++;
 
-    if (laststatobj == &statobjlist[MAXSTATS])
+    if (laststatobj == &statobjlist[MAXSTATS - 1])
         Quit ("Too many static objects!\n");
 }
 
@@ -230,7 +230,7 @@ void PlaceItemType (int itemtype, int tilex, int tiley)
     {
         if (spot==laststatobj)
         {
-            if (spot == &statobjlist[MAXSTATS])
+            if (spot == &statobjlist[MAXSTATS - 1])
                 return;                                     // no free spots
             laststatobj++;                                  // space at end
             break;
