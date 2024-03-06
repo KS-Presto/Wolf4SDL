@@ -229,7 +229,9 @@ void A_MechaSound (objtype *ob);
 
 void A_Smoke (objtype *ob)
 {
-    GetNewActor ();
+    objtype *newobj = NULL;
+
+    newobj = GetNewActor ();
 #ifdef SPEAR
     if (ob->obclass == hrocketobj)
         newobj->state = &s_hsmoke1;
@@ -841,34 +843,35 @@ statetype s_gretelshoot8        = {false,SPR_GRETEL_SHOOT1,10,NULL,NULL,&s_grete
 
 void SpawnStand (int which, int tilex, int tiley, int dir)
 {
+    objtype *newobj = NULL;
     word *map;
     word tile;
 
     switch (which)
     {
         case en_guard:
-            SpawnNewObj (tilex,tiley,&s_grdstand);
+            newobj = SpawnNewObj(tilex,tiley,&s_grdstand);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_officer:
-            SpawnNewObj (tilex,tiley,&s_ofcstand);
+            newobj = SpawnNewObj(tilex,tiley,&s_ofcstand);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_mutant:
-            SpawnNewObj (tilex,tiley,&s_mutstand);
+            newobj = SpawnNewObj(tilex,tiley,&s_mutstand);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_ss:
-            SpawnNewObj (tilex,tiley,&s_ssstand);
+            newobj = SpawnNewObj(tilex,tiley,&s_ssstand);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
@@ -915,7 +918,9 @@ void SpawnStand (int which, int tilex, int tiley, int dir)
 
 void SpawnDeadGuard (int tilex, int tiley)
 {
-    SpawnNewObj (tilex,tiley,&s_grddie4);
+    objtype *newobj = NULL;
+
+    newobj = SpawnNewObj(tilex,tiley,&s_grddie4);
     DEMOIF_SDL
     {
         newobj->flags |= FL_NONMARK;    // walk through moving enemy fix
@@ -936,7 +941,9 @@ void SpawnDeadGuard (int tilex, int tiley)
 
 void SpawnBoss (int tilex, int tiley)
 {
-    SpawnNewObj (tilex,tiley,&s_bossstand);
+    objtype *newobj = NULL;
+
+    newobj = SpawnNewObj(tilex,tiley,&s_bossstand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = bossobj;
@@ -957,7 +964,9 @@ void SpawnBoss (int tilex, int tiley)
 
 void SpawnGretel (int tilex, int tiley)
 {
-    SpawnNewObj (tilex,tiley,&s_gretelstand);
+    objtype *newobj = NULL;
+
+    newobj = SpawnNewObj(tilex,tiley,&s_gretelstand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = gretelobj;
@@ -979,38 +988,40 @@ void SpawnGretel (int tilex, int tiley)
 
 void SpawnPatrol (int which, int tilex, int tiley, int dir)
 {
+    objtype *newobj = NULL;
+
     switch (which)
     {
         case en_guard:
-            SpawnNewObj (tilex,tiley,&s_grdpath1);
+            newobj = SpawnNewObj(tilex,tiley,&s_grdpath1);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_officer:
-            SpawnNewObj (tilex,tiley,&s_ofcpath1);
+            newobj = SpawnNewObj(tilex,tiley,&s_ofcpath1);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_ss:
-            SpawnNewObj (tilex,tiley,&s_sspath1);
+            newobj = SpawnNewObj(tilex,tiley,&s_sspath1);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_mutant:
-            SpawnNewObj (tilex,tiley,&s_mutpath1);
+            newobj = SpawnNewObj(tilex,tiley,&s_mutpath1);
             newobj->speed = SPDPATROL;
             if (!loadedgame)
                 gamestate.killtotal++;
             break;
 
         case en_dog:
-            SpawnNewObj (tilex,tiley,&s_dogpath1);
+            newobj = SpawnNewObj(tilex,tiley,&s_dogpath1);
             newobj->speed = SPDDOG;
             if (!loadedgame)
                 gamestate.killtotal++;
@@ -1246,13 +1257,12 @@ statetype s_transshoot8         = {false,SPR_TRANS_SHOOT1,10,NULL,NULL,&s_transc
 
 void SpawnTrans (int tilex, int tiley)
 {
-    //        word *map;
-    //        word tile;
+    objtype *newobj = NULL;
 
     if (SoundBlasterPresent && DigiMode != sds_Off)
         s_transdie01.tictime = 105;
 
-    SpawnNewObj (tilex,tiley,&s_transstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_transstand);
     newobj->obclass = transobj;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][en_trans];
     newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
@@ -1328,10 +1338,12 @@ statetype s_ubershoot7          = {false,SPR_UBER_SHOOT1,12,NULL,NULL,&s_ubercha
 
 void SpawnUber (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (SoundBlasterPresent && DigiMode != sds_Off)
         s_uberdie01.tictime = 70;
 
-    SpawnNewObj (tilex,tiley,&s_uberstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_uberstand);
     newobj->obclass = uberobj;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][en_uber];
     newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
@@ -1425,10 +1437,12 @@ statetype s_willshoot6          = {false,SPR_WILL_SHOOT4,10,NULL,(statefunc)T_Sh
 
 void SpawnWill (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (SoundBlasterPresent && DigiMode != sds_Off)
         s_willdie2.tictime = 70;
 
-    SpawnNewObj (tilex,tiley,&s_willstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_willstand);
     newobj->obclass = willobj;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][en_will];
     newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
@@ -1602,10 +1616,12 @@ statetype s_deathshoot5         = {false,SPR_DEATH_SHOOT4,10,NULL,(statefunc)T_S
 
 void SpawnDeath (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (SoundBlasterPresent && DigiMode != sds_Off)
         s_deathdie2.tictime = 105;
 
-    SpawnNewObj (tilex,tiley,&s_deathstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_deathstand);
     newobj->obclass = deathobj;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][en_death];
     newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
@@ -1623,6 +1639,7 @@ void SpawnDeath (int tilex, int tiley)
 
 void T_Launch (objtype *ob)
 {
+    objtype *newobj = NULL;
     int32_t deltax,deltay;
     float   angle;
     int     iangle;
@@ -1650,7 +1667,7 @@ void T_Launch (objtype *ob)
         }
     }
 
-    GetNewActor ();
+    newobj = GetNewActor();
     newobj->state = &s_rocket;
     newobj->ticcount = 1;
 
@@ -1791,10 +1808,12 @@ void A_Breathing (objtype *ob)
 
 void SpawnAngel (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (SoundBlasterPresent && DigiMode != sds_Off)
         s_angeldie11.tictime = 105;
 
-    SpawnNewObj (tilex,tiley,&s_angelstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_angelstand);
     newobj->obclass = angelobj;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][en_angel];
     newobj->flags |= FL_SHOOTABLE|FL_AMBUSH;
@@ -1906,10 +1925,12 @@ statetype s_spectrewake         = {false,SPR_SPECTRE_F4,10,NULL,(statefunc)A_Dor
 
 void SpawnSpectre (int tilex, int tiley)
 {
-    SpawnNewObj (tilex,tiley,&s_spectrewait1);
+    objtype *newobj = NULL;
+
+    newobj = SpawnNewObj(tilex,tiley,&s_spectrewait1);
     newobj->obclass = spectreobj;
     newobj->hitpoints = starthitpoints[gamestate.difficulty][en_spectre];
-    newobj->flags |= FL_SHOOTABLE|FL_AMBUSH|FL_BONUS; // |FL_NEVERMARK|FL_NONMARK;
+    newobj->flags |= FL_SHOOTABLE|FL_AMBUSH|FL_BONUS;
     if (!loadedgame)
         gamestate.killtotal++;
 }
@@ -1986,19 +2007,21 @@ moveok:
 
 void SpawnGhosts (int which, int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     switch(which)
     {
         case en_blinky:
-            SpawnNewObj (tilex,tiley,&s_blinkychase1);
+            newobj = SpawnNewObj(tilex,tiley,&s_blinkychase1);
             break;
         case en_clyde:
-            SpawnNewObj (tilex,tiley,&s_clydechase1);
+            newobj = SpawnNewObj(tilex,tiley,&s_clydechase1);
             break;
         case en_pinky:
-            SpawnNewObj (tilex,tiley,&s_pinkychase1);
+            newobj = SpawnNewObj(tilex,tiley,&s_pinkychase1);
             break;
         case en_inky:
-            SpawnNewObj (tilex,tiley,&s_inkychase1);
+            newobj = SpawnNewObj(tilex,tiley,&s_inkychase1);
             break;
     }
 
@@ -2205,12 +2228,14 @@ statetype s_fatshoot6           = {false,SPR_FAT_SHOOT4,10,NULL,(statefunc)T_Sho
 
 void SpawnSchabbs (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (DigiMode != sds_Off)
         s_schabbdie2.tictime = 140;
     else
         s_schabbdie2.tictime = 5;
 
-    SpawnNewObj (tilex,tiley,&s_schabbstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_schabbstand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = schabbobj;
@@ -2232,12 +2257,14 @@ void SpawnSchabbs (int tilex, int tiley)
 
 void SpawnGift (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (DigiMode != sds_Off)
         s_giftdie2.tictime = 140;
     else
         s_giftdie2.tictime = 5;
 
-    SpawnNewObj (tilex,tiley,&s_giftstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_giftstand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = giftobj;
@@ -2259,12 +2286,14 @@ void SpawnGift (int tilex, int tiley)
 
 void SpawnFat (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (DigiMode != sds_Off)
         s_fatdie2.tictime = 140;
     else
         s_fatdie2.tictime = 5;
 
-    SpawnNewObj (tilex,tiley,&s_fatstand);
+    newobj = SpawnNewObj(tilex,tiley,&s_fatstand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = fatobj;
@@ -2286,6 +2315,7 @@ void SpawnFat (int tilex, int tiley)
 
 void T_SchabbThrow (objtype *ob)
 {
+    objtype *newobj = NULL;
     int32_t deltax,deltay;
     float   angle;
     int     iangle;
@@ -2297,7 +2327,7 @@ void T_SchabbThrow (objtype *ob)
         angle = (float) (M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);
 
-    GetNewActor ();
+    newobj = GetNewActor();
     newobj->state = &s_needle1;
     newobj->ticcount = 1;
 
@@ -2326,6 +2356,7 @@ void T_SchabbThrow (objtype *ob)
 
 void T_GiftThrow (objtype *ob)
 {
+    objtype *newobj = NULL;
     int32_t deltax,deltay;
     float   angle;
     int     iangle;
@@ -2337,7 +2368,7 @@ void T_GiftThrow (objtype *ob)
         angle = (float) (M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);
 
-    GetNewActor ();
+    newobj = GetNewActor();
     newobj->state = &s_rocket;
     newobj->ticcount = 1;
 
@@ -2815,7 +2846,9 @@ statetype s_hitlershoot6        = {false,SPR_HITLER_SHOOT2,10,NULL,(statefunc)T_
 
 void SpawnFakeHitler (int tilex, int tiley)
 {
-    SpawnNewObj (tilex,tiley,&s_fakestand);
+    objtype *newobj = NULL;
+
+    newobj = SpawnNewObj(tilex,tiley,&s_fakestand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = fakeobj;
@@ -2837,13 +2870,14 @@ void SpawnFakeHitler (int tilex, int tiley)
 
 void SpawnHitler (int tilex, int tiley)
 {
+    objtype *newobj = NULL;
+
     if (DigiMode != sds_Off)
         s_hitlerdie2.tictime = 140;
     else
         s_hitlerdie2.tictime = 5;
 
-
-    SpawnNewObj (tilex,tiley,&s_mechastand);
+    newobj = SpawnNewObj(tilex,tiley,&s_mechastand);
     newobj->speed = SPDPATROL;
 
     newobj->obclass = mechahitlerobj;
@@ -2865,9 +2899,10 @@ void SpawnHitler (int tilex, int tiley)
 
 void A_HitlerMorph (objtype *ob)
 {
-    short hitpoints[4]={500,700,800,900};
+    objtype *newobj = NULL;
+    short   hitpoints[4]={500,700,800,900};
 
-    SpawnNewObj (ob->tilex,ob->tiley,&s_hitlerchase1);
+    newobj = SpawnNewObj(ob->tilex,ob->tiley,&s_hitlerchase1);
     newobj->speed = SPDPATROL*5;
 
     newobj->x = ob->x;
@@ -2914,6 +2949,7 @@ void A_Slurpie (objtype *ob)
 
 void T_FakeFire (objtype *ob)
 {
+    objtype *newobj = NULL;
     int32_t deltax,deltay;
     float   angle;
     int     iangle;
@@ -2931,7 +2967,7 @@ void T_FakeFire (objtype *ob)
         angle = (float)(M_PI*2+angle);
     iangle = (int) (angle/(M_PI*2)*ANGLES);
 
-    GetNewActor ();
+    newobj = GetNewActor();
     newobj->state = &s_fire1;
     newobj->ticcount = 1;
 
@@ -3632,7 +3668,9 @@ statetype s_deathcam            = {false,0,0,NULL,NULL,NULL};
 
 void SpawnBJVictory (void)
 {
-    SpawnNewObj (player->tilex,player->tiley+1,&s_bjrun1);
+    objtype *newobj = NULL;
+
+    newobj = SpawnNewObj(player->tilex,player->tiley+1,&s_bjrun1);
     newobj->x = player->x;
     newobj->y = player->y;
     newobj->obclass = bjobj;

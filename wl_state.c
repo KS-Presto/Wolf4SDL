@@ -60,14 +60,17 @@ void    FirstSighting (objtype *ob);
 = Spaws a new actor at the given TILE coordinates, with the given state, and
 = the given size in GLOBAL units.
 =
-= newobj = a pointer to an initialized new actor
+= Returns:
+=     newobj = a pointer to an initialized new actor
 =
 ===================
 */
 
-void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
+objtype *SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
 {
-    GetNewActor ();
+    objtype *newobj = NULL;
+
+    newobj = GetNewActor();
     newobj->state = state;
     if (state->tictime)
         newobj->ticcount = DEMOCHOOSE_ORIG_SDL(
@@ -84,6 +87,8 @@ void SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state)
 
     actorat[tilex][tiley] = newobj;
     newobj->areanumber = MAPSPOT(tilex,tiley,0) - AREATILE;
+
+    return newobj;
 }
 
 

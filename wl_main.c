@@ -484,7 +484,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
     int actnum = 0;
     word laststatobjnum;
     int32_t checksum,oldchecksum;
-    objtype nullobj;
+    objtype *newobj = NULL,nullobj;
     statobj_t nullstat;
 
     checksum = 0;
@@ -537,7 +537,7 @@ boolean LoadTheGame(FILE *file,int x,int y)
         fread (&nullobj,sizeof(nullobj),1,file);
         if (nullobj.active == ac_badobject)
             break;
-        GetNewActor ();
+        newobj = GetNewActor();
         nullobj.state=(statetype *) ((uintptr_t)nullobj.state+(uintptr_t)&s_grdstand);
         // don't copy over the links
         memcpy (newobj,&nullobj,sizeof(nullobj)-8);

@@ -1038,7 +1038,7 @@ extern  int         DebugOk;
 extern  boolean     madenoise;
 
 extern  objtype     objlist[MAXACTORS];
-extern  objtype     *newobj,*player,*objfreelist,*killerobj;
+extern  objtype     *player,*objfreelist,*killerobj;
 
 extern  tiletype    tilemap[MAPSIZE][MAPSIZE];      // wall values only
 extern  bool        spotvis[MAPSIZE][MAPSIZE];
@@ -1079,7 +1079,7 @@ extern  void        *demobuffer;
 
 
 void    InitActorList (void);
-void    GetNewActor (void);
+objtype *GetNewActor (void);
 void    PlayLoop (void);
 void    CenterWindow (word w, word h);
 void    InitRedShifts (void);
@@ -1204,7 +1204,7 @@ void Transform3DShape (statobj_t *statptr);
 #define SPDDOG          1500
 
 
-void    SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
+objtype *SpawnNewObj (unsigned tilex, unsigned tiley, statetype *state);
 void    NewState (objtype *ob, statetype *state);
 
 boolean TryWalk (objtype *ob);

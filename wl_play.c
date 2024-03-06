@@ -31,7 +31,7 @@ static int lastmusicchunk = 0;
 int     DebugOk;
 
 objtype objlist[MAXACTORS];
-objtype *newobj, *obj, *player, *lastobj, *objfreelist, *killerobj;
+objtype *player,*lastobj,*objfreelist,*killerobj;
 
 boolean singlestep,godmode,noclip,ammocheat,mapreveal;
 int     extravbls;
@@ -796,9 +796,7 @@ void InitActorList (void)
 //
 // give the player the first free spots
 //
-    GetNewActor ();
-    player = newobj;
-
+    player = GetNewActor();
 }
 
 //===========================================================================
@@ -808,7 +806,7 @@ void InitActorList (void)
 =
 = GetNewActor
 =
-= Sets the global variable new to point to a free spot in objlist.
+= Returns a pointer to a free spot in objlist.
 = The free spot is inserted at the end of the liked list
 =
 = When the object list is full, the caller can either have it bomb out ot
@@ -817,8 +815,10 @@ void InitActorList (void)
 =========================
 */
 
-void GetNewActor (void)
+objtype *GetNewActor (void)
 {
+    objtype *newobj = NULL;
+
     if (!objfreelist)
         Quit ("GetNewActor: No free spots in objlist!");
 
@@ -828,12 +828,14 @@ void GetNewActor (void)
 
     if (lastobj)
         lastobj->next = newobj;
-    newobj->prev = lastobj;     // new->next is allready NULL from memset
+    newobj->prev = lastobj;     // newobj->next is allready NULL from memset
 
     newobj->active = ac_no;
     lastobj = newobj;
 
     objcount++;
+
+    return newobj;
 }
 
 //===========================================================================
@@ -860,7 +862,7 @@ void RemoveObj (objtype * gone)
 // fix the next object's back link
 //
     if (gone == lastobj)
-        lastobj = (objtype *) gone->prev;
+        lastobj = gone->prev;
     else
         gone->next->prev = gone->prev;
 
@@ -1251,6 +1253,7 @@ int32_t funnyticount;
 
 void PlayLoop (void)
 {
+    objtype *obj;
 #if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
     if(GetFeatureFlags() & FF_CLOUDSKY)
         InitSky();
