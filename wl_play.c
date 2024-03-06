@@ -1208,13 +1208,12 @@ void DoActor (objtype * ob)
         if (!ob->state->tictime)
         {
             ob->ticcount = 0;
-            goto think;
+            break;
         }
 
         ob->ticcount += ob->state->tictime;
     }
 
-think:
     //
     // think
     //

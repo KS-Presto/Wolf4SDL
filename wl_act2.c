@@ -1951,15 +1951,11 @@ void A_Dormant (objtype *ob)
     int         x,y;
     uintptr_t   tile;
 
-    deltax = ob->x - player->x;
-    if (deltax < -MINACTORDIST || deltax > MINACTORDIST)
-        goto moveok;
-    deltay = ob->y - player->y;
-    if (deltay < -MINACTORDIST || deltay > MINACTORDIST)
-        goto moveok;
+    deltax = labs(ob->x - player->x);
+    deltay = labs(ob->y - player->y);
 
-    return;
-moveok:
+    if (deltax <= MINACTORDIST && deltay <= MINACTORDIST)
+        return;
 
     xl = (ob->x-MINDIST) >> TILESHIFT;
     xh = (ob->x+MINDIST) >> TILESHIFT;

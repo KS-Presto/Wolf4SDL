@@ -586,31 +586,35 @@ int DebugKeys (void)
             CenterWindow(17,12);
             start = 0; end = 10;
         }
-again:
-        for(x=start;x<end;x++)
+
+        while (1)
         {
-            US_PrintUnsigned(x+1);
-            US_Print(" ");
-            US_PrintUnsigned(LevelRatios[x].time/60);
-            US_Print(":");
-            if (LevelRatios[x].time%60 < 10)
-                US_Print("0");
-            US_PrintUnsigned(LevelRatios[x].time%60);
-            US_Print(" ");
-            US_PrintUnsigned(LevelRatios[x].kill);
-            US_Print("% ");
-            US_PrintUnsigned(LevelRatios[x].secret);
-            US_Print("% ");
-            US_PrintUnsigned(LevelRatios[x].treasure);
-            US_Print("%\n");
-        }
-        VW_UpdateScreen();
-        IN_Ack();
-        if (end == 10 && gamestate.mapon > 9)
-        {
-            start = 10; end = 20;
-            CenterWindow(17,12);
-            goto again;
+            for(x=start;x<end;x++)
+            {
+                US_PrintUnsigned(x+1);
+                US_Print(" ");
+                US_PrintUnsigned(LevelRatios[x].time/60);
+                US_Print(":");
+                if (LevelRatios[x].time%60 < 10)
+                    US_Print("0");
+                US_PrintUnsigned(LevelRatios[x].time%60);
+                US_Print(" ");
+                US_PrintUnsigned(LevelRatios[x].kill);
+                US_Print("% ");
+                US_PrintUnsigned(LevelRatios[x].secret);
+                US_Print("% ");
+                US_PrintUnsigned(LevelRatios[x].treasure);
+                US_Print("%\n");
+            }
+            VW_UpdateScreen();
+            IN_Ack();
+            if (end == 10 && gamestate.mapon > 9)
+            {
+                start = 10; end = 20;
+                CenterWindow(17,12);
+            }
+            else
+                break;
         }
 
         return 1;

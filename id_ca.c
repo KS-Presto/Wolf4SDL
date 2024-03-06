@@ -810,22 +810,21 @@ void CA_LoadAllSounds (void)
 {
     unsigned start,i;
 
-    switch (oldsoundmode)
+    if (oldsoundmode != sdm_Off)
     {
-        case sdm_Off:
-            goto cachein;
-        case sdm_PC:
-            start = STARTPCSOUNDS;
-            break;
-        case sdm_AdLib:
-            start = STARTADLIBSOUNDS;
-            break;
+        switch (oldsoundmode)
+        {
+            case sdm_PC:
+                start = STARTPCSOUNDS;
+                break;
+            case sdm_AdLib:
+                start = STARTADLIBSOUNDS;
+                break;
+        }
+
+        for (i=0;i<NUMSOUNDS;i++,start++)
+            UNCACHEAUDIOCHUNK(start);
     }
-
-    for (i=0;i<NUMSOUNDS;i++,start++)
-        UNCACHEAUDIOCHUNK(start);
-
-cachein:
 
     oldsoundmode = SoundMode;
 

@@ -678,37 +678,41 @@ void SelectRunDir (objtype *ob)
 
 void MoveObj (objtype *ob, int32_t move)
 {
-    int32_t    deltax,deltay;
+    int32_t deltax,deltay;
+    fixed   newx,newy;
+
+    newx = ob->x;
+    newy = ob->y;
 
     switch (ob->dir)
     {
         case north:
-            ob->y -= move;
+            newy -= move;
             break;
         case northeast:
-            ob->x += move;
-            ob->y -= move;
+            newx += move;
+            newy -= move;
             break;
         case east:
-            ob->x += move;
+            newx += move;
             break;
         case southeast:
-            ob->x += move;
-            ob->y += move;
+            newx += move;
+            newy += move;
             break;
         case south:
-            ob->y += move;
+            newy += move;
             break;
         case southwest:
-            ob->x -= move;
-            ob->y += move;
+            newx -= move;
+            newy += move;
             break;
         case west:
-            ob->x -= move;
+            newx -= move;
             break;
         case northwest:
-            ob->x -= move;
-            ob->y -= move;
+            newx -= move;
+            newy -= move;
             break;
 
         case nodir:
@@ -723,60 +727,33 @@ void MoveObj (objtype *ob, int32_t move)
     //
     if (ob->areanumber >= NUMAREAS || areabyplayer[ob->areanumber])
     {
-        deltax = ob->x - player->x;
-        if (deltax < -MINACTORDIST || deltax > MINACTORDIST)
-            goto moveok;
-        deltay = ob->y - player->y;
-        if (deltay < -MINACTORDIST || deltay > MINACTORDIST)
-            goto moveok;
+        deltax = labs(newx - player->x);
+        deltay = labs(newy - player->y);
 
-        if (ob->hidden && spotvis[player->tilex][player->tiley])
-            goto moveok;         // move closer until he meets CheckLine
-
-        if (ob->obclass == ghostobj || ob->obclass == spectreobj)
-            TakeDamage (tics*2,ob);
-
-        //
-        // back up
-        //
-        switch (ob->dir)
+        if (deltax <= MINACTORDIST && deltay <= MINACTORDIST)
         {
-            case north:
-                ob->y += move;
-                break;
-            case northeast:
-                ob->x -= move;
-                ob->y += move;
-                break;
-            case east:
-                ob->x -= move;
-                break;
-            case southeast:
-                ob->x -= move;
-                ob->y -= move;
-                break;
-            case south:
-                ob->y -= move;
-                break;
-            case southwest:
-                ob->x += move;
-                ob->y -= move;
-                break;
-            case west:
-                ob->x += move;
-                break;
-            case northwest:
-                ob->x += move;
-                ob->y += move;
-                break;
+            //
+            // TODO: this trick allows guards to get closer to the player
+            // until they meet CheckLine, but sometimes it lets them get
+            // inside the player and prevent him from moving... Maybe allow
+            // the player to move *away* from guards that are on top of him,
+            // but not into? That should allow him to back out of a situation
+            // where he gets stuck, but not exploit it by moving further into
+            // the guard and effectively no-clipping through them...
+            //
+            if (!ob->hidden || !spotvis[player->tilex][player->tiley])
+            {
+                if (ob->obclass == ghostobj || ob->obclass == spectreobj)
+                    TakeDamage (tics*2,ob);
 
-            case nodir:
                 return;
+            }
         }
-        return;
     }
-moveok:
-    ob->distance -=move;
+
+    ob->x = newx;
+    ob->y = newy;
+    ob->distance -= move;
 }
 
 /*

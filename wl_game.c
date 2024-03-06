@@ -1343,7 +1343,6 @@ void GameLoop (void)
     clock_t start,end;
 #endif
 
-restartgame:
     ClearMemory ();
     SETFONTCOLOR(0,15);
     VW_FadeOut();
@@ -1387,13 +1386,10 @@ restartgame:
 
 //        DrawLevel ();                     // ADDEDFIX 5 - moved up  Chris Chokan
 
-#ifdef SPEAR
-startplayloop:
-#endif
         PlayLoop ();
 
 #ifdef SPEAR
-        if (spearflag)
+        while (spearflag)
         {
             SD_StopSound();
             SD_PlaySound(GETSPEARSND);
@@ -1414,7 +1410,7 @@ startplayloop:
             player->angle = (short)spearangle;
             spearflag = false;
             Thrust (0,0);
-            goto startplayloop;
+            PlayLoop ();
         }
 #endif
 
@@ -1425,7 +1421,14 @@ startplayloop:
             FinishDemoRecord ();
 
         if (startgame || loadedgame)
-            goto restartgame;
+        {
+            ClearMemory ();
+            SETFONTCOLOR(0,15);
+            VW_FadeOut();
+            DrawPlayScreen ();
+            died = false;
+            continue;
+        }
 
         switch (playstate)
         {
