@@ -3009,7 +3009,7 @@ HandleMenu (CP_iteminfo * item_i, CP_itemtype * items, void (*routine) (int w))
     exit = 0;
     lastBlinkTime = GetTimeCount ();
     IN_ClearKeysDown ();
-
+    IN_ClearTextInput ();
 
     do
     {
