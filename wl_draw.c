@@ -69,13 +69,6 @@ byte    *postsourcesky;
 #endif
 
 //
-// wall optimization variables
-//
-int     lastside;               // true for vertical
-word    lasttilehit;
-int     lasttexture;
-
-//
 // ray tracing variables
 //
 short    focaltx,focalty;
@@ -435,42 +428,23 @@ void HitVertWall (void)
     wallheight[pixx] = CalcHeight();
     postx = pixx;
 
-    if (lastside == 1 && lasttilehit == tilehit && !(tilehit & BIT_WALL))
+    if (tilehit & BIT_WALL)
     {
         //
-        // in the same wall type as last time, so use the last postsource
+        // check for adjacent doors
         //
-        if (texture != lasttexture)
-        {
-            postsource += texture - lasttexture;
-            lasttexture = texture;
-        }
+        if (tilemap[xtile - xtilestep][yinttile] & BIT_DOOR)
+            wallpic = DOORWALL+3;
+        else
+            wallpic = vertwall[tilehit & ~BIT_WALL];
     }
     else
-    {
-        lastside = 1;
-        lasttilehit = tilehit;
-        lasttexture = texture;
+        wallpic = vertwall[tilehit];
 
-        if (tilehit & BIT_WALL)
-        {
-            //
-            // check for adjacent doors
-            //
-            if (tilemap[xtile - xtilestep][yinttile] & BIT_DOOR)
-                wallpic = DOORWALL+3;
-            else
-                wallpic = vertwall[tilehit & ~BIT_WALL];
-        }
-        else
-            wallpic = vertwall[tilehit];
-
-        postsource = PM_GetPage(wallpic) + texture;
+    postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
-        postsourcesky = postsource - texture;
+    postsourcesky = postsource - texture;
 #endif
-    }
-
     ScalePost ();
 }
 
@@ -501,42 +475,23 @@ void HitHorizWall (void)
     wallheight[pixx] = CalcHeight();
     postx = pixx;
 
-    if (lastside == 0 && lasttilehit == tilehit && !(tilehit & BIT_WALL))
+    if (tilehit & BIT_WALL)
     {
         //
-        // in the same wall type as last time, so use the last postsource
+        // check for adjacent doors
         //
-        if (texture != lasttexture)
-        {
-            postsource += texture - lasttexture;
-            lasttexture = texture;
-        }
+        if (tilemap[xinttile][ytile - ytilestep] & BIT_DOOR)
+            wallpic = DOORWALL + 2;
+        else
+            wallpic = horizwall[tilehit & ~BIT_WALL];
     }
     else
-    {
-        lastside = 0;
-        lasttilehit = tilehit;
-        lasttexture = texture;
+        wallpic = horizwall[tilehit];
 
-        if (tilehit & BIT_WALL)
-        {
-            //
-            // check for adjacent doors
-            //
-            if (tilemap[xinttile][ytile - ytilestep] & BIT_DOOR)
-                wallpic = DOORWALL + 2;
-            else
-                wallpic = horizwall[tilehit & ~BIT_WALL];
-        }
-        else
-            wallpic = horizwall[tilehit];
-
-        postsource = PM_GetPage(wallpic) + texture;
+    postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
-        postsourcesky = postsource - texture;
+    postsourcesky = postsource - texture;
 #endif
-    }
-
     ScalePost ();
 }
 
@@ -562,42 +517,25 @@ void HitHorizDoor (void)
     wallheight[pixx] = CalcHeight();
     postx = pixx;
 
-    if (lasttilehit == tilehit)
+    switch (doorobjlist[doornum].lock)
     {
-        //
-        // in the same door as last time, so use the last postsource
-        //
-        if (texture != lasttexture)
-        {
-            postsource += texture - lasttexture;
-            lasttexture = texture;
-        }
+        case dr_normal:
+            doorpage = DOORWALL;
+            break;
+
+        case dr_lock1:
+        case dr_lock2:
+        case dr_lock3:
+        case dr_lock4:
+            doorpage = DOORWALL + 6;
+            break;
+
+        case dr_elevator:
+            doorpage = DOORWALL + 4;
+            break;
     }
-    else
-    {
-        lasttilehit = tilehit;
-        lasttexture = texture;
 
-        switch (doorobjlist[doornum].lock)
-        {
-            case dr_normal:
-                doorpage = DOORWALL;
-                break;
-
-            case dr_lock1:
-            case dr_lock2:
-            case dr_lock3:
-            case dr_lock4:
-                doorpage = DOORWALL + 6;
-                break;
-
-            case dr_elevator:
-                doorpage = DOORWALL + 4;
-                break;
-        }
-
-        postsource = PM_GetPage(doorpage) + texture;
-    }
+    postsource = PM_GetPage(doorpage) + texture;
 
     ScalePost ();
 }
@@ -624,42 +562,25 @@ void HitVertDoor (void)
     wallheight[pixx] = CalcHeight();
     postx = pixx;
 
-    if (lasttilehit == tilehit)
+    switch (doorobjlist[doornum].lock)
     {
-        //
-        // in the same door as last time, so use the last postsource
-        //
-        if (texture != lasttexture)
-        {
-            postsource += texture - lasttexture;
-            lasttexture = texture;
-        }
+        case dr_normal:
+            doorpage = DOORWALL + 1;
+            break;
+
+        case dr_lock1:
+        case dr_lock2:
+        case dr_lock3:
+        case dr_lock4:
+            doorpage = DOORWALL + 7;
+            break;
+
+        case dr_elevator:
+            doorpage = DOORWALL + 5;
+            break;
     }
-    else
-    {
-        lasttilehit = tilehit;
-        lasttexture = texture;
 
-        switch (doorobjlist[doornum].lock)
-        {
-            case dr_normal:
-                doorpage = DOORWALL + 1;
-                break;
-
-            case dr_lock1:
-            case dr_lock2:
-            case dr_lock3:
-            case dr_lock4:
-                doorpage = DOORWALL + 7;
-                break;
-
-            case dr_elevator:
-                doorpage = DOORWALL + 5;
-                break;
-        }
-
-        postsource = PM_GetPage(doorpage) + texture;
-    }
+    postsource = PM_GetPage(doorpage) + texture;
 
     ScalePost ();
 }
@@ -1010,7 +931,6 @@ void WallRefresh (void)
     longword  xpartial,ypartial;
     doorobj_t *door;
     int       pwallposnorm,pwallposinv,pwallposi;           // holds modified pwallpos
-    bool      passdoor;
 
     for (pixx = 0; pixx < viewwidth; pixx++)
     {
@@ -1136,32 +1056,16 @@ void WallRefresh (void)
             //
             // check intersections with vertical walls
             //
+            if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == ytile)
+                yinttile = ytile;
+
             if ((ytilestep == -1 && yinttile <= ytile) || (ytilestep == 1 && yinttile >= ytile))
                 goto horizentry;
 vertentry:
 #ifdef REVEALMAP
             mapseen[xtile][yinttile] = true;
 #endif
-            //
-            // get the wall value from tilemap
-            //
-            if (tilemap[xtile][ytile] && (xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile)
-            {
-                //
-                // exactly in the wall corner, so use the last tile
-                //
-                tilehit = lasttilehit;
-
-                if (tilehit & BIT_DOOR)
-                    passdoor = false;                        // don't let the trace continue if it's a door
-            }
-            else
-            {
-                tilehit = tilemap[xtile][yinttile];
-
-                if (tilehit & BIT_DOOR)
-                    passdoor = true;
-            }
+            tilehit = tilemap[xtile][yinttile];
 
             if (tilehit)
             {
@@ -1181,7 +1085,7 @@ vertentry:
                     //
                     // midpoint is outside tile, so it hit the side of the wall before a door
                     //
-                    if (yinttemp >> TILESHIFT != yinttile && passdoor)
+                    if (yinttemp >> TILESHIFT != yinttile)
                         goto passvert;
 
                     if (door->action != dr_closed)
@@ -1346,6 +1250,9 @@ passvert:
             //
             // check intersections with horizontal walls
             //
+            if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile)
+                xinttile = xtile;
+
             if ((xtilestep == -1 && xinttile <= xtile) || (xtilestep == 1 && xinttile >= xtile))
                 goto vertentry;
 
@@ -1353,26 +1260,7 @@ horizentry:
 #ifdef REVEALMAP
             mapseen[xinttile][ytile] = true;
 #endif
-            //
-            // get the wall value from tilemap
-            //
-            if (tilemap[xtile][ytile] && (xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile)
-            {
-                //
-                // exactly in the wall corner, so use the last tile
-                //
-                tilehit = lasttilehit;
-
-                if (tilehit & BIT_DOOR)
-                    passdoor = false;                        // don't let the trace continue if it's a door
-            }
-            else
-            {
-                tilehit = tilemap[xinttile][ytile];
-
-                if (tilehit & BIT_DOOR)
-                    passdoor = true;
-            }
+            tilehit = tilemap[xinttile][ytile];
 
             if (tilehit)
             {
@@ -1392,7 +1280,7 @@ horizentry:
                     //
                     // midpoint is outside tile, so it hit the side of the wall before a door
                     //
-                    if (xinttemp >> TILESHIFT != xinttile && passdoor)
+                    if (xinttemp >> TILESHIFT != xinttile)
                         goto passhoriz;
 
                     if (door->action != dr_closed)
@@ -1581,8 +1469,6 @@ void Setup3DView (void)
     xpartialup = TILEGLOBAL-xpartialdown;
     ypartialdown = viewy&(TILEGLOBAL-1);
     ypartialup = TILEGLOBAL-ypartialdown;
-
-    lastside = -1;                  // no optimization on the first post
 }
 
 //==========================================================================
