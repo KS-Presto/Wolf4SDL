@@ -35,7 +35,11 @@
 #define YESBUTTONNAME "Y"
 #define NOBUTTONNAME  "B"
 #else
+#ifdef SPANISH
+#define YESBUTTONNAME "S"
+#else
 #define YESBUTTONNAME "Y"
+#endif
 #define NOBUTTONNAME  "N"
 #endif
 

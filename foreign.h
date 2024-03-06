@@ -14,7 +14,7 @@
 
 #define ENDGAMESTR	"Are you sure you want\n"\
 					"to end the game you\n"\
-					"are playing? (Y or N):"
+					"are playing? (" YESBUTTONNAME " or " NOBUTTONNAME "):"
 
 #define STR_NG	"New Game"
 #define	STR_SD	"Sound"

@@ -550,13 +550,7 @@ DrawMainMenu (void)
     if (ingame)
     {
 #ifndef JAPAN
-
-#ifdef SPANISH
-        snprintf (MainMenu[backtodemo].string,sizeof(MainMenu[backtodemo].string),STR_GAME);
-#else
         snprintf (MainMenu[backtodemo].string,sizeof(MainMenu[backtodemo].string),STR_BG);
-#endif
-
 #else
         VWB_DrawPic (12 * 8, 20 * 8, C_MRETGAMEPIC);
         VWB_DrawPic (12 * 8, 18 * 8, C_MENDGAMEPIC);
