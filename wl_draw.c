@@ -1466,9 +1466,9 @@ void Setup3DView (void)
     focalty = (short)(viewy>>TILESHIFT);
 
     xpartialdown = viewx&(TILEGLOBAL-1);
-    xpartialup = TILEGLOBAL-xpartialdown;
+    xpartialup = xpartialdown ^ (TILEGLOBAL - 1);
     ypartialdown = viewy&(TILEGLOBAL-1);
-    ypartialup = TILEGLOBAL-ypartialdown;
+    ypartialup = ypartialdown ^ (TILEGLOBAL - 1);
 }
 
 //==========================================================================
