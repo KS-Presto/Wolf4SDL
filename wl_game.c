@@ -1455,7 +1455,7 @@ void GameLoop (void)
 
                     CheckHighScore (gamestate.score,gamestate.mapon+1);
 #ifndef JAPAN
-                    strcpy(MainMenu[viewscores].string,STR_VS);
+                    snprintf (MainMenu[viewscores].string,sizeof(MainMenu[viewscores].string),STR_VS);
 #endif
                     MainMenu[viewscores].routine = CP_ViewScores;
                     return;
@@ -1473,7 +1473,7 @@ void GameLoop (void)
 
                     CheckHighScore (gamestate.score,gamestate.mapon+1);
 #ifndef JAPAN
-                    strcpy(MainMenu[viewscores].string,STR_VS);
+                    snprintf (MainMenu[viewscores].string,sizeof(MainMenu[viewscores].string),STR_VS);
 #endif
                     MainMenu[viewscores].routine = CP_ViewScores;
                     return;
@@ -1545,7 +1545,7 @@ void GameLoop (void)
 
                 CheckHighScore (gamestate.score,gamestate.mapon+1);
 #ifndef JAPAN
-                strcpy(MainMenu[viewscores].string,STR_VS);
+                snprintf (MainMenu[viewscores].string,sizeof(MainMenu[viewscores].string),STR_VS);
 #endif
                 MainMenu[viewscores].routine = CP_ViewScores;
                 return;
@@ -1565,7 +1565,7 @@ void GameLoop (void)
 
                 CheckHighScore (gamestate.score,gamestate.mapon+1);
 #ifndef JAPAN
-                strcpy(MainMenu[viewscores].string,STR_VS);
+                snprintf (MainMenu[viewscores].string,sizeof(MainMenu[viewscores].string),STR_VS);
 #endif
                 MainMenu[viewscores].routine = CP_ViewScores;
                 return;

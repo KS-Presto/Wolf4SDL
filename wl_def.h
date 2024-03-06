@@ -1404,7 +1404,7 @@ void SpawnBJVictory (void);
 =============================================================================
 */
 
-extern  char    helpfilename[],endfilename[];
+extern  char    helpfilename[13],endfilename[13];
 
 extern  void    HelpScreens (void);
 extern  void    EndText (void);
@@ -1454,15 +1454,21 @@ void GP2X_ButtonUp (int button);
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
 
 #ifndef _WIN32
-    static inline char* itoa(int value, char* string, int radix)
+    static inline char *itoa (int value, char *string, int radix)
     {
-	    sprintf(string, "%d", value);
+        int len = strlen(string) + 1;
+
+	    snprintf (string,len,"%d",value);
+
 	    return string;
     }
 
-    static inline char* ltoa(long value, char* string, int radix)
+    static inline char *ltoa (long value, char *string, int radix)
     {
-	    sprintf(string, "%ld", value);
+        int len = strlen(string) + 1;
+
+	    snprintf (string,len,"%ld",value);
+
 	    return string;
     }
 #endif

@@ -1135,7 +1135,7 @@ CheckHighScore (int32_t score, word other)
     int n;
     HighScore myscore;
 
-    strcpy (myscore.name, "");
+    myscore.name[0] = '\0';
     myscore.score = score;
     myscore.episode = gamestate.episode;
     myscore.completed = other;
@@ -1522,7 +1522,7 @@ CopyProtection (void)
                 PrintY += 25;
                 US_CPrint (STR_MAN1);
                 US_CPrint (STR_MAN2);
-                sprintf(message, STR_MAN3 " \"%s\" " STR_MAN4, WordStr[whichword]);
+                snprintf(message,sizeof(message), STR_MAN3 " \"%s\" " STR_MAN4, WordStr[whichword]);
                 US_CPrint (message);
                 VW_UpdateScreen ();
                 VW_FadeIn ();

@@ -3451,11 +3451,7 @@ void T_Path (objtype *ob)
         }
 
         if (ob->tilex>MAPSIZE || ob->tiley>MAPSIZE)
-        {
-            sprintf (str, "T_Path hit a wall at %u,%u, dir %u",
-                ob->tilex,ob->tiley,ob->dir);
-            Quit (str);
-        }
+            Quit ("T_Path hit a wall at %u,%u, dir %u",ob->tilex,ob->tiley,ob->dir);
 
         ob->x = ((int32_t)ob->tilex<<TILESHIFT)+TILEGLOBAL/2;
         ob->y = ((int32_t)ob->tiley<<TILESHIFT)+TILEGLOBAL/2;

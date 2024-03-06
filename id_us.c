@@ -176,7 +176,7 @@ void
 US_PrintUnsigned(longword n)
 {
 	char	buffer[32];
-	sprintf(buffer, "%u", n);
+	snprintf(buffer,sizeof(buffer), "%u", n);
 
 	US_Print(buffer);
 }
@@ -436,7 +436,7 @@ USL_XORICursor(int x,int y,const char *s,word cursor)
 	int		temp;
 	word	w,h;
 
-	strcpy(buf,s);
+	snprintf (buf,sizeof(buf),"%s",s);
 	buf[cursor] = '\0';
 	USL_MeasureString(buf,&w,&h);
 
@@ -500,7 +500,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 	byte        lastdir = dir_None;
 
 	if (def)
-		strcpy(s,def);
+		snprintf (s,sizeof(s),"%s",def);
 	else
 		*s = '\0';
 	*olds = '\0';
@@ -599,7 +599,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 		{
 			if(ci.button0)             // acts as return
 			{
-				strcpy(buf,s);
+				snprintf (buf,sizeof(buf),"%s",s);
 				done = true;
 				result = true;
 				checkkey = false;
@@ -615,8 +615,8 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				lastbuttontime = curtime;
 				if(cursor)
 				{
-					strcpy(s + cursor - 1,s + cursor);
-					cursor--;
+				    len = strlen(&s[--cursor]) + 1;
+					memmove (&s[cursor],&s[cursor + 1],len);
 					redraw = true;
 				}
 				cursormoved = true;
@@ -639,7 +639,18 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					cursormoved = true;
 					break;
 				case sc_Home:
-					cursor = 0;
+                    if (cursor > 0)
+                    {
+                        cursor--;
+
+                        //
+                        // delete trailing whitespace
+                        //
+                        while (cursor >= 0 && s[cursor] == ' ' && s[cursor + 1] == '\0')
+                            s[cursor--] = '\0';
+
+                        cursor = 0;
+                    }
 					cursormoved = true;
 					break;
 				case sc_End:
@@ -648,7 +659,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					break;
 
 				case sc_Return:
-					strcpy(buf,s);
+					snprintf (buf,sizeof(buf),"%s",s);
 					done = true;
 					result = true;
 					break;
@@ -663,16 +674,18 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 				case sc_BackSpace:
 					if (cursor)
 					{
-						strcpy(s + cursor - 1,s + cursor);
-						cursor--;
+                        len = strlen(&s[--cursor]) + 1;
+                        memmove (&s[cursor],&s[cursor + 1],len);
 						redraw = true;
 					}
 					cursormoved = true;
 					break;
+
 				case sc_Delete:
 					if (s[cursor])
 					{
-						strcpy(s + cursor,s + cursor + 1);
+                        len = strlen(&s[cursor]) + 1;
+                        memmove (&s[cursor],&s[cursor + 1],len);
 						redraw = true;
 					}
 					cursormoved = true;
@@ -705,7 +718,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 			fontcolor = backcolor;
 			USL_DrawString(olds);
 			fontcolor = (byte) temp;
-			strcpy(olds,s);
+			snprintf (olds,sizeof(olds),"%s",s);
 
 			px = x;
 			py = y;

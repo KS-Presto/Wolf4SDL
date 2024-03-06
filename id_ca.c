@@ -82,7 +82,9 @@ static const char gheadname[] = "vgahead.";
 static const char gfilename[] = "vgagraph.";
 static const char gdictname[] = "vgadict.";
 static const char mheadname[] = "maphead.";
-#ifndef CARMACIZED
+#ifdef CARMACIZED
+static const char mfilename[] = "gamemaps.";
+#else
 static const char mfilename[] = "maptemp.";
 #endif
 static const char aheadname[] = "audiohed.";
@@ -449,9 +451,7 @@ void CAL_SetupGrFile (void)
 //
 // load ???dict.ext (huffman dictionary for graphics files)
 //
-
-    strcpy(fname,gdictname);
-    strcat(fname,graphext);
+    snprintf (fname,sizeof(fname),"%s%s",gdictname,extension);
 
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
@@ -461,8 +461,7 @@ void CAL_SetupGrFile (void)
     close(handle);
 
     // load the data offsets from ???head.ext
-    strcpy(fname,gheadname);
-    strcat(fname,graphext);
+    snprintf (fname,sizeof(fname),"%s%s",gheadname,extension);
 
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
@@ -496,8 +495,7 @@ void CAL_SetupGrFile (void)
 //
 // Open the graphics file
 //
-    strcpy(fname,gfilename);
-    strcat(fname,graphext);
+    snprintf (fname,sizeof(fname),"%s%s",gfilename,extension);
 
     grhandle = open(fname, O_RDONLY | O_BINARY);
     if (grhandle == -1)
@@ -540,8 +538,7 @@ void CAL_SetupMapFile (void)
 //
 // load maphead.ext (offsets and tileinfo for map file)
 //
-    strcpy(fname,mheadname);
-    strcat(fname,extension);
+    snprintf (fname,sizeof(fname),"%s%s",mheadname,extension);
 
     handle = open(fname, O_RDONLY | O_BINARY);
     if (handle == -1)
@@ -555,21 +552,11 @@ void CAL_SetupMapFile (void)
 //
 // open the data file
 //
-#ifdef CARMACIZED
-    strcpy(fname, "gamemaps.");
-    strcat(fname, extension);
+    snprintf (fname,sizeof(fname),"%s%s",mfilename,extension);
 
     maphandle = open(fname, O_RDONLY | O_BINARY);
     if (maphandle == -1)
         CA_CannotOpen(fname);
-#else
-    strcpy(fname,mfilename);
-    strcat(fname,extension);
-
-    maphandle = open(fname, O_RDONLY | O_BINARY);
-    if (maphandle == -1)
-        CA_CannotOpen(fname);
-#endif
 
 //
 // load all map header
@@ -612,8 +599,7 @@ void CAL_SetupAudioFile (void)
 //
 // load audiohed.ext (offsets for audio file)
 //
-    strcpy(fname,aheadname);
-    strcat(fname,audioext);
+    snprintf (fname,sizeof(fname),"%s%s",aheadname,extension);
 
     void* ptr;
     if (!CA_LoadFile(fname, &ptr))
@@ -623,8 +609,7 @@ void CAL_SetupAudioFile (void)
 //
 // open the data file
 //
-    strcpy(fname,afilename);
-    strcat(fname,audioext);
+    snprintf (fname,sizeof(fname),"%s%s",afilename,extension);
 
     audiohandle = open(fname, O_RDONLY | O_BINARY);
     if (audiohandle == -1)
@@ -1069,10 +1054,5 @@ void CA_CacheMap (int mapnum)
 
 void CA_CannotOpen(const char *string)
 {
-    char str[30];
-
-    strcpy(str,"Can't open ");
-    strcat(str,string);
-    strcat(str,"!\n");
-    Quit (str);
+    Quit ("Can't open %s!",string);
 }

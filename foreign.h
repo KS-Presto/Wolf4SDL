@@ -25,6 +25,7 @@
 #define	STR_VS	"View Scores"
 #define STR_EG	"End Game"
 #define	STR_BD	"Back to Demo"
+#define STR_BG  "Back to Game"
 #define STR_QT	"Quit"
 
 #define STR_LOADING	"Loading"

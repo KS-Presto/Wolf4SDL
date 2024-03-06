@@ -517,7 +517,7 @@ void EnableEndGameMenuItem()
 {
     MainMenu[viewscores].routine = NULL;
 #ifndef JAPAN
-    strcpy (MainMenu[viewscores].string, STR_EG);
+    snprintf (MainMenu[viewscores].string,sizeof(MainMenu[viewscores].string),STR_EG);
 #endif
 }
 
@@ -552,9 +552,9 @@ DrawMainMenu (void)
 #ifndef JAPAN
 
 #ifdef SPANISH
-        strcpy (&MainMenu[backtodemo].string, STR_GAME);
+        snprintf (MainMenu[backtodemo].string,sizeof(MainMenu[backtodemo].string),STR_GAME);
 #else
-        strcpy (&MainMenu[backtodemo].string[8], STR_GAME);
+        snprintf (MainMenu[backtodemo].string,sizeof(MainMenu[backtodemo].string),STR_BG);
 #endif
 
 #else
@@ -566,11 +566,7 @@ DrawMainMenu (void)
     else
     {
 #ifndef JAPAN
-#ifdef SPANISH
-        strcpy (&MainMenu[backtodemo].string, STR_BD);
-#else
-        strcpy (&MainMenu[backtodemo].string[8], STR_DEMO);
-#endif
+        snprintf (MainMenu[backtodemo].string,sizeof(MainMenu[backtodemo].string),STR_BD);
 #else
         VWB_DrawPic (12 * 8, 20 * 8, C_MRETDEMOPIC);
         VWB_DrawPic (12 * 8, 18 * 8, C_MSCORESPIC);
@@ -737,8 +733,7 @@ CP_CheckQuick (ScanCode scancode)
 
                 fontnumber = 1;
 
-                strcat (string, SaveGameNames[LSItems.curpos]);
-                strcat (string, "\"?");
+                snprintf (str,sizeof(str),STR_LGC "%s\"?",SaveGameNames[LSItems.curpos]);
 
                 if (Confirm (string))
                     CP_LoadGame (1);
@@ -831,7 +826,7 @@ CP_EndGame (int blank)
     MainMenu[savegame].active = 0;
     MainMenu[viewscores].routine = CP_ViewScores;
 #ifndef JAPAN
-    strcpy (MainMenu[viewscores].string, STR_VS);
+    snprintf (MainMenu[viewscores].string,sizeof(MainMenu[viewscores].string),STR_VS);
 #endif
 
     return 1;
@@ -1336,7 +1331,7 @@ CP_LoadGame (int quick)
     char name[13];
     char loadpath[300];
 
-    strcpy (name, SaveName);
+    snprintf (name,sizeof(name),"%s",SaveName);
 
     //
     // QUICKLOAD?
@@ -1353,10 +1348,10 @@ CP_LoadGame (int quick)
             DC_LoadFromVMU(name);
 #endif
 
-            if(configdir[0])
-                snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
+            if (configdir[0])
+                snprintf (loadpath, sizeof(loadpath), "%s/%s", configdir, name);
             else
-                strcpy(loadpath, name);
+                snprintf (loadpath,sizeof(loadpath),"%s",name);
 
             file = fopen (loadpath, "rb");
             fseek (file, 32, SEEK_SET);
@@ -1392,10 +1387,10 @@ CP_LoadGame (int quick)
             DC_LoadFromVMU(name);
 #endif
 
-            if(configdir[0])
-                snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
+            if (configdir[0])
+                snprintf (loadpath, sizeof(loadpath), "%s/%s", configdir, name);
             else
-                strcpy(loadpath, name);
+                snprintf (loadpath,sizeof(loadpath),"%s",name);
 
             file = fopen (loadpath, "rb");
             fseek (file, 32, SEEK_SET);
@@ -1518,7 +1513,7 @@ CP_SaveGame (int quick)
     char savepath[300];
     char input[32];
 
-    strcpy (name, SaveName);
+    snprintf (name,sizeof(name),"%s",SaveName);
 
     //
     // QUICKSAVE?
@@ -1531,15 +1526,15 @@ CP_SaveGame (int quick)
         {
             name[7] = which + '0';
 
-            if(configdir[0])
-                snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+            if (configdir[0])
+                snprintf (savepath, sizeof(savepath), "%s/%s", configdir, name);
             else
-                strcpy(savepath, name);
+                snprintf (savepath,sizeof(savepath),"%s",name);
 
             unlink (savepath);
             file = fopen (savepath, "wb");
 
-            strcpy (input, &SaveGameNames[which][0]);
+            snprintf (input,sizeof(input),"%s",SaveGameNames[which]);
 
             fwrite (input, 1, 32, file);
             fseek (file, 32, SEEK_SET);
@@ -1585,7 +1580,7 @@ CP_SaveGame (int quick)
 
             ShootSnd ();
 
-            strcpy (input, &SaveGameNames[which][0]);
+            snprintf (input,sizeof(input),"%s",SaveGameNames[which]);
             name[7] = which + '0';
 
             fontnumber = 0;
@@ -1599,12 +1594,12 @@ CP_SaveGame (int quick)
                  LSM_W - LSItems.indent - 30))
             {
                 SaveGamesAvail[which] = 1;
-                strcpy (&SaveGameNames[which][0], input);
+                snprintf (SaveGameNames[which],sizeof(SaveGameNames[which]),"%s",input);
 
-                if(configdir[0])
-                    snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+                if (configdir[0])
+                    snprintf (savepath, sizeof(savepath), "%s/%s", configdir, name);
                 else
-                    strcpy(savepath, name);
+                    snprintf (savepath,sizeof(savepath),"%s",name);
 
                 unlink (savepath);
                 file = fopen (savepath, "wb");
@@ -2939,7 +2934,7 @@ void SetupSaveGames()
     char name[13];
     char savepath[300];
 
-    strcpy(name, SaveName);
+    snprintf (name,sizeof(name),"%s",SaveName);
     for(i = 0; i < 10; i++)
     {
         name[7] = '0' + i;
@@ -2948,20 +2943,17 @@ void SetupSaveGames()
         if(DC_LoadFromVMU(name))
         {
 #endif
-            if(configdir[0])
-                snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+            if (configdir[0])
+                snprintf (savepath, sizeof(savepath), "%s/%s", configdir, name);
             else
-                strcpy(savepath, name);
+                snprintf (savepath,sizeof(savepath),"%s",name);
 
             const int handle = open(savepath, O_RDONLY | O_BINARY);
             if(handle >= 0)
             {
-                char temp[32];
-
                 SaveGamesAvail[i] = 1;
-                read(handle, temp, 32);
+                read(handle, SaveGameNames[i], 32);
                 close(handle);
-                strcpy(&SaveGameNames[i][0], temp);
             }
 #ifdef _arch_dreamcast
             // Remove unpacked version of file
@@ -3795,22 +3787,20 @@ CheckForEpisodes (void)
 #ifdef JAPDEMO
     if(!stat("vswap.wj1", &statbuf))
     {
-        strcpy (extension, "wj1");
+        snprintf (extension,sizeof(extension),"wj1");
 #else
     if(!stat("vswap.wj6", &statbuf))
     {
-        strcpy (extension, "wj6");
+        snprintf (extension,sizeof(extension),"wj6");
 #endif
-        strcat (configname, extension);
-        strcat (SaveName, extension);
-        strcat (demoname, extension);
         EpisodeSelect[1] =
-            EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
+        EpisodeSelect[2] =
+        EpisodeSelect[3] =
+        EpisodeSelect[4] =
+        EpisodeSelect[5] = 1;
     }
     else
         Quit ("NO JAPANESE WOLFENSTEIN 3-D DATA FILES to be found!");
-    strcpy (graphext, extension);
-    strcpy (audioext, extension);
 #else
 
 //
@@ -3818,33 +3808,39 @@ CheckForEpisodes (void)
 //
 #ifdef UPLOAD
     if(!stat("vswap.wl1", &statbuf))
-        strcpy (extension, "wl1");
+        snprintf (extension,sizeof(extension),"wl1");
     else
         Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
 #else
 #ifndef SPEAR
     if(!stat("vswap.wl6", &statbuf))
     {
-        strcpy (extension, "wl6");
+        snprintf (extension,sizeof(extension),"wl6");
         NewEmenu[2].active =
-            NewEmenu[4].active =
-            NewEmenu[6].active =
-            NewEmenu[8].active =
-            NewEmenu[10].active =
-            EpisodeSelect[1] =
-            EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] = EpisodeSelect[5] = 1;
+        NewEmenu[4].active =
+        NewEmenu[6].active =
+        NewEmenu[8].active =
+        NewEmenu[10].active =
+        EpisodeSelect[1] =
+        EpisodeSelect[2] =
+        EpisodeSelect[3] =
+        EpisodeSelect[4] =
+        EpisodeSelect[5] = 1;
     }
     else
     {
         if(!stat("vswap.wl3", &statbuf))
         {
-            strcpy (extension, "wl3");
-            NewEmenu[2].active = NewEmenu[4].active = EpisodeSelect[1] = EpisodeSelect[2] = 1;
+            snprintf (extension,sizeof(extension),"wl3");
+            NewEmenu[2].active =
+            NewEmenu[4].active =
+            EpisodeSelect[1] =
+            EpisodeSelect[2] = 1;
         }
         else
         {
             if(!stat("vswap.wl1", &statbuf))
-                strcpy (extension, "wl1");
+                snprintf (extension,sizeof(extension),"wl1");
             else
                 Quit ("NO WOLFENSTEIN 3-D DATA FILES to be found!");
         }
@@ -3858,59 +3854,51 @@ CheckForEpisodes (void)
     if(param_mission == 0)
     {
         if(!stat("vswap.sod", &statbuf))
-            strcpy (extension, "sod");
+            snprintf (extension,sizeof(extension),"sod");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 1)
     {
         if(!stat("vswap.sd1", &statbuf))
-            strcpy (extension, "sd1");
+            snprintf (extension,sizeof(extension),"sd1");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 2)
     {
         if(!stat("vswap.sd2", &statbuf))
-            strcpy (extension, "sd2");
+            snprintf (extension,sizeof(extension),"sd2");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else if(param_mission == 3)
     {
         if(!stat("vswap.sd3", &statbuf))
-            strcpy (extension, "sd3");
+            snprintf (extension,sizeof(extension),"sd3");
         else
             Quit ("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
     }
     else
         Quit ("UNSUPPORTED MISSION!");
-    strcpy (graphext, "sod");
-    strcpy (audioext, "sod");
 #else
     if(!stat("vswap.sdm", &statbuf))
     {
-        strcpy (extension, "sdm");
+        snprintf (extension,sizeof(extension),"sdm");
     }
     else
         Quit ("NO SPEAR OF DESTINY DEMO DATA FILES TO BE FOUND!");
-    strcpy (graphext, "sdm");
-    strcpy (audioext, "sdm");
 #endif
-#else
-    strcpy (graphext, extension);
-    strcpy (audioext, extension);
 #endif
-
-    strcat (configname, extension);
-    strcat (SaveName, extension);
-    strcat (demoname, extension);
 
 #ifndef SPEAR
 #ifndef GOODTIMES
-    strcat (helpfilename, extension);
+    strncat (helpfilename,extension,sizeof(helpfilename) - strlen(helpfilename) - 1);
 #endif
-    strcat (endfilename, extension);
+    strncat (endfilename,extension,sizeof(endfilename) - strlen(endfilename) - 1);
 #endif
 #endif
+    strncat (configname,extension,sizeof(configname) - strlen(configname) - 1);
+    strncat (SaveName,extension,sizeof(SaveName) - strlen(SaveName) - 1);
+    strncat (demoname,extension,sizeof(demoname) - strlen(demoname) - 1);
 }

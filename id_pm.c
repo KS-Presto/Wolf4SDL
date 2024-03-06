@@ -31,9 +31,9 @@ void PM_Startup (void)
     uint32_t pagesize;
     int32_t  filesize,datasize;
     FILE     *file;
-    char     fname[13] = "vswap.";
+    char     fname[13];
 
-    strcat (fname,extension);
+    snprintf (fname,sizeof(fname),"vswap.%s",extension);
 
     file = fopen(fname,"rb");
 

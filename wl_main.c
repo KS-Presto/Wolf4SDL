@@ -129,10 +129,10 @@ void ReadConfig(void)
     DC_LoadFromVMU(configname);
 #endif
 
-    if(configdir[0])
-        snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
+    if (configdir[0])
+        snprintf (configpath, sizeof(configpath), "%s/%s", configdir, configname);
     else
-        strcpy(configpath, configname);
+        snprintf (configpath,sizeof(configpath),"%s",configname);
 
     const int file = open(configpath, O_RDONLY | O_BINARY);
     if (file != -1)
@@ -254,10 +254,10 @@ void WriteConfig(void)
     fs_unlink(configname);
 #endif
 
-    if(configdir[0])
-        snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
+    if (configdir[0])
+        snprintf (configpath, sizeof(configpath), "%s/%s", configdir, configname);
     else
-        strcpy(configpath, configname);
+        snprintf (configpath,sizeof(configpath),"%s",configname);
 
     const int file = open(configpath, O_CREAT | O_WRONLY | O_BINARY, 0644);
     if (file != -1)
@@ -1375,7 +1375,7 @@ void Quit (const char *errorStr, ...)
     {
         va_list vlist;
         va_start(vlist, errorStr);
-        vsprintf(error, errorStr, vlist);
+        vsnprintf(error,sizeof(error), errorStr, vlist);
         va_end(vlist);
     }
     else
@@ -1715,9 +1715,10 @@ void CheckParameters(int argc, char *argv[])
                     snprintf (error,sizeof(error),"The config directory is too long!");
                 else
                 {
-                    strcpy(configdir, argv[i]);
-                    if(argv[i][len] != '/' && argv[i][len] != '\\')
-                        strcat(configdir, "/");
+                    if (argv[i][len] != '/' && argv[i][len] != '\\')
+                        snprintf (configdir,sizeof(configdir),"%s/",argv[i]);
+                    else
+                        snprintf (configdir,sizeof(configdir),"%s",argv[i]);
                 }
             }
         }

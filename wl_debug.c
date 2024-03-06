@@ -54,8 +54,7 @@ void CountObjects (void)
     total = (int)(laststatobj-&statobjlist[0]);
     US_PrintUnsigned (total);
 
-    char str[60];
-    sprintf(str,"\nlaststatobj=%.8X",(int32_t)(uintptr_t)laststatobj);
+    snprintf(str,sizeof(str),"\nlaststatobj=%.8X",(int32_t)(uintptr_t)laststatobj);
     US_Print(str);
 
     US_Print ("\nIn use statics:");
@@ -255,7 +254,7 @@ void ShapeTest (void)
 
         US_Print ("\n Address: ");
         addr = PM_GetPage(i);
-        sprintf (str,"0x%010X",(intptr_t)addr);
+        snprintf (str,sizeof(str),"0x%010X",(intptr_t)addr);
         US_Print (str);
 
         if (addr)
@@ -443,6 +442,7 @@ int DebugKeys (void)
 {
     boolean esc;
     int level;
+    objtype *spot;
 
     if (Keyboard[sc_B])             // B = border color
     {
@@ -495,24 +495,30 @@ int DebugKeys (void)
 
     if (Keyboard[sc_F])             // F = facing spot
     {
-        char str[60];
-        CenterWindow (14,6);
-        US_Print ("x:");     US_PrintUnsigned (player->x);
-        US_Print (" (");     US_PrintUnsigned (player->x%65536);
-        US_Print (")\ny:");  US_PrintUnsigned (player->y);
-        US_Print (" (");     US_PrintUnsigned (player->y%65536);
-        US_Print (")\nA:");  US_PrintUnsigned (player->angle);
-        US_Print (" X:");    US_PrintUnsigned (player->tilex);
-        US_Print (" Y:");    US_PrintUnsigned (player->tiley);
-        US_Print ("\n1:");   US_PrintUnsigned (tilemap[player->tilex][player->tiley]);
-        sprintf(str," 2:%.8X",(unsigned)(uintptr_t)actorat[player->tilex][player->tiley]); US_Print(str);
-        US_Print ("\nf 1:"); US_PrintUnsigned (player->areanumber);
-        US_Print (" 2:");    US_PrintUnsigned (MAPSPOT(player->tilex,player->tiley,1));
-        US_Print (" 3:");
-        if ((unsigned)(uintptr_t)actorat[player->tilex][player->tiley] < BIT_ALLTILES)
-            US_PrintUnsigned (spotvis[player->tilex][player->tiley]);
-        else
-            US_PrintUnsigned (actorat[player->tilex][player->tiley]->flags);
+        spot = actorat[player->tilex][player->tiley];
+
+        CenterWindow (15,9);
+        snprintf (str,sizeof(str),"X: %d (%d)\n",player->x,player->x % TILEGLOBAL);
+        US_Print (str);
+        snprintf (str,sizeof(str),"Y: %d (%d)\n",player->y,player->y % TILEGLOBAL);
+        US_Print (str);
+        snprintf (str,sizeof(str),"A: %d\n",player->angle);
+        US_Print (str);
+        snprintf (str,sizeof(str),"TileX: %u\n",player->tilex);
+        US_Print (str);
+        snprintf (str,sizeof(str),"TileY: %u\n",player->tiley);
+        US_Print (str);
+        snprintf (str,sizeof(str),"1: %u",tilemap[player->tilex][player->tiley]);
+        US_Print (str);
+        snprintf (str,sizeof(str)," 2:%.8X\n",(uintptr_t)spot);
+        US_Print (str);
+        snprintf (str,sizeof(str),"f 1: %u",player->areanumber);
+        US_Print (str);
+        snprintf (str,sizeof(str)," 2: %u",MAPSPOT(player->tilex,player->tiley,1));
+        US_Print (str);
+        snprintf (str,sizeof(str)," 3: %u",!ISPOINTER(spot) ? spotvis[player->tilex][player->tiley] : spot->flags);
+        US_Print (str);
+
         VW_UpdateScreen();
         IN_Ack();
         return 1;
@@ -746,12 +752,12 @@ int DebugKeys (void)
         US_PrintUnsigned(curSky->colorMapIndex);
         VW_UpdateScreen();
 
-        sprintf(defstr, "%u", curSky->seed);
+        snprintf (defstr,sizeof(defstr) "%u", curSky->seed);
         esc = !US_LineInput(seedpx, seedpy, str, defstr, true, 10, 0);
         if(esc) return 1;
         curSky->seed = (uint32_t) atoi(str);
 
-        sprintf(defstr, "%u", curSky->colorMapIndex);
+        snprintf (defstr,sizeof(defstr), "%u", curSky->colorMapIndex);
         esc = !US_LineInput(mappx, mappy, str, defstr, true, 10, 0);
         if(esc) return 1;
         uint32_t newInd = (uint32_t) atoi(str);
