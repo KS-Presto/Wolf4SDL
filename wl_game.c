@@ -1,7 +1,7 @@
 // WL_GAME.C
 
 #include "wl_def.h"
-#include <SDL_Mixer.h>
+#include <SDL_mixer.h>
 
 /*
 =============================================================================

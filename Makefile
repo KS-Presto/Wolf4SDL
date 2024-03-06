@@ -59,7 +59,6 @@ ifndef GPL
 else
     SRCS += dosbox/dbopl.cpp
 endif
-SRCS += sdl_wrap.c
 SRCS += id_ca.c
 SRCS += id_in.c
 SRCS += id_pm.c
