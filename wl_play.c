@@ -780,13 +780,14 @@ void InitActorList (void)
 //
 // init the actor lists
 //
-    for (i = 0; i < MAXACTORS; i++)
+    for (i = 0; i < MAXACTORS - 1; i++)
     {
         objlist[i].prev = &objlist[i + 1];
         objlist[i].next = NULL;
     }
 
     objlist[MAXACTORS - 1].prev = NULL;
+    objlist[MAXACTORS - 1].next = NULL;
 
     objfreelist = &objlist[0];
     lastobj = NULL;
