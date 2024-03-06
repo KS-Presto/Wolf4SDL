@@ -638,7 +638,6 @@ void SetupGameLevel (void)
             = gamestate.treasurecount
             = pwallstate = pwallpos = facetimes = 0;
         LastAttacker = NULL;
-        killerobj = NULL;
     }
 
     if (demoplayback || demorecord)
@@ -1210,10 +1209,10 @@ void Died (void)
     //
     // swing around to face attacker
     //
-    if(killerobj)
+    if (LastAttacker)
     {
-        dx = killerobj->x - player->x;
-        dy = player->y - killerobj->y;
+        dx = LastAttacker->x - player->x;
+        dy = player->y - LastAttacker->y;
 
         fangle = (float) atan2((float) dy, (float) dx);     // returns -pi to pi
         if (fangle<0)

@@ -671,7 +671,7 @@ CP_CheckQuick (ScanCode scancode)
 #endif
             {
                 playstate = ex_died;
-                killerobj = NULL;
+                LastAttacker = NULL;
                 pickquick = gamestate.lives = 0;
             }
 
@@ -815,7 +815,7 @@ CP_EndGame (int blank)
 
     pickquick = gamestate.lives = 0;
     playstate = ex_died;
-    killerobj = NULL;
+    LastAttacker = NULL;
 
     MainMenu[savegame].active = 0;
     MainMenu[viewscores].routine = CP_ViewScores;

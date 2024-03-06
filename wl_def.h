@@ -1050,7 +1050,7 @@ extern  int         DebugOk;
 extern  boolean     madenoise;
 
 extern  objtype     objlist[MAXACTORS];
-extern  objtype     *player,*objfreelist,*killerobj;
+extern  objtype     *player,*objfreelist;
 
 extern  tiletype    tilemap[MAPSIZE][MAPSIZE];      // wall values only
 extern  bool        spotvis[MAPSIZE][MAPSIZE];

@@ -31,7 +31,7 @@ static int lastmusicchunk = 0;
 int     DebugOk;
 
 objtype objlist[MAXACTORS];
-objtype *player,*lastobj,*objfreelist,*killerobj;
+objtype *player,*lastobj,*objfreelist;
 
 boolean singlestep,godmode,noclip,ammocheat,mapreveal;
 int     extravbls;

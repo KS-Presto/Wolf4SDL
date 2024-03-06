@@ -429,7 +429,6 @@ void TakeDamage (int points,objtype *attacker)
     {
         gamestate.health = 0;
         playstate = ex_died;
-        killerobj = attacker;
     }
 
     if (godmode != 2)
