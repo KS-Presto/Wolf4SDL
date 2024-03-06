@@ -883,16 +883,14 @@ void SpawnStand (int which, int tilex, int tiley, int dir)
     tile = *map;
     if (tile == AMBUSHTILE)
     {
-        tilemap[tilex][tiley] = 0;
-
-        if (*(map+1) >= AREATILE)
-            tile = *(map+1);
-        if (*(map-mapwidth) >= AREATILE)
-            tile = *(map-mapwidth);
-        if (*(map+mapwidth) >= AREATILE)
-            tile = *(map+mapwidth);
-        if ( *(map-1) >= AREATILE)
-            tile = *(map-1);
+        if (VALIDAREA(*(map + 1)))
+            tile = *(map + 1);
+        if (VALIDAREA(*(map - mapwidth)))
+            tile = *(map - mapwidth);
+        if (VALIDAREA(*(map + mapwidth)))
+            tile = *(map + mapwidth);
+        if (VALIDAREA(*(map - 1)))
+            tile = *(map - 1);
 
         *map = tile;
         newobj->areanumber = tile-AREATILE;

@@ -683,7 +683,7 @@ void SetupGameLevel (void)
         for (x=0;x<mapwidth;x++)
         {
             tile = *map++;
-            if (tile<AREATILE)
+            if (tile < AMBUSHTILE)
             {
                 // solid wall
                 tilemap[x][y] = (byte) tile;
@@ -751,24 +751,23 @@ void SetupGameLevel (void)
     {
         for (x=0;x<mapwidth;x++)
         {
-            tile = *map++;
+            tile = *map;
+
             if (tile == AMBUSHTILE)
             {
-                tilemap[x][y] = 0;
-                if ( (unsigned)(uintptr_t)actorat[x][y] == AMBUSHTILE)
-                    actorat[x][y] = NULL;
-
-                if (*map >= AREATILE)
+                if (VALIDAREA(*(map + 1)))
                     tile = *map;
-                if (*(map-1-mapwidth) >= AREATILE)
-                    tile = *(map-1-mapwidth);
-                if (*(map-1+mapwidth) >= AREATILE)
-                    tile = *(map-1+mapwidth);
-                if ( *(map-2) >= AREATILE)
-                    tile = *(map-2);
+                if (VALIDAREA(*(map - mapwidth)))
+                    tile = *(map - mapwidth);
+                if (VALIDAREA(*(map + mapwidth)))
+                    tile = *(map + mapwidth);
+                if (VALIDAREA(*(map - 1)))
+                    tile = *(map - 1);
 
-                *(map-1) = tile;
+                *map = tile;
             }
+
+            map++;
         }
     }
 
