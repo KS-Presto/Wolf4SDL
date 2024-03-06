@@ -14,6 +14,7 @@
 //#define APOGEE_1_1
 //#define APOGEE_1_2
 //#define JAPAN
+//#define SPANISH
 
 /*
     Wolf3d Full v1.1 Apogee (with ReadThis)   - define CARMACIZED and APOGEE_1_1
