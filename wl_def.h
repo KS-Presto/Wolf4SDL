@@ -1550,6 +1550,7 @@ void GP2X_ButtonUp (int button);
 
 #ifdef USE_PARALLAX
     void DrawParallax (void);
+    void SetParallaxStartTexture (void);
 #endif
 
 #endif

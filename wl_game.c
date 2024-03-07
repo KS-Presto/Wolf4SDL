@@ -777,6 +777,10 @@ void SetupGameLevel (void)
     GetFlatTextures ();
 #endif
 
+#ifdef USE_PARALLAX
+    SetParallaxStartTexture ();
+#endif
+
 //
 // have the caching manager load and purge stuff to make sure all marks
 // are in memory

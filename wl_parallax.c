@@ -6,33 +6,93 @@
 
 #include "wl_def.h"
 
+#ifdef USE_COMPOSITEPARALLAX
+#define SKYTEXTURESHIFT 7
+#else
+#define SKYTEXTURESHIFT 6
+#endif
+
+#define SKYTEXTURESIZE  (1 << SKYTEXTURESHIFT)
+#define SKYTEXTUREMASK  (SKYTEXTURESIZE * (TEXTURESIZE - 1))
+
+int  startskytex;
+
+#ifdef USE_COMPOSITEPARALLAX
+/*
+====================
+=
+= Build a table of composite sky textures
+=
+====================
+*/
+
+byte skytextures[USE_PARALLAX][SKYTEXTURESIZE * TEXTURESIZE];
+
+void MakeSky (void)
+{
+    int  i;
+    int  x,y;
+    int  skypage;
+    byte *srctop,*srcbot,*dest;
+
+    skypage = startskytex + (USE_PARALLAX - 1);
+
+    for (i = 0; i < USE_PARALLAX; i++)
+    {
+        srctop = PM_GetPage(skypage - i);
+        srcbot = PM_GetPage(skypage + USE_PARALLAX - i);
+
+        dest = skytextures[i];
+
+        for (y = 0; y < TEXTURESIZE; y++)
+        {
+            x = 0;
+
+            while (x < TEXTURESIZE)
+            {
+                *dest++ = *srctop++;
+                x++;
+            }
+
+            while (x < SKYTEXTURESIZE)
+            {
+                *dest++ = *srcbot++;
+                x++;
+            }
+        }
+    }
+}
+#endif
+
 #ifdef USE_FEATUREFLAGS
 
 // The lower left tile of every map determines the start texture of the parallax sky.
-int GetParallaxStartTexture (void)
+void SetParallaxStartTexture (void)
 {
-    int startTex = ffDataBottomLeft;
+    startskytex = ffDataBottomLeft;
 
-    assert(startTex >= 0 && startTex < PMSpriteStart);
+    assert(startskytex >= 0 && startskytex < PMSpriteStart - (USE_PARALLAX - 1));
 
-    return startTex;
+#ifdef USE_COMPOSITEPARALLAX
+    MakeSky ();
+#endif
 }
 
 #else
 
-int GetParallaxStartTexture (void)
+void SetParallaxStartTexture (void)
 {
-    int startTex;
-
     switch (gamestate.episode * 10 + gamestate.mapon)
     {
-        case  0: startTex = 20; break;
-        default: startTex =  0; break;
+        case  0: startskytex = 20; break;
+        default: startskytex =  0; break;
     }
 
-    assert(startTex >= 0 && startTex < PMSpriteStart);
+    assert(startskytex >= 0 && startskytex < PMSpriteStart - (USE_PARALLAX - 1));
 
-    return startTex;
+#ifdef USE_COMPOSITEPARALLAX
+    MakeSky ();
+#endif
 }
 
 #endif
@@ -47,24 +107,20 @@ int GetParallaxStartTexture (void)
 
 void DrawParallax (void)
 {
-    int     x,y;
-    byte    *dest,*skysource;
-    word    texture;
-    int16_t angle;
-    int16_t skypage,curskypage;
-    int16_t lastskypage;
-    int16_t xtex;
-    int16_t toppix;
+    int   x,y;
+    byte  *dest,*skysource;
+    int   texture,texoffs;
+    int   angle;
+    int   skypage;
+    fixed frac,fracstep;
 
-    skypage = GetParallaxStartTexture();
-    skypage += USE_PARALLAX - 1;
-    lastskypage = -1;
+    skypage = startskytex + (USE_PARALLAX - 1);
 
     for (x = 0; x < viewwidth; x++)
     {
-        toppix = centery - (wallheight[x] >> 3);
+        y = centery - (wallheight[x] >> 3);
 
-        if (toppix <= 0)
+        if (y <= 0)
             continue;                // nothing to draw
 
         angle = pixelangle[x] + midangle;
@@ -74,19 +130,25 @@ void DrawParallax (void)
         else if (angle >= FINEANGLES)
             angle -= FINEANGLES;
 
-        xtex = ((angle * USE_PARALLAX) << TEXTURESHIFT) / FINEANGLES;
-        curskypage = xtex >> TEXTURESHIFT;
+        texture = ((angle * USE_PARALLAX) << TEXTURESHIFT) / FINEANGLES;
 
-        if (lastskypage != curskypage)
+        texoffs = ((texture << SKYTEXTURESHIFT) & SKYTEXTUREMASK) ^ SKYTEXTUREMASK;
+#ifdef USE_COMPOSITEPARALLAX
+        skysource = &skytextures[texture >> TEXTURESHIFT][texoffs];
+#else
+        skysource = PM_GetPage(skypage - (texture >> TEXTURESHIFT)) + texoffs;
+#endif
+        dest = vbuf + x;
+
+        fracstep = 0xffffffff / (viewheight << (FRACBITS - SKYTEXTURESHIFT - 1));
+        frac = 0;
+
+        while (y--)
         {
-            lastskypage = curskypage;
-            skysource = PM_GetPage(skypage - curskypage);
+            *dest = skysource[(frac >> FRACBITS) & (SKYTEXTURESIZE - 1)];
+            dest += bufferPitch;
+            frac += fracstep;
         }
-
-        texture = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
-
-        for (y = 0, dest = &vbuf[x]; y < toppix; y++, dest += bufferPitch)
-            *dest = skysource[texture + ((y << TEXTURESHIFT) / centery)];
     }
 }
 

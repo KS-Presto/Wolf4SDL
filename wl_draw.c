@@ -1494,8 +1494,10 @@ void ThreeDRefresh (void)
 
     WallRefresh ();
 
-#if defined(USE_FEATUREFLAGS) && defined(USE_PARALLAX)
-    if(GetFeatureFlags() & FF_PARALLAXSKY)
+#ifdef USE_PARALLAX
+#ifdef USE_FEATUREFLAGS
+    if (GetFeatureFlags() & FF_PARALLAXSKY)
+#endif
         DrawParallax();
 #endif
 
