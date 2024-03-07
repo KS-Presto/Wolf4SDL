@@ -35,16 +35,16 @@ void GetFlatTextures (void)
 ===================
 */
 #ifdef USE_MULTIFLATS
-void DrawSpan (int16_t x1, int16_t x2, int16_t height)
+void DrawSpan (int x1, int x2, int height)
 {
-    byte      tilex,tiley,lasttilex,lasttiley;
+    int       tilex,tiley,lasttilex,lasttiley;
     byte      *dest;
     byte      *shade;
-    word      texture,spot;
+    int       texture,spot;
     uint32_t  rowofs;
-    int16_t   ceilingpage,floorpage,lastceilingpage,lastfloorpage;
-    int16_t   count,prestep;
-    fixed     basedist,stepscale;
+    int       ceilingpage,floorpage,lastceilingpage,lastfloorpage;
+    int       count,prestep;
+    fixed     basedist;
     fixed     xfrac,yfrac;
     fixed     xstep,ystep;
 
@@ -61,13 +61,12 @@ void DrawSpan (int16_t x1, int16_t x2, int16_t height)
 
     prestep = centerx - x1 + 1;
     basedist = FixedDiv(scale,height + 1) >> 1;                 // distance to row projection
-    stepscale = basedist / scale;
 
-    xstep = FixedMul(stepscale,viewsin);
-    ystep = -FixedMul(stepscale,viewcos);
+    xstep = (viewsin >> 1) / (height + 1);
+    ystep = (viewcos >> 1) / (height + 1);
 
     xfrac = (viewx + FixedMul(basedist,viewcos)) - (xstep * prestep);
-    yfrac = -(viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
+    yfrac = (viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
 
 //
 // draw two spans simultaneously
@@ -88,7 +87,7 @@ void DrawSpan (int16_t x1, int16_t x2, int16_t height)
         // get tile coords of texture
         //
         tilex = (xfrac >> TILESHIFT) & (mapwidth - 1);
-        tiley = ~(yfrac >> TILESHIFT) & (mapheight - 1);
+        tiley = (yfrac >> TILESHIFT) & (mapheight - 1);
 
         //
         // get floor & ceiling textures if it's a new tile
@@ -108,7 +107,7 @@ void DrawSpan (int16_t x1, int16_t x2, int16_t height)
 
         if (spot)
         {
-            texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) + (~(yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
+            texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) + ((yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
 
             //
             // write ceiling pixel
@@ -164,14 +163,14 @@ void DrawSpan (int16_t x1, int16_t x2, int16_t height)
 ===================
 */
 
-void DrawSpan (int16_t x1, int16_t x2, int16_t height)
+void DrawSpan (int x1, int x2, int height)
 {
     byte     *dest;
     byte     *shade;
-    word     texture;
-    uint32_t rowofs;                                    
-    int16_t  count,prestep;
-    fixed    basedist,stepscale;
+    int      texture;
+    uint32_t rowofs;
+    int      count,prestep;
+    fixed    basedist;
     fixed    xfrac,yfrac;
     fixed    xstep,ystep;
 
@@ -188,20 +187,19 @@ void DrawSpan (int16_t x1, int16_t x2, int16_t height)
 
     prestep = centerx - x1 + 1;
     basedist = FixedDiv(scale,height + 1) >> 1;         // distance to row projection
-    stepscale = basedist / scale;
 
-    xstep = FixedMul(stepscale,viewsin);
-    ystep = -FixedMul(stepscale,viewcos);
+    xstep = (viewsin >> 1) / (height + 1);
+    ystep = (viewcos >> 1) / (height + 1);
 
     xfrac = (viewx + FixedMul(basedist,viewcos)) - (xstep * prestep);
-    yfrac = -(viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
+    yfrac = (viewy - FixedMul(basedist,viewsin)) - (ystep * prestep);
 
 //
 // draw two spans simultaneously
 //
 	while (count--)
 	{
-		texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) + (~(yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
+		texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) + ((yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
 
 #ifdef USE_SHADING
         *dest = shade[ceilingsource[texture]];
