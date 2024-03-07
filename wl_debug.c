@@ -752,7 +752,7 @@ int DebugKeys (void)
         US_PrintUnsigned(curSky->colorMapIndex);
         VW_UpdateScreen();
 
-        snprintf (defstr,sizeof(defstr) "%u", curSky->seed);
+        snprintf (defstr,sizeof(defstr), "%u", curSky->seed);
         esc = !US_LineInput(seedpx, seedpy, str, defstr, true, 10, 0);
         if(esc) return 1;
         curSky->seed = (uint32_t) atoi(str);
