@@ -535,12 +535,11 @@ boolean LoadTheGame (FILE *file, int x, int y)
     fread (areaconnect,sizeof(areaconnect),1,file);
     fread (areabyplayer,sizeof(areabyplayer),1,file);
 
+    DiskFlopAnim (x,y);
     InitActorList ();
 
     while (1)
     {
-        DiskFlopAnim (x,y);
-
         fread (&nullobj,sizeof(nullobj),1,file);
 
         if (nullobj.active == ac_badobject)
