@@ -234,12 +234,10 @@ void SimpleScaleShape (int xcenter, int shapenum, int height)
 =
 = Draws a compiled 3D shape at [scale1] pixels high
 =
-= Aryan: No amount of optimisation in the world will make this code look good... Reeee-write!
-=
 ===================
 */
 
-void Scale3DShape (int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixed ny2, fixed nx1, fixed nx2)
+void Scale3DShape (visobj_t *sprite, int x1, int x2, fixed ny1, fixed ny2, fixed nx1, fixed nx2)
 {
     int         i;
     compshape_t *shape;
@@ -253,7 +251,7 @@ void Scale3DShape (int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
     fixed       dxx,dzz;
     fixed       dxa,dza;
 
-    linesrc = PM_GetSpritePage(shapenum);
+    linesrc = PM_GetSpritePage(sprite->shapenum);
     shape = (compshape_t *)linesrc;
 
     len = shape->rightpix - shape->leftpix + 1;
@@ -317,7 +315,7 @@ void Scale3DShape (int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
             if (wallheight[slinex] < (height >> 12))
             {
 #ifdef USE_SHADING
-                if (flags & FL_FULLBRIGHT)
+                if (sprite->flags & FL_FULLBRIGHT)
                     curshades = shadetable[0];
                 else
                     curshades = shadetable[GetShade(scale1 << 3)];
@@ -342,7 +340,7 @@ void Scale3DShape (int x1, int x2, int shapenum, uint32_t flags, fixed ny1, fixe
 ========================
 */
 
-void Transform3DShape (statobj_t *statptr)
+void Transform3DShape (visobj_t *sprite)
 {
     #define SIZEADD 1024
 
@@ -357,24 +355,24 @@ void Transform3DShape (statobj_t *statptr)
     // if you have problems with sprites being visible through wall edges
     // where they shouldn't, you can try to adjust these values and SIZEADD
     //
-    switch (statptr->flags & FL_DIR_POS_MASK)
+    switch (sprite->flags & FL_DIR_POS_MASK)
     {
         case FL_DIR_POS_FW: diradd = 0x7ff0 + 0x8000; break;
         case FL_DIR_POS_BW: diradd = -0x7ff0 + 0x8000; break;
         case FL_DIR_POS_MID: diradd = 0x8000; break;
 
         default:
-            Quit ("Unknown directional 3d sprite position (shapenum = %i)",statptr->shapenum);
+            Quit ("Bad 3D sprite dir at %dx%d (shapenum = %d)",sprite->tilex,sprite->tiley,sprite->shapenum);
     }
 
-    if (statptr->flags & FL_DIR_VERT_FLAG)
+    if (sprite->flags & FL_DIR_VERT_FLAG)
     {
         //
         // translate point to view centered coordinates
         //
-        gy1 = (((fixed)statptr->tiley) << TILESHIFT) + 0x8000 - viewy - 0x8000L - SIZEADD;
+        gy1 = (((fixed)sprite->tiley) << TILESHIFT) + 0x8000 - viewy - 0x8000L - SIZEADD;
         gy2 = gy1 + 0x10000L + (2 * SIZEADD);
-        gx = (((fixed)statptr->tilex) << TILESHIFT) + diradd - viewx;
+        gx = (((fixed)sprite->tilex) << TILESHIFT) + diradd - viewx;
 
         //
         // calculate nx
@@ -400,9 +398,9 @@ void Transform3DShape (statobj_t *statptr)
         //
         // translate point to view centered coordinates
         //
-        gx1 = (((fixed)statptr->tilex) << TILESHIFT) + 0x8000 - viewx - 0x8000L - SIZEADD;
+        gx1 = (((fixed)sprite->tilex) << TILESHIFT) + 0x8000 - viewx - 0x8000L - SIZEADD;
         gx2 = gx1 + 0x10000L + (2 * SIZEADD);
-        gy = (((fixed)statptr->tiley) << TILESHIFT) + diradd - viewy;
+        gy = (((fixed)sprite->tiley) << TILESHIFT) + diradd - viewy;
 
         //
         // calculate nx
@@ -438,9 +436,9 @@ void Transform3DShape (statobj_t *statptr)
     viewx2 = (int)(centerx + ny2 * scale / nx2);
 
     if (viewx2 < viewx1)
-        Scale3DShape (viewx2,viewx1,statptr->shapenum,statptr->flags,ny2,ny1,nx2,nx1);
+        Scale3DShape (sprite,viewx2,viewx1,ny2,ny1,nx2,nx1);
     else
-        Scale3DShape (viewx1,viewx2,statptr->shapenum,statptr->flags,ny1,ny2,nx1,nx2);
+        Scale3DShape (sprite,viewx1,viewx2,ny1,ny2,nx1,nx2);
 }
 
 #endif

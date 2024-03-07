@@ -25,6 +25,8 @@
 
 byte     *vbuf;
 
+visobj_t vislist[MAXVISABLE];
+
 int32_t    lasttimecount;
 int32_t    frameon;
 boolean fpscounter;
@@ -682,30 +684,13 @@ int CalcRotate (objtype *ob)
 =====================
 */
 
-#define MAXVISABLE 250
-
-typedef struct
-{
-    short      viewx,
-               viewheight,
-               shapenum;
-    short      flags;          // this must be changed to uint32_t, when you
-                               // you need more than 16-flags for drawing
-#ifdef USE_DIR3DSPR
-    statobj_t *transsprite;
-#endif
-} visobj_t;
-
-visobj_t vislist[MAXVISABLE];
-visobj_t *visptr,*visstep,*farthest;
-
 void DrawScaleds (void)
 {
-    int      i,least,numvisable,height;
-    byte     *visspot;
-
+    int       i,least,numvisable,height;
+    byte      *visspot;
     statobj_t *statptr;
     objtype   *obj;
+    visobj_t  *visptr,*visstep,*farthest;
 
     visptr = &vislist[0];
 
@@ -731,16 +716,11 @@ void DrawScaleds (void)
         if (!visptr->viewheight)
             continue;                                               // to close to the object
 
-#ifdef USE_DIR3DSPR
-        if(statptr->flags & FL_DIR_MASK)
-            visptr->transsprite=statptr;
-        else
-            visptr->transsprite=NULL;
-#endif
-
         if (visptr < &vislist[MAXVISABLE-1])    // don't let it overflow
         {
-            visptr->flags = (short) statptr->flags;
+            visptr->tilex = statptr->tilex;
+            visptr->tiley = statptr->tiley;
+            visptr->flags = statptr->flags;
             visptr++;
         }
     }
@@ -783,10 +763,9 @@ void DrawScaleds (void)
 
             if (visptr < &vislist[MAXVISABLE-1])    // don't let it overflow
             {
-                visptr->flags = (short) obj->flags;
-#ifdef USE_DIR3DSPR
-                visptr->transsprite = NULL;
-#endif
+                visptr->tilex = obj->tilex;
+                visptr->tiley = obj->tiley;
+                visptr->flags = obj->flags;
                 visptr++;
             }
             obj->flags |= FL_VISABLE;
@@ -819,11 +798,11 @@ void DrawScaleds (void)
         // draw farthest
         //
 #ifdef USE_DIR3DSPR
-        if (farthest->transsprite)
-            Transform3DShape(farthest->transsprite);
+        if (farthest->flags & FL_DIR_MASK)
+            Transform3DShape (farthest);
         else
 #endif
-            ScaleShape(farthest->viewx, farthest->shapenum, farthest->viewheight, farthest->flags);
+            ScaleShape (farthest->viewx,farthest->shapenum,farthest->viewheight,farthest->flags);
 
         farthest->viewheight = 32000;
     }

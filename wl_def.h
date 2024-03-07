@@ -152,6 +152,7 @@ void Quit (const char *errorStr, ...);
 #define MAXSTATS        400         // max number of lamps, bonus, etc
 #define MAXDOORS        64          // max number of sliding doors
 #define MAXWALLTILES    64          // max number of wall tiles
+#define MAXVISABLE      250         // max number of visible sprites
 
 #if WALLSHIFT >= 7
 typedef uint16_t tiletype;
@@ -839,6 +840,16 @@ typedef struct statestruct
 } statetype;
 
 
+typedef struct
+{
+    byte       tilex,tiley;
+    int16_t    viewx;
+    int16_t    viewheight;
+    int16_t    shapenum;
+    uint32_t   flags;
+} visobj_t;
+
+
 enum buttontypes
 {
     bt_nobutton=-1,
@@ -1213,7 +1224,7 @@ typedef struct
 void ScaleShape (int xcenter, int shapenum, int height, uint32_t flags);
 void SimpleScaleShape (int xcenter, int shapenum, int height);
 #ifdef USE_DIR3DSPR
-void Transform3DShape (statobj_t *statptr);
+void Transform3DShape (visobj_t *sprite);
 #endif
 
 /*
