@@ -368,6 +368,7 @@ boolean SaveTheGame (FILE *file, int x, int y)
     objtype   *ob;
     objtype   nullobj;
     statobj_t *statobj;
+    doorobj_t *door;
 
     checksum = 0;
 
@@ -442,8 +443,11 @@ boolean SaveTheGame (FILE *file, int x, int y)
     }
 
     DiskFlopAnim (x,y);
-    fwrite (doorobjlist,sizeof(doorobjlist),1,file);
-    checksum = DoChecksum(doorobjlist,sizeof(doorobjlist),checksum);
+    for (door = &doorobjlist[0]; door < lastdoorobj; door++)
+    {
+        fwrite (door,sizeof(*door),1,file);
+        checksum = DoChecksum(door,sizeof(*door),checksum);
+    }
 
     DiskFlopAnim (x,y);
     fwrite (&pwallstate,sizeof(pwallstate),1,file);
@@ -489,6 +493,7 @@ boolean LoadTheGame (FILE *file, int x, int y)
     objtype   *newobj = NULL;
     objtype   nullobj;
     statobj_t *statobj;
+    doorobj_t *door;
 
     checksum = 0;
 
@@ -571,8 +576,11 @@ boolean LoadTheGame (FILE *file, int x, int y)
     }
 
     DiskFlopAnim (x,y);
-    fread (doorobjlist,sizeof(doorobjlist),1,file);
-    checksum = DoChecksum(doorobjlist,sizeof(doorobjlist),checksum);
+    for (door = &doorobjlist[0]; door < lastdoorobj; door++)
+    {
+        fread (door,sizeof(*door),1,file);
+        checksum = DoChecksum(door,sizeof(*door),checksum);
+    }
 
     DiskFlopAnim(x,y);
     fread (&pwallstate,sizeof(pwallstate),1,file);
