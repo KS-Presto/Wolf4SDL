@@ -122,6 +122,7 @@ void ReadConfig(void)
     byte  sd;
     byte  sm;
     byte sds;
+    FILE *file;
 
     char configpath[300];
 
@@ -134,43 +135,46 @@ void ReadConfig(void)
     else
         snprintf (configpath,sizeof(configpath),"%s",configname);
 
-    const int file = open(configpath, O_RDONLY | O_BINARY);
-    if (file != -1)
+    file = fopen(configpath,"rb");
+
+    if (file)
     {
         //
         // valid config file
         //
         word tmp;
-        read(file,&tmp,sizeof(tmp));
-        if(tmp!=0xfefa)
+        fread (&tmp,sizeof(tmp),1,file);
+
+        if (tmp!=0xfefa)
         {
-            close(file);
+            fclose (file);
             goto noconfig;
         }
-        read(file,Scores,sizeof(HighScore) * MaxScores);
 
-        read(file,&sd,sizeof(sd));
-        read(file,&sm,sizeof(sm));
-        read(file,&sds,sizeof(sds));
+        fread (Scores,sizeof(Scores),1,file);
 
-        read(file,&mouseenabled,sizeof(mouseenabled));
-        read(file,&joystickenabled,sizeof(joystickenabled));
+        fread (&sd,sizeof(sd),1,file);
+        fread (&sm,sizeof(sm),1,file);
+        fread (&sds,sizeof(sds),1,file);
+
+        fread (&mouseenabled,sizeof(mouseenabled),1,file);
+        fread (&joystickenabled,sizeof(joystickenabled),1,file);
         boolean dummyJoypadEnabled;
-        read(file,&dummyJoypadEnabled,sizeof(dummyJoypadEnabled));
+        fread (&dummyJoypadEnabled,sizeof(dummyJoypadEnabled),1,file);
         boolean dummyJoystickProgressive;
-        read(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
+        fread (&dummyJoystickProgressive,sizeof(dummyJoystickProgressive),1,file);
         int dummyJoystickPort = 0;
-        read(file,&dummyJoystickPort,sizeof(dummyJoystickPort));
+        fread (&dummyJoystickPort,sizeof(dummyJoystickPort),1,file);
 
-        read(file,dirscan,sizeof(dirscan));
-        read(file,buttonscan,sizeof(buttonscan));
-        read(file,buttonmouse,sizeof(buttonmouse));
-        read(file,buttonjoy,sizeof(buttonjoy));
+        fread (dirscan,sizeof(dirscan),1,file);
+        fread (buttonscan,sizeof(buttonscan),1,file);
+        fread (buttonmouse,sizeof(buttonmouse),1,file);
+        fread (buttonjoy,sizeof(buttonjoy),1,file);
 
-        read(file,&viewsize,sizeof(viewsize));
-        read(file,&mouseadjustment,sizeof(mouseadjustment));
+        fread (&viewsize,sizeof(viewsize),1,file);
+        fread (&mouseadjustment,sizeof(mouseadjustment),1,file);
 
-        close(file);
+        fclose (file);
 
         if ((sd == sdm_AdLib || sm == smm_AdLib) && !AdLibPresent
                 && !SoundBlasterPresent)
@@ -249,6 +253,7 @@ noconfig:
 void WriteConfig(void)
 {
     char configpath[300];
+    FILE *file;
 
 #ifdef _arch_dreamcast
     fs_unlink(configname);
@@ -259,35 +264,36 @@ void WriteConfig(void)
     else
         snprintf (configpath,sizeof(configpath),"%s",configname);
 
-    const int file = open(configpath, O_CREAT | O_WRONLY | O_BINARY, 0644);
-    if (file != -1)
+    file = fopen(configpath,"wb");
+
+    if (file)
     {
         word tmp=0xfefa;
-        write(file,&tmp,sizeof(tmp));
-        write(file,Scores,sizeof(HighScore) * MaxScores);
+        fwrite (&tmp,sizeof(tmp),1,file);
+        fwrite (Scores,sizeof(Scores),1,file);
 
-        write(file,&SoundMode,sizeof(SoundMode));
-        write(file,&MusicMode,sizeof(MusicMode));
-        write(file,&DigiMode,sizeof(DigiMode));
+        fwrite (&SoundMode,sizeof(SoundMode),1,file);
+        fwrite (&MusicMode,sizeof(MusicMode),1,file);
+        fwrite (&DigiMode,sizeof(DigiMode),1,file);
 
-        write(file,&mouseenabled,sizeof(mouseenabled));
-        write(file,&joystickenabled,sizeof(joystickenabled));
+        fwrite (&mouseenabled,sizeof(mouseenabled),1,file);
+        fwrite (&joystickenabled,sizeof(joystickenabled),1,file);
         boolean dummyJoypadEnabled = false;
-        write(file,&dummyJoypadEnabled,sizeof(dummyJoypadEnabled));
+        fwrite (&dummyJoypadEnabled,sizeof(dummyJoypadEnabled),1,file);
         boolean dummyJoystickProgressive = false;
-        write(file,&dummyJoystickProgressive,sizeof(dummyJoystickProgressive));
+        fwrite (&dummyJoystickProgressive,sizeof(dummyJoystickProgressive),1,file);
         int dummyJoystickPort = 0;
-        write(file,&dummyJoystickPort,sizeof(dummyJoystickPort));
+        fwrite (&dummyJoystickPort,sizeof(dummyJoystickPort),1,file);
 
-        write(file,dirscan,sizeof(dirscan));
-        write(file,buttonscan,sizeof(buttonscan));
-        write(file,buttonmouse,sizeof(buttonmouse));
-        write(file,buttonjoy,sizeof(buttonjoy));
+        fwrite (dirscan,sizeof(dirscan),1,file);
+        fwrite (buttonscan,sizeof(buttonscan),1,file);
+        fwrite (buttonmouse,sizeof(buttonmouse),1,file);
+        fwrite (buttonjoy,sizeof(buttonjoy),1,file);
 
-        write(file,&viewsize,sizeof(viewsize));
-        write(file,&mouseadjustment,sizeof(mouseadjustment));
+        fwrite (&viewsize,sizeof(viewsize),1,file);
+        fwrite (&mouseadjustment,sizeof(mouseadjustment),1,file);
 
-        close(file);
+        fclose (file);
     }
 #ifdef _arch_dreamcast
     DC_SaveToVMU(configname, NULL);

@@ -58,7 +58,7 @@ extern void			(*USL_DrawString)(const char *);
 extern	boolean		(*USL_SaveGame)(int),(*USL_LoadGame)(int);
 extern	void		(*USL_ResetGame)(void);
 extern	SaveGame	Games[MaxSaveGames];
-extern	HighScore	Scores[];
+extern	HighScore	Scores[MaxScores];
 
 #define	US_HomeWindow()	{PrintX = WindowX; PrintY = WindowY;}
 

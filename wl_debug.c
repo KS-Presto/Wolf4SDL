@@ -102,6 +102,7 @@ void CountObjects (void)
 void PictureGrabber (void)
 {
     int i;
+    FILE *file;
     static char fname[] = "WSHOT000.BMP";
 
     for(i = 0; i < 1000; i++)
@@ -109,9 +110,13 @@ void PictureGrabber (void)
         fname[7] = i % 10 + '0';
         fname[6] = (i / 10) % 10 + '0';
         fname[5] = i / 100 + '0';
-        int file = open(fname, O_RDONLY | O_BINARY);
-        if(file == -1) break;       // file does not exist, so use that filename
-        close(file);
+
+        file = fopen(fname,"rb");
+
+        if (!file)
+            break;       // file does not exist, so use that filename
+
+        fclose (file);
     }
 
     // overwrites WSHOT999.BMP if all wshot files exist

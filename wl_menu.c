@@ -270,7 +270,7 @@ static int SaveGamesAvail[10];
 static int StartGame;
 static int SoundStatus = 1;
 static int pickquick;
-static char SaveGameNames[10][32];
+static char SaveGameNames[10][MaxGameName];
 static char SaveName[13] = "savegam?.";
 
 
@@ -2927,6 +2927,7 @@ void SetupSaveGames()
     int i;
     char name[13];
     char savepath[300];
+    FILE *file;
 
     snprintf (name,sizeof(name),"%s",SaveName);
     for(i = 0; i < 10; i++)
@@ -2942,12 +2943,13 @@ void SetupSaveGames()
             else
                 snprintf (savepath,sizeof(savepath),"%s",name);
 
-            const int handle = open(savepath, O_RDONLY | O_BINARY);
-            if(handle >= 0)
+            file = fopen(savepath,"rb");
+
+            if (file)
             {
                 SaveGamesAvail[i] = 1;
-                read(handle, SaveGameNames[i], 32);
-                close(handle);
+                fread (SaveGameNames[i],MaxGameName,1,file);
+                fclose (file);
             }
 #ifdef _arch_dreamcast
             // Remove unpacked version of file

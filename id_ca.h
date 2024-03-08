@@ -31,8 +31,8 @@ extern  char  audioext[5];
 
 //===========================================================================
 
-boolean CA_LoadFile (const char *filename, void **ptr);
-boolean CA_WriteFile (const char *filename, void *ptr, int32_t length);
+void CA_LoadFile (const char *filename, void **ptr);
+void CA_WriteFile (const char *filename, void *ptr, int32_t length);
 
 int32_t CA_RLEWCompress (word *source, int32_t length, word *dest, word rlewtag);
 
@@ -44,9 +44,9 @@ void CA_Shutdown (void);
 int32_t CA_CacheAudioChunk (int chunk);
 void CA_LoadAllSounds (void);
 
-void CA_CacheGrChunks (void);
+void CA_CacheGrChunks (FILE *file);
 void CA_CacheMap (int mapnum);
 
-void CA_CannotOpen(const char *name);
+void CA_CannotOpen (const char *name);
 
 #endif
