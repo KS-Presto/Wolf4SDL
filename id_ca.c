@@ -1022,6 +1022,9 @@ void CA_CacheMap (int mapnum)
         pos = mapheaderseg[mapnum]->planestart[plane];
         compressed = mapheaderseg[mapnum]->planelength[plane];
 
+	if (!compressed)
+	    continue;    // empty plane
+
         dest = mapsegs[plane];
 
         fseek (file,pos,SEEK_SET);
