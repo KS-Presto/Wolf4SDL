@@ -1035,7 +1035,7 @@ void WallRefresh (void)
             //
             // check intersections with vertical walls
             //
-            if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == ytile)
+            if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile)
                 yinttile = ytile;
 
             if ((ytilestep == -1 && yinttile <= ytile) || (ytilestep == 1 && yinttile >= ytile))
