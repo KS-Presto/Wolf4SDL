@@ -55,7 +55,7 @@ SDL_Color curpal[256];
 
 
 #define CASSERT(x) extern int ASSERT_COMPILE[((x) != 0) * 2 - 1];
-#define RGB(r, g, b) {(r)*255/63, (g)*255/63, (b)*255/63, 0}
+#define RGB(r, g, b) {(r)*255/63, (g)*255/63, (b)*255/63, SDL_ALPHA_OPAQUE}
 
 SDL_Color gamepal[]={
 #ifdef SPEAR
@@ -199,6 +199,7 @@ void VL_ConvertPalette(byte *srcpal, SDL_Color *destpal, int numColors)
         destpal[i].r = *srcpal++ * 255 / 63;
         destpal[i].g = *srcpal++ * 255 / 63;
         destpal[i].b = *srcpal++ * 255 / 63;
+        destpal[i].a = SDL_ALPHA_OPAQUE;
     }
 }
 
@@ -220,6 +221,7 @@ void VL_FillPalette (int red, int green, int blue)
         pal[i].r = red;
         pal[i].g = green;
         pal[i].b = blue;
+        pal[i].a = SDL_ALPHA_OPAQUE;
     }
 
     VL_SetPalette(pal, true);
@@ -327,6 +329,7 @@ void VL_FadeOut (int start, int end, int red, int green, int blue, int steps)
 			orig = origptr->b;
 			delta = blue-orig;
 			newptr->b = orig + delta * i / steps;
+			newptr->a = SDL_ALPHA_OPAQUE;
 			origptr++;
 			newptr++;
 		}
@@ -373,6 +376,7 @@ void VL_FadeIn (int start, int end, SDL_Color *palette, int steps)
 			palette2[j].g = palette1[j].g + delta * i / steps;
 			delta = palette[j].b-palette1[j].b;
 			palette2[j].b = palette1[j].b + delta * i / steps;
+			palette2[j].a = SDL_ALPHA_OPAQUE;
 		}
 
         VL_WaitVBL(1);
