@@ -599,7 +599,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 		{
 			if(ci.button0)             // acts as return
 			{
-				snprintf (buf,sizeof(buf),"%s",s);
+				snprintf (buf,maxchars + 1,"%s",s);
 				done = true;
 				result = true;
 				checkkey = false;
@@ -659,7 +659,7 @@ US_LineInput(int x,int y,char *buf,const char *def,boolean escok,
 					break;
 
 				case sc_Return:
-					snprintf (buf,sizeof(buf),"%s",s);
+					snprintf (buf,maxchars + 1,"%s",s);
 					done = true;
 					result = true;
 					break;
