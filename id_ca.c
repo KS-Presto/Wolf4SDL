@@ -487,7 +487,7 @@ void CAL_SetupGrFile (void)
     int32_t* i;
     for (i = grstarts; i != endof(grstarts); ++i)
     {
-        int32_t val = ReadLong(d) & 0x00ffffff;
+        int32_t val = d[0] | (d[1] << 8) | (d[2] << 16);
         *i = (val == 0x00FFFFFF ? -1 : val);
         d += 3;
     }
