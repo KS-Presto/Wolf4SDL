@@ -207,25 +207,28 @@ ScanCode IN_MapKey (int key)
 {
     ScanCode scan = key;
 
-    if (!(SDL_GetModState() & KMOD_NUM))
+    switch (key)
     {
-        switch (key)
-        {
-            case sc_KeyPad2: scan = sc_DownArrow; break;
-            case sc_KeyPad4: scan = sc_LeftArrow; break;
-            case sc_KeyPad6: scan = sc_RightArrow; break;
-            case sc_KeyPad8: scan = sc_UpArrow; break;
-        }
-    }
-    else
-    {
-        switch (key)
-        {
-            case sc_KeyPadEnter: scan = sc_Enter; break;
-            case sc_RShift: scan = sc_LShift; break;
-            case sc_RAlt: scan = sc_LAlt; break;
-            case sc_RControl: scan = sc_LControl; break;
-        }
+        case sc_KeyPadEnter: scan = sc_Enter; break;
+        case sc_RShift: scan = sc_LShift; break;
+        case sc_RAlt: scan = sc_LAlt; break;
+        case sc_RControl: scan = sc_LControl; break;
+
+        case sc_KeyPad2:
+        case sc_KeyPad4:
+        case sc_KeyPad6:
+        case sc_KeyPad8:
+            if (!(SDL_GetModState() & KMOD_NUM))
+            {
+                switch (key)
+                {
+                    case sc_KeyPad2: scan = sc_DownArrow; break;
+                    case sc_KeyPad4: scan = sc_LeftArrow; break;
+                    case sc_KeyPad6: scan = sc_RightArrow; break;
+                    case sc_KeyPad8: scan = sc_UpArrow; break;
+                }
+            }
+            break;
     }
 
     return scan;
