@@ -877,15 +877,33 @@ void
 SD_Startup(void)
 {
     int     i;
+    int chunksize;
 
     if (SD_Started)
         return;
 
-    if(Mix_OpenAudio(param_samplerate, AUDIO_S16, 2, param_audiobuffer))
+    //
+    // use a custom size audiobuffer or the largest power
+    // of 2 <= the value calculated based on the samplerate
+    //
+    if (param_audiobuffer != DEFAULT_AUDIO_BUFFER_SIZE)
+        chunksize = param_audiobuffer;
+    else
     {
-        printf("Unable to open audio: %s\n", Mix_GetError());
+        if (!param_samplerate || param_samplerate > 44100)
+            Quit ("Divide by zero caused by invalid samplerate!");
+
+        chunksize = 1 << (int)log2(param_audiobuffer / (44100 / param_samplerate));
+    }
+
+    if (Mix_OpenAudioDevice(param_samplerate,AUDIO_S16,2,chunksize,NULL,SDL_AUDIO_ALLOW_FREQUENCY_CHANGE))
+    {
+        snprintf (str,sizeof(str),"Unable to open audio device: %s\n", Mix_GetError());
+        Error (str);
         return;
     }
+
+    Mix_QuerySpec (&param_samplerate,NULL,NULL);
 
     Mix_ReserveChannels(2);  // reserve player and boss weapon channels
     Mix_GroupChannels(2, MIX_CHANNELS-1, 1); // group remaining channels

@@ -32,9 +32,11 @@
 #if defined(_arch_dreamcast)
 #define YESBUTTONNAME "A"
 #define NOBUTTONNAME  "B"
+#define DEFAULT_AUDIO_BUFFER_SIZE    1024
 #elif defined(GP2X)
 #define YESBUTTONNAME "Y"
 #define NOBUTTONNAME  "B"
+#define DEFAULT_AUDIO_BUFFER_SIZE    128
 #else
 #ifdef SPANISH
 #define YESBUTTONNAME "S"
@@ -42,6 +44,7 @@
 #define YESBUTTONNAME "Y"
 #endif
 #define NOBUTTONNAME  "N"
+#define DEFAULT_AUDIO_BUFFER_SIZE    2048
 #endif
 
 #include "foreign.h"

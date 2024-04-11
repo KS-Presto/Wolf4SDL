@@ -81,19 +81,17 @@ boolean param_nowait = false;
 int     param_difficulty = 1;           // default is "normal"
 int     param_tedlevel = -1;            // default is not to start a level
 int     param_joystickindex = 0;
+int     param_audiobuffer = DEFAULT_AUDIO_BUFFER_SIZE;
 
 #if defined(_arch_dreamcast)
 int     param_joystickhat = 0;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
-int     param_audiobuffer = 1024;
 #elif defined(GP2X_940)
 int     param_joystickhat = -1;
 int     param_samplerate = 11025;       // higher samplerates result in "out of memory"
-int     param_audiobuffer = 128;
 #else
 int     param_joystickhat = -1;
 int     param_samplerate = 44100;
-int     param_audiobuffer = 2048;
 #endif
 
 int     param_mission = 0;
@@ -1598,7 +1596,6 @@ void CheckParameters(int argc, char *argv[])
         "See Options.txt for help\n\n"
     };
 
-    bool   sampleRateGiven = false, audioBufferGiven = false;
     int    i;
     size_t len;
     char   error[256],*helpstr;
@@ -1707,9 +1704,12 @@ void CheckParameters(int argc, char *argv[])
             if (++i >= argc)
                 snprintf (error,sizeof(error),"The samplerate option is missing the rate argument!");
             else
+            {
                 param_samplerate = atoi(argv[i]);
 
-            sampleRateGiven = true;
+                if (param_samplerate < 7042 || param_samplerate > 44100)
+                    snprintf (error,sizeof(error),"The samplerate must be between 7042 and 44100!");
+            }
         }
         else IFARG("--audiobuffer")
         {
@@ -1717,8 +1717,6 @@ void CheckParameters(int argc, char *argv[])
                 snprintf (error,sizeof(error),"The audiobuffer option is missing the size argument!");
             else
                 param_audiobuffer = atoi(argv[i]);
-
-            audioBufferGiven = true;
         }
         else IFARG("--mission")
         {
@@ -1772,9 +1770,6 @@ void CheckParameters(int argc, char *argv[])
 
         exit(1);
     }
-
-    if(sampleRateGiven && !audioBufferGiven)
-        param_audiobuffer = 2048 / (44100 / param_samplerate);
 }
 
 /*
