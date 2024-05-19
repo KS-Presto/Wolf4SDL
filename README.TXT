@@ -1,3 +1,12 @@
+                           *** - NOTICE - ***
+
+This GitHub repository is now archived and no longer maintained. Migrated repo
+can be found at https://bitbucket.org/ks-presto/wolf4sdl where development will
+continue, without being badgered to enable 2FA.
+
+
+
+
 Wolf4SDL by Moritz "Ripper" Kroll (http://www.chaos-software.de.vu - OFFLINE)
 Original Wolfenstein 3D by id Software (http://www.idsoftware.com)
 Modifications to r262 by Andy_Nonymous and others
